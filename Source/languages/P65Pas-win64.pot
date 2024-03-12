@@ -1,0 +1,856 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: adapter6502.msg_synfil_nof
+#, object-pascal-format
+msgctxt "adapter6502.msg_synfil_nof"
+msgid "Syntax file not found: %s"
+msgstr ""
+
+#: analyzer.er_arr_siz_big
+msgid "Array size to big."
+msgstr ""
+
+#: analyzer.er_bool_expect
+msgid "Boolean expression expected."
+msgstr ""
+
+#: analyzer.er_con_exp_exp
+msgctxt "analyzer.er_con_exp_exp"
+msgid "Constant expression expected."
+msgstr ""
+
+#: analyzer.er_duplic_func_
+#, object-pascal-format
+msgid "Duplicated function: %s"
+msgstr ""
+
+#: analyzer.er_duplic_iden
+#, object-pascal-format
+msgctxt "analyzer.er_duplic_iden"
+msgid "Duplicated identifier: \"%s\""
+msgstr ""
+
+#: analyzer.er_els_unexpec
+msgid "\"else\" unexpected."
+msgstr ""
+
+#: analyzer.er_end_expecte
+msgid "\"end\" expected."
+msgstr ""
+
+#: analyzer.er_eof_end_exp
+msgid "Unexpected end of file. \"end\" expected."
+msgstr ""
+
+#: analyzer.er_equ_com_exp
+msgid "\"=\" or \",\" expected."
+msgstr ""
+
+#: analyzer.er_equ_expectd
+msgid "\"=\" expected."
+msgstr ""
+
+#: analyzer.er_exp_var_ide
+msgid "Identifier of variable expected."
+msgstr ""
+
+#: analyzer.er_fil_nofound
+#, object-pascal-format
+msgid "File not found: %s"
+msgstr ""
+
+#: analyzer.er_iden_expect
+msgctxt "analyzer.er_iden_expect"
+msgid "Identifier expected."
+msgstr ""
+
+#: analyzer.er_ide_con_exp
+msgid "Identifier of constant expected."
+msgstr ""
+
+#: analyzer.er_ide_typ_exp
+msgid "Identifier of type expected."
+msgstr ""
+
+#: analyzer.er_inst_nev_exe
+msgid "Instruction will never execute."
+msgstr ""
+
+#: analyzer.er_inv_arr_siz
+msgid "Invalid array size."
+msgstr ""
+
+#: analyzer.er_inv_memaddr
+msgid "Invalid memory address."
+msgstr ""
+
+#: analyzer.er_not_aft_end
+msgid "Syntax error. Nothing should be after \"END.\""
+msgstr ""
+
+#: analyzer.er_not_implem_
+#, object-pascal-format
+msgid "Not implemented: \"%s\""
+msgstr ""
+
+#: analyzer.er_num_add_exp
+msgid "Numeric address expected."
+msgstr ""
+
+#: analyzer.er_onl_byt_word
+msgid "Only BYTE or WORD index is allowed in FOR."
+msgstr ""
+
+#: analyzer.er_prog_nam_ex
+msgid "Program name expected."
+msgstr ""
+
+#: analyzer.er_sem_com_exp
+msgid "\":\" or \",\" expected."
+msgstr ""
+
+#: analyzer.er_unknown_ide_
+#, object-pascal-format
+msgctxt "analyzer.er_unknown_ide_"
+msgid "Unknown identifier: %s"
+msgstr ""
+
+#: analyzer.er_unkn_struct
+msgid "Unknown structure."
+msgstr ""
+
+#: analyzer.er_variab_expec
+msgid "Variable expected."
+msgstr ""
+
+#: compbase.er_can_ap_oper_
+#, object-pascal-format
+msgid "Cannot apply the operator \"%s\" to type \"%s\""
+msgstr ""
+
+#: compbase.er_con_exp_exp
+msgctxt "compbase.er_con_exp_exp"
+msgid "Constant expression expected."
+msgstr ""
+
+#: compbase.er_duplic_iden
+#, object-pascal-format
+msgctxt "compbase.er_duplic_iden"
+msgid "Duplicated identifier: \"%s\""
+msgstr ""
+
+#: compbase.er_iden_expect
+msgctxt "compbase.er_iden_expect"
+msgid "Identifier expected."
+msgstr ""
+
+#: compbase.er_illeg_opera_
+#, object-pascal-format
+msgid "Illegal Operation: %s"
+msgstr ""
+
+#: compbase.er_inv_cod_char
+msgid "Invalid code for char."
+msgstr ""
+
+#: compbase.er_in_character
+msgid "Error in character."
+msgstr ""
+
+#: compbase.er_in_expressi
+msgid "Error in expression. \")\" expected."
+msgstr ""
+
+#: compbase.er_notypdef_nu
+msgid "No type defined to allocate this number."
+msgstr ""
+
+#: compbase.er_operan_expec
+msgid "Operand expected."
+msgstr ""
+
+#: compbase.er_ra_hav_used
+msgid "Register A has been used."
+msgstr ""
+
+#: compbase.er_rx_hav_used
+msgid "Register X has been used."
+msgstr ""
+
+#: compbase.er_ry_hav_used
+msgid "Register Y has been used."
+msgstr ""
+
+#: compbase.er_semic_expec
+msgid "\";\" expected."
+msgstr ""
+
+#: compbase.er_str_expected
+#, object-pascal-format
+msgid "\"%s\" expected."
+msgstr ""
+
+#: compbase.er_typ_parm_er_
+#, object-pascal-format
+msgid "Type parameters error on %s"
+msgstr ""
+
+#: compbase.er_undef_type_
+#, object-pascal-format
+msgid "Undefined type \"%s\""
+msgstr ""
+
+#: compbase.er_und_oper_ty_
+#, object-pascal-format
+msgid "Undefined operator: %s for type: %s"
+msgstr ""
+
+#: compbase.er_unknown_ide_
+#, object-pascal-format
+msgctxt "compbase.er_unknown_ide_"
+msgid "Unknown identifier: %s"
+msgstr ""
+
+#: editview.msg_allfiles
+msgctxt "editview.msg_allfiles"
+msgid "All files"
+msgstr ""
+
+#: editview.msg_modifsav
+#, object-pascal-format
+msgctxt "editview.msg_modifsav"
+msgid "File %s has been modified. Save?"
+msgstr ""
+
+#: editview.msg_pasfiles
+msgctxt "editview.msg_pasfiles"
+msgid "Pascal Files"
+msgstr ""
+
+#: formconfig.cpage_cmp_extra1
+msgctxt "formconfig.cpage_cmp_extra1"
+msgid "Extra Subpanel 1"
+msgstr ""
+
+#: formconfig.cpage_cmp_extra2
+msgctxt "formconfig.cpage_cmp_extra2"
+msgid "Extra Subpanel 2"
+msgstr ""
+
+#: formconfig.cpage_cmp_extra3
+msgctxt "formconfig.cpage_cmp_extra3"
+msgid "Extra Subpanel 3"
+msgstr ""
+
+#: formconfig.cpage_compil
+msgctxt "formconfig.cpage_compil"
+msgid "Extra Panel"
+msgstr ""
+
+#: formconfig.cpage_editor
+msgctxt "formconfig.cpage_editor"
+msgid "Editor"
+msgstr ""
+
+#: formconfig.cpage_edi_appear
+msgctxt "formconfig.cpage_edi_appear"
+msgid "Appearance"
+msgstr ""
+
+#: formconfig.cpage_edi_extra1
+msgctxt "formconfig.cpage_edi_extra1"
+msgid "Extra Subpanel 1"
+msgstr ""
+
+#: formconfig.cpage_edi_syntax
+msgctxt "formconfig.cpage_edi_syntax"
+msgid "Syntax"
+msgstr ""
+
+#: formconfig.cpage_environ
+msgctxt "formconfig.cpage_environ"
+msgid "Environment"
+msgstr ""
+
+#: formconfig.cpage_env_extra1
+msgctxt "formconfig.cpage_env_extra1"
+msgid "Extra Subpanel 1"
+msgstr ""
+
+#: formconfig.cpage_env_filexp
+msgctxt "formconfig.cpage_env_filexp"
+msgid "File Explorer"
+msgstr ""
+
+#: formconfig.cpage_env_mespan
+msgctxt "formconfig.cpage_env_mespan"
+msgid "Message Panel"
+msgstr ""
+
+#: formconfig.cpage_env_themes
+msgid "Themes"
+msgstr ""
+
+#: formconfig.cpage_extool
+msgctxt "formconfig.cpage_extool"
+msgid "External Tool"
+msgstr ""
+
+#: formconfig.label_them_none
+msgid "None"
+msgstr ""
+
+#: formconfig.msg_allfiles
+msgctxt "formconfig.msg_allfiles"
+msgid "All files"
+msgstr ""
+
+#: formconfig.theme_file_desc
+msgid "Theme file"
+msgstr ""
+
+#: formprincipal.msg_filsavcomp
+msgid "File must be saved before compiling."
+msgstr ""
+
+#: formprincipal.msg_modified
+msgid "(*)Modified"
+msgstr ""
+
+#: formprincipal.msg_nofiles
+msgid "No files."
+msgstr ""
+
+#: formprincipal.msg_nofound_
+#, object-pascal-format
+msgid "No found \"%s\""
+msgstr ""
+
+#: formprincipal.msg_n_replac
+#, object-pascal-format
+msgid "%d words replaced"
+msgstr ""
+
+#: formprincipal.msg_project
+msgid "Project: "
+msgstr ""
+
+#: formprincipal.msg_repthis
+msgid "Replace this?"
+msgstr ""
+
+#: formprincipal.msg_saved
+msgid "Saved"
+msgstr ""
+
+#: formprincipal.msg_synfil_nof
+#, object-pascal-format
+msgctxt "formprincipal.msg_synfil_nof"
+msgid "Syntax file not found: %s"
+msgstr ""
+
+#: framecfgexttool.er_fail_exec_
+#, object-pascal-format
+msgid "Fail executing: %s"
+msgstr ""
+
+#: framecfgexttool.pre_tool_name
+msgid "Tool"
+msgstr ""
+
+#: frameeditview.msg_allfiles
+msgctxt "frameeditview.msg_allfiles"
+msgid "All files"
+msgstr ""
+
+#: frameeditview.msg_nofiles
+msgid "No files"
+msgstr ""
+
+#: frameeditview.msg_nosynfil
+#, object-pascal-format
+msgctxt "frameeditview.msg_nosynfil"
+msgid "Syntax file not found: %s"
+msgstr ""
+
+#: frameeditview.msg_pasfiles
+msgctxt "frameeditview.msg_pasfiles"
+msgid "Pascal Files"
+msgstr ""
+
+#: framefileexplor.folder_name
+msgctxt "framefileexplor.folder_name"
+msgid "folder"
+msgstr ""
+
+#: framefileexplor.new_file_name
+msgctxt "framefileexplor.new_file_name"
+msgid "newfile.pas"
+msgstr ""
+
+#: framefileexplor.txt_alread_exist
+msgid "A file with that name already exists."
+msgstr ""
+
+#: framefileexplor.txt_delfile
+#, object-pascal-format
+msgctxt "framefileexplor.txt_delfile"
+msgid "Delete file \"%s\"?"
+msgstr ""
+
+#: framefileexplor.txt_dir_notexist_
+msgid "Directory doesn't exist: "
+msgstr ""
+
+#: framefileexplor.txt_empty
+msgctxt "framefileexplor.txt_empty"
+msgid "<empty>"
+msgstr ""
+
+#: framefileexplor.txt_err_renaming
+msgid "An error occurred renaming file."
+msgstr ""
+
+#: framefileexplor.txt_fold
+msgctxt "framefileexplor.txt_fold"
+msgid "C&ollapse"
+msgstr ""
+
+#: framefileexplor.txt_notac_filexp
+msgid "File is not accessible from the File Explorer."
+msgstr ""
+
+#: framefileexplor.txt_notdelfol
+msgctxt "framefileexplor.txt_notdelfol"
+msgid "Cannot delete folders"
+msgstr ""
+
+#: framefileexplor.txt_unfold
+msgctxt "framefileexplor.txt_unfold"
+msgid "E&xpand"
+msgstr ""
+
+#: framemessageswin.msg_compil
+msgid "Compiled in: "
+msgstr ""
+
+#: framemessageswin.msg_error
+msgid "Error"
+msgstr ""
+
+#: framemessageswin.msg_errors
+msgid "Errors"
+msgstr ""
+
+#: framemessageswin.msg_inicomp
+msgid "Starting Compilation..."
+msgstr ""
+
+#: framemessageswin.msg_warn
+msgid "Warning"
+msgstr ""
+
+#: framemessageswin.msg_warns
+msgid "Warnings"
+msgstr ""
+
+#: tfracfgafterchg6502.grpafteredit_6502.caption
+msgid "Actions after changes in editor:"
+msgstr ""
+
+#: tfracfgasmout6502.chkexcunused.caption
+msgid "Exclude unused"
+msgstr ""
+
+#: tfracfgasmout6502.chkincaddress.caption
+msgid "Include &Memory Address"
+msgstr ""
+
+#: tfracfgasmout6502.chkinccomment.caption
+msgid "Include &Comments"
+msgstr ""
+
+#: tfracfgasmout6502.chkincdecvar.caption
+msgid "Include &Variables declaration"
+msgstr ""
+
+#: tfracfgasmout6502.chkincvarname.caption
+msgid "Include &Variable names"
+msgstr ""
+
+#: tfracfgasmout6502.radiogroup2.caption
+msgid "Output"
+msgstr ""
+
+#: tfracfgcompiler6502.chkfortorepeat.caption
+msgid "Convert FOR loop to REPEAT loop"
+msgstr ""
+
+#: tfracfgcompiler6502.chkoptretproc.caption
+msgid "Optimize RETURN in procedures"
+msgstr ""
+
+#: tfracfgcompiler6502.chkremunopcod.caption
+msgid "Remove unnecessary Opcodes"
+msgstr ""
+
+#: tfracfgcompiler6502.chkreuprocvar.caption
+msgid "Reuse Procedures Variables"
+msgstr ""
+
+#: tfracfgcompiler6502.chksavebefcomp.caption
+msgid "Save file before compiling"
+msgstr ""
+
+#: tfracfgcompiler6502.grpoptimlev.caption
+msgid "Optimizacion Level: "
+msgstr ""
+
+#: tfracfgcompiler6502.label1.caption
+msgid "Units Path:"
+msgstr ""
+
+#: tframir6502.acgendoanalys.caption
+msgctxt "tframir6502.acgendoanalys.caption"
+msgid "Do Analysis"
+msgstr ""
+
+#: tframir6502.acgendooptim.caption
+msgctxt "tframir6502.acgendooptim.caption"
+msgid "Do Optimization"
+msgstr ""
+
+#: tframir6502.acgendosinth.caption
+msgctxt "tframir6502.acgendosinth.caption"
+msgid "Do Synthesis"
+msgstr ""
+
+#: tframir6502.acgenexpall.caption
+msgctxt "tframir6502.acgenexpall.caption"
+msgid "Expand All"
+msgstr ""
+
+#: tframir6502.acgengoto.caption
+msgctxt "tframir6502.acgengoto.caption"
+msgid "Go To..."
+msgstr ""
+
+#: tframir6502.acgenprop.caption
+msgctxt "tframir6502.acgenprop.caption"
+msgid "&Properties"
+msgstr ""
+
+#: tframir6502.acgenrefres.caption
+msgctxt "tframir6502.acgenrefres.caption"
+msgid "&Refresh"
+msgstr ""
+
+#: tfrapicasm.label2.caption
+msgid "Assembler Code"
+msgstr ""
+
+#: tfrapicasm.speedbutton1.caption
+msgctxt "tfrapicasm.speedbutton1.caption"
+msgid "X"
+msgstr ""
+
+#: tfrapicregisters.label1.caption
+msgid "CPU registers"
+msgstr ""
+
+#: tfrapicregisters.label2.caption
+msgid "A register"
+msgstr ""
+
+#: tfrapicregisters.label3.caption
+msgid "STATUS register"
+msgstr ""
+
+#: tfrapicregisters.label4.caption
+msgid "X register"
+msgstr ""
+
+#: tfrapicregisters.label5.caption
+msgid "Y register"
+msgstr ""
+
+#: tfraramexplorer6502.label1.caption
+msgid "RAM map"
+msgstr ""
+
+#: tfraramexplorer6502.speedbutton1.caption
+msgctxt "tfraramexplorer6502.speedbutton1.caption"
+msgid "X"
+msgstr ""
+
+#: tfraregwatcher.acaddrt.caption
+msgid "Add &Registers"
+msgstr ""
+
+#: tfraregwatcher.acaddvars.caption
+msgid "Add Program &Variables"
+msgstr ""
+
+#: tfraregwatcher.acclearall.caption
+msgid "&Clear all"
+msgstr ""
+
+#: tfraregwatcher.acdeleterow.caption
+msgid "&Delete row"
+msgstr ""
+
+#: tfraregwatcher.label1.caption
+msgid "Register Watcher"
+msgstr ""
+
+#: tfraregwatcher.speedbutton1.caption
+msgctxt "tfraregwatcher.speedbutton1.caption"
+msgid "X"
+msgstr ""
+
+#: tfrastatist6502.lblram.caption
+msgid "RAM"
+msgstr ""
+
+#: tfrastatist6502.lblrom.caption
+msgid "ROM"
+msgstr ""
+
+#: tfrasynxtree6502.acgendoanalys.caption
+msgctxt "tfrasynxtree6502.acgendoanalys.caption"
+msgid "Do Analysis"
+msgstr ""
+
+#: tfrasynxtree6502.acgendooptim.caption
+msgctxt "tfrasynxtree6502.acgendooptim.caption"
+msgid "Do Optimization"
+msgstr ""
+
+#: tfrasynxtree6502.acgendosinth.caption
+msgctxt "tfrasynxtree6502.acgendosinth.caption"
+msgid "Do Synthesis"
+msgstr ""
+
+#: tfrasynxtree6502.acgenexpall.caption
+msgctxt "tfrasynxtree6502.acgenexpall.caption"
+msgid "Expand All"
+msgstr ""
+
+#: tfrasynxtree6502.acgengoto.caption
+msgctxt "tfrasynxtree6502.acgengoto.caption"
+msgid "Go To..."
+msgstr ""
+
+#: tfrasynxtree6502.acgenprop.caption
+msgctxt "tfrasynxtree6502.acgenprop.caption"
+msgid "&Properties"
+msgstr ""
+
+#: tfrasynxtree6502.acgenrefres.caption
+msgctxt "tfrasynxtree6502.acgenrefres.caption"
+msgid "&Refresh"
+msgstr ""
+
+#: tfrmadapter6502.actoolasmdebug.caption
+msgid "ASM &Debugger"
+msgstr ""
+
+#: tfrmadapter6502.actoolasmdebug.hint
+msgid "ASM debugger"
+msgstr ""
+
+#: tfrmadapter6502.actoolchecksyn.caption
+msgid "Check S&yntax"
+msgstr ""
+
+#: tfrmadapter6502.actoolchecksyn.hint
+msgid "Check syntax"
+msgstr ""
+
+#: tfrmadapter6502.actoolcomejec.caption
+msgid "Compile and execute..."
+msgstr ""
+
+#: tfrmadapter6502.actoolcomejec.hint
+msgid "Compile and execute"
+msgstr ""
+
+#: tfrmadapter6502.actoolcompil.caption
+msgid "&Compile"
+msgstr ""
+
+#: tfrmadapter6502.actoolcompil.hint
+msgid "Compile current file"
+msgstr ""
+
+#: tfrmadapter6502.actoolfinddec.caption
+msgctxt "tfrmadapter6502.actoolfinddec.caption"
+msgid "Find Declaration"
+msgstr ""
+
+#: tfrmadapter6502.actoolfinddec.hint
+msgctxt "tfrmadapter6502.actoolfinddec.hint"
+msgid "Find Declaration"
+msgstr ""
+
+#: tfrmadapter6502.actoollistrep.caption
+msgid "&List Report"
+msgstr ""
+
+#: tfrmadapter6502.actoollistrep.hint
+msgid "List Report"
+msgstr ""
+
+#: tfrmadapter6502.actoolramexp.caption
+msgid "&RAM Explorer"
+msgstr ""
+
+#: tfrmadapter6502.actoolramexp.hint
+msgid "Ram Explorer"
+msgstr ""
+
+#: tfrmadapter6502.actooltestunit.caption
+msgid "Test Device Units"
+msgstr ""
+
+#: tfrmadapter6502.actooltestunit.hint
+msgid "Test Units"
+msgstr ""
+
+#: tfrmadapter6502.caption
+msgid "frmAdapter6502"
+msgstr ""
+
+#: tfrmadapter6502.extramenu1.caption
+msgid "extraMenu1"
+msgstr ""
+
+#: tfrmadapter6502.extramenu2.caption
+msgid "extraMenu2"
+msgstr ""
+
+#: tfrmdebugger6502.acgenaddwatch.caption
+msgid "Add &Watcher on ?"
+msgstr ""
+
+#: tfrmdebugger6502.acgenaddwatch.hint
+msgid "Add Watcher on"
+msgstr ""
+
+#: tfrmdebugger6502.acgenclearcc.caption
+msgctxt "tfrmdebugger6502.acgenclearcc.caption"
+msgid "Reset Cycles Counter"
+msgstr ""
+
+#: tfrmdebugger6502.acgenclearcc.hint
+msgctxt "tfrmdebugger6502.acgenclearcc.hint"
+msgid "Reset Cycles Counter"
+msgstr ""
+
+#: tfrmdebugger6502.acgenexecher.caption
+msgctxt "tfrmdebugger6502.acgenexecher.caption"
+msgid "Exec until here"
+msgstr ""
+
+#: tfrmdebugger6502.acgenexecher.hint
+msgctxt "tfrmdebugger6502.acgenexecher.hint"
+msgid "Exec until here"
+msgstr ""
+
+#: tfrmdebugger6502.acgenpause.caption
+msgctxt "tfrmdebugger6502.acgenpause.caption"
+msgid "Pause"
+msgstr ""
+
+#: tfrmdebugger6502.acgenpause.hint
+msgctxt "tfrmdebugger6502.acgenpause.hint"
+msgid "Pause"
+msgstr ""
+
+#: tfrmdebugger6502.acgenreset.caption
+msgid "Restart"
+msgstr ""
+
+#: tfrmdebugger6502.acgenreset.hint
+msgid "Reset"
+msgstr ""
+
+#: tfrmdebugger6502.acgenrun.caption
+msgid "&Run"
+msgstr ""
+
+#: tfrmdebugger6502.acgenrun.hint
+msgid "Run"
+msgstr ""
+
+#: tfrmdebugger6502.acgensetbrkpnt.caption
+msgctxt "tfrmdebugger6502.acgensetbrkpnt.caption"
+msgid "Set Break Point"
+msgstr ""
+
+#: tfrmdebugger6502.acgensetbrkpnt.hint
+msgctxt "tfrmdebugger6502.acgensetbrkpnt.hint"
+msgid "Set Break Point"
+msgstr ""
+
+#: tfrmdebugger6502.acgensetpc.caption
+msgid "Set PC here"
+msgstr ""
+
+#: tfrmdebugger6502.acgensetpc.hint
+msgid "Set PC position"
+msgstr ""
+
+#: tfrmdebugger6502.acgenstep.caption
+msgid "Step Over"
+msgstr ""
+
+#: tfrmdebugger6502.acgenstep.hint
+msgid "Step"
+msgstr ""
+
+#: tfrmdebugger6502.acgenstepin.caption
+msgid "Step Into"
+msgstr ""
+
+#: tfrmdebugger6502.acgenstepin.hint
+msgid "Step In"
+msgstr ""
+
+#: tfrmdebugger6502.caption
+msgid "Debugger"
+msgstr ""
+
+#: tfrmdebugger6502.toolbar1.caption
+msgid "ToolBar1"
+msgstr ""
+
+#: tfrmdebugger6502.toolbutton4.caption
+msgid "ToolButton4"
+msgstr ""
+
+#: tfrmramexplorer6502.caption
+msgid "RAM Explorer"
+msgstr ""
+
+#: tfrmramexplorer6502.label2.caption
+msgid "Special RAM"
+msgstr ""
+
+#: tfrmramexplorer6502.label4.caption
+msgid "Unimplem."
+msgstr ""
+
+#: tfrmramexplorer6502.label5.caption
+msgid "Used RAM"
+msgstr ""
+
+#: tfrmramexplorer6502.mnzommneg.caption
+msgid "Zoom -"
+msgstr ""
+
+#: tfrmramexplorer6502.mnzoompos.caption
+msgid "Zoom +"
+msgstr ""
+

@@ -179,7 +179,7 @@ resourcestring
   TXT_UNFOLD      = 'E&xpand';
   TXT_NOTDELFOL   = 'Cannot delete folders';
   TXT_DELFILE     = 'Delete file "%s"?';
-  TXT_DIR_NOTEXIST = 'Directory doesn''t exist.';
+  TXT_DIR_NOTEXIST_ = 'Directory doesn''t exist: ';
   TXT_NOTAC_FILEXP = 'File is not accessible from the File Explorer.';
   TXT_ALREAD_EXIST = 'A file with that name already exists.';
   TXT_ERR_RENAMING = 'An error occurred renaming file.';
@@ -642,7 +642,7 @@ begin
     exit;
   end;
   if not DirectoryExists(currPath) then begin
-    MsgExc(TXT_DIR_NOTEXIST);
+    MsgExc(TXT_DIR_NOTEXIST_ + currPath);
     TreeView1.Items.Clear;
     exit;
   end;

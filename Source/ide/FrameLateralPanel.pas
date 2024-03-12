@@ -1,3 +1,4 @@
+{Frame que se ubica en el panel lateral en la parte izquierda.}
 unit FrameLateralPanel;
 {$mode objfpc}{$H+}
 interface

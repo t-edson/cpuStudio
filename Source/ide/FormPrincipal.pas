@@ -192,11 +192,11 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
-    tic         : integer;  //Contador para temporización
-    ticSynCheck : integer;  //Contador para temporizar la verifiación ed sintaxis
-    actSynCheck : Boolean;  //Activa la verificación de sinatxis
-    PopupEdit_N : integer; //Contador de ítems de menú
-    fraEditView1: TfraEditView;   //Panel de editores
+    tic         : integer;       //Contador para temporización
+    ticSynCheck : integer;       //Contador para temporizar la verifiación de sintaxis
+    actSynCheck : Boolean;       //Activa la verificación de sintaxis
+    PopupEdit_N : integer;       //Contador de ítems de menú
+    fraEditView1: TfraEditView;  //Panel de editores
     fraLeftPanel: TfraLateralPanel; //Panel lateral para explorador de archivos y Árbol de sintaxis
     fraMessages : TfraMessagesWin;
     procedure comp_AfterCheckSyn;
