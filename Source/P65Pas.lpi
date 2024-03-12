@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <PathDelim Value="\"/>
+    <General>
+      <Flags>
+        <CompatibilityMode Value="True"/>
+      </Flags>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="P65Pas"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <Icon Value="0"/>
+    </General>
+    <i18n>
+      <EnableI18N Value="True"/>
+      <OutDir Value="languages"/>
+    </i18n>
+    <BuildModes Count="2">
+      <Item1 Name="Debug" Default="True"/>
+      <Item2 Name="Release">
+        <CompilerOptions>
+          <Version Value="11"/>
+          <PathDelim Value="\"/>
+          <Target>
+            <Filename Value="..\P65Pas-$(TargetOS)"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="_libraries\SynFacilUtils-1.24;_libraries\MisUtils-0.6;_libraries\MiConfig-0.4;_libraries\UtilsGrilla-0.8;_libraries\epiktimer;..\comp_p65pas\src\_libraries\P65Utils-0.5;ide"/>
+            <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <DebugInfoType Value="dsDwarf3"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item2>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <DestinationDirectory Value="C:\Users\Usuario\Desktop\PicPasFull"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+      <Modes Count="1">
+        <Mode0 Name="default"/>
+      </Modes>
+    </RunParams>
+    <RequiredPackages Count="4">
+      <Item1>
+        <PackageName Value="TAChartLazarusPkg"/>
+      </Item1>
+      <Item2>
+        <PackageName Value="LazControls"/>
+      </Item2>
+      <Item3>
+        <PackageName Value="SynEdit"/>
+      </Item3>
+      <Item4>
+        <PackageName Value="LCL"/>
+      </Item4>
+    </RequiredPackages>
+    <Units Count="30">
+      <Unit0>
+        <Filename Value="P65Pas.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="ide\FormPrincipal.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmPrincipal"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="ide\Globales.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="ide\FormConfig.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Config"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="ide\FrameEditView.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraEditView"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="ide\FrameMessagesWin.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraMessagesWin"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="ide\FrameFileExplor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraFileExplor"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="ide\FrameCfgSyntax.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgSyntax"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="ide\FrameCfgSynEdit.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgSynEdit"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit8>
+      <Unit9>
+        <Filename Value="adap_p65pas\FormAdapter6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmAdapter6502"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit9>
+      <Unit10>
+        <Filename Value="adap_p65pas\adapter6502.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit10>
+      <Unit11>
+        <Filename Value="adap_p65pas\CodeTools6502.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit11>
+      <Unit12>
+        <Filename Value="adap_p65pas\FormDebugger6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmDebugger6502"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit12>
+      <Unit13>
+        <Filename Value="adap_p65pas\FormElemProperty.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmElemProperty"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit13>
+      <Unit14>
+        <Filename Value="adap_p65pas\FormRAMExplorer6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="frmRAMExplorer6502"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit14>
+      <Unit15>
+        <Filename Value="adap_p65pas\FrameAsm6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraPicAsm"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit15>
+      <Unit16>
+        <Filename Value="adap_p65pas\FrameCfgAfterChg6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgAfterChg6502"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit16>
+      <Unit17>
+        <Filename Value="adap_p65pas\FrameCfgAsmOut6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgAsmOut6502"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit17>
+      <Unit18>
+        <Filename Value="adap_p65pas\FrameCfgCompiler6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgCompiler6502"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit18>
+      <Unit19>
+        <Filename Value="adap_p65pas\FrameMIR6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraMIR6502"/>
+      </Unit19>
+      <Unit20>
+        <Filename Value="adap_p65pas\FrameRamExplorer6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraRamExplorer6502"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit20>
+      <Unit21>
+        <Filename Value="adap_p65pas\FrameRegisters6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraPicRegisters"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit21>
+      <Unit22>
+        <Filename Value="adap_p65pas\FrameRegWatcher6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraRegWatcher"/>
+      </Unit22>
+      <Unit23>
+        <Filename Value="adap_p65pas\FrameStatist6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraStatist6502"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit23>
+      <Unit24>
+        <Filename Value="adap_p65pas\FrameSynTree6502.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraSynxTree6502"/>
+      </Unit24>
+      <Unit25>
+        <Filename Value="ide\FrameCfgExtTool.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraCfgExtTool"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit25>
+      <Unit26>
+        <Filename Value="ide\FrameLateralPanel.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="fraLateralPanel"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
+      </Unit26>
+      <Unit27>
+        <Filename Value="ide\adapterBase.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit27>
+      <Unit28>
+        <Filename Value="ide\EditView.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit28>
+      <Unit29>
+        <Filename Value="ide\CibGrillas.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit29>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <PathDelim Value="\"/>
+    <Target>
+      <Filename Value="..\P65Pas-$(TargetOS)"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="ide;_libraries\SynFacilUtils-1.24;_libraries\MisUtils-0.6;_libraries\MiConfig-0.4;_libraries\UtilsGrilla-0.8;_libraries\epiktimer;comp_p65pas;comp_p65pas\_libraries\P65Utils-0.5;adap_p65pas"/>
+      <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf2Set"/>
+        <UseHeaptrc Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+    </Linking>
+    <Other>
+      <CompilerMessages>
+        <IgnoredMessages idx5057="True" idx5024="True" idx4079="True"/>
+      </CompilerMessages>
+    </Other>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions Count="3">
+      <Item1>
+        <Name Value="EAbort"/>
+      </Item1>
+      <Item2>
+        <Name Value="ECodetoolError"/>
+      </Item2>
+      <Item3>
+        <Name Value="EFOpenError"/>
+      </Item3>
+    </Exceptions>
+  </Debugging>
+</CONFIG>

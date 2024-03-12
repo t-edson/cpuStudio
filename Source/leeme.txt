@@ -1,0 +1,22 @@
+Esta carpeta está destinada a guardar todos los códigos fuentes del
+proyecto.
+Contiene las siguientes carpetas:
+
+* /ide -> Código fuente principal. Es el proyecto que permite construir a la IDE.
+
+* /_libraries -> Librerías que se usa para la IDE. Cada librería es un proyecto 
+independiente y tiene su propio sitio en Github, pero se incluyen aquí como 
+ayuda para quienes quieran construir el proyecto fácilmente.
+
+* / comp_p65pas -> Esta es la carpeta para incluir el código fuente del 
+compilador P65pas.
+Se crea como enlace simbólico a /comp_p65pas/src para modificar directamente 
+en el otro proyecto /comp_p65pas (compilador) que se maneja como un proyecto 
+independiente.
+
+* /adap_p65pas -> Adaptador de la IDE para embeber al compilador "comp_p65pas"
+dentro de la misma IDE.
+
+* /adapterKickc_ -> Adaptador en desarrollo para el compilador Kickc. Se 
+estaba haciendo una prueba para incluir al compilador Kickc por línea de 
+comando.
