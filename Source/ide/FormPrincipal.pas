@@ -197,8 +197,11 @@ type
     actSynCheck : Boolean;       //Activa la verificación de sintaxis
     PopupEdit_N : integer;       //Contador de ítems de menú
     fraEditView1: TfraEditView;  //Panel de editores
-    fraLeftPanel: TfraLateralPanel; //Panel lateral para explorador de archivos y Árbol de sintaxis
+    fraFileExplor1: TfraFileExplor;  //Explorador de archivos
+    fraLaterPanel: TfraLateralPanel; //Panel lateral para explorador de archivos y Árbol de sintaxis
     fraMessages : TfraMessagesWin;
+    procedure OpenFolder(folderPath: string);
+    procedure CloseFolder;
     procedure comp_AfterCheckSyn;
     procedure comp_BeforeCheckSyn;
     procedure comp_BeforeCompile;
@@ -209,12 +212,12 @@ type
     procedure FileExplor1_CloseFile(file0: string; var Cancel: boolean);
     procedure FileExplor1_RenamedFile(oldFile, newFile: string);
     procedure fraMessagesStatisDBlClick;
-    procedure fraLeftPanel_selecFileExplorer;
+    procedure fraLeftPanel_selectedPage(pagName: string);
     procedure fraEdit_RequireSynEditConfig(ed: TsynEdit);
     procedure ConfigChanged;
     procedure fraEdit_SelectEditor;
     procedure fraMessagesDblClickMessage(fileSrc: string; row, col: integer);
-    procedure fraLeftPanel_OpenFile(filname: string);
+    procedure FileExplor1_OpenFile(nod: TExplorNode);
     procedure MarkErrors;
     procedure ShowErrorInDialogBox;
     procedure UpdateIDE(CompName: string);
@@ -240,22 +243,57 @@ resourcestring
 implementation
 {$R *.lfm}
 { TfrmPrincipal }
-procedure TfrmPrincipal.fraLeftPanel_OpenFile(filname: string);
-{El explorador de código, solicita abrir un archivo.}
+procedure TfrmPrincipal.OpenFolder(folderPath: string);
+{Abre la carpeta "folderPath" en el explorador de archivo.}
 begin
-  fraEditView1.LoadFile(filname);
+  //Configura filtros del explorador de archivos
+  {Por ahora esto es estático, pero más adelante se puede leer las opciones de
+  configuración de un archivo o carpeta oculta, que resida en el mismo folder. }
+  fraFileExplor1.Filter.Items.Clear;
+  fraFileExplor1.Filter.Items.Add('*.pas,*.pp,*.inc');  //los filtros se separan por comas
+  fraFileExplor1.Filter.Items.Add('*');  //para seleccionar todos
+  fraFileExplor1.Filter.ItemIndex:=0;    //selecciona la primera opción por defecto
+  fraFileExplor1.Filter.Visible := false;  //No se usa por ahora
+  //Configura ruta de trabajo
+  fraFileExplor1.OpenFolder(folderPath);
+end;
+procedure TfrmPrincipal.CloseFolder;
+begin
+  fraFileExplor1.CloseFolder();
+end;
+procedure TfrmPrincipal.FileExplor1_OpenFile(nod: TExplorNode);
+begin
+  fraEditView1.LoadFile(nod.GetPath);
   Config.SaveToFile;  //guarda la configuración actual
 end;
-procedure TfrmPrincipal.fraLeftPanel_selecFileExplorer;
+procedure TfrmPrincipal.FileExplor1_CloseFile(file0: string; var Cancel: boolean);
+{Se pide cerrar un archivo en el editor.}
+begin
+  if fraEditView1.SelectEditor(file0) then begin
+     if not fraEditView1.CloseEditor then Cancel := true;
+  end;
+end;
+procedure TfrmPrincipal.FileExplor1_RenamedFile(oldFile, newFile: string);
+var
+  idEdit: Integer;
+begin
+  idEdit := fraEditView1.SearchEditorIdx(oldFile);
+  if idEdit <>-1 then begin
+     fraEditView1.ChangeFileName(idEdit, newFile);
+  end;
+end;
+procedure TfrmPrincipal.fraLeftPanel_selectedPage(pagName: string);
 {Se ha seleccionado el modo de explorador de archivo,}
 var
   ed: TSynEditor;
 begin
-  //Ubica el archivo actual en el explorador.
-  ed := fraEditView1.ActiveEditor;
-  if (ed<>nil) and (ed.FileName<>'') then begin
-     //¿Vale la pena hacer esto?
-     //fraLeftPanel.LocateFile(ed.FileName);
+  if pagName='file_exp' then begin
+     //Ubica el archivo actual en el explorador.
+     ed := fraEditView1.ActiveEditor;
+     if (ed<>nil) and (ed.FileName<>'') then begin
+        //¿Vale la pena hacer esto?
+        //fraLaterPanel.LocateFile(ed.FileName);
+     end;
   end;
 end;
 procedure TfrmPrincipal.fraEdit_ChangeEditorState(ed: TSynEditor);
@@ -323,22 +361,6 @@ begin
   //Pasa requerimiento al compilador actual
   currComp.SetCompletion(ed);
 end;
-procedure TfrmPrincipal.FileExplor1_CloseFile(file0: string; var Cancel: boolean);
-{Se pide cerrar un archivo en el editor.}
-begin
-  if fraEditView1.SelectEditor(file0) then begin
-     if not fraEditView1.CloseEditor then Cancel := true;
-  end;
-end;
-procedure TfrmPrincipal.FileExplor1_RenamedFile(oldFile, newFile: string);
-var
-  idEdit: Integer;
-begin
-  idEdit := fraEditView1.SearchEditorIdx(oldFile);
-  if idEdit <>-1 then begin
-     fraEditView1.ChangeFileName(idEdit, newFile);
-  end;
-end;
 procedure TfrmPrincipal.fraMessagesStatisDBlClick;
 //Doble clcik en la sección de estadísticas
 begin
@@ -355,14 +377,14 @@ end;
 procedure TfrmPrincipal.fraEdit_LocateInFileExpl(ed: TSynEditor);
 begin
   if ed.FileName<>'' then begin
-    fraLeftPanel.fraFileExplor1.LocateFileOnTree(ed.FileName);
+    fraFileExplor1.LocateFileOnTree(ed.FileName);
   end;
 end;
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
 
-  fraLeftPanel := TfraLateralPanel.Create(self);
-  fraLeftPanel.Parent := self;
+  fraLaterPanel := TfraLateralPanel.Create(self);
+  fraLaterPanel.Parent := self;
   //Configura panel de mensajes
   fraMessages := TfraMessagesWin.Create(self);
   fraMessages.Parent := panMessages;  //Ubica
@@ -389,20 +411,34 @@ end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   //Alineamiento de panel izquierdo
-  fraLeftPanel.Align := alLeft;
-  fraLeftPanel.Visible := true;
+  fraLaterPanel.Align := alLeft;
+  fraLaterPanel.Visible := true;
   splLeft.Align := alLeft;
-  AnchorTo(splLeft, akLeft, fraLeftPanel);
+  AnchorTo(splLeft, akLeft, fraLaterPanel);
   //Alineamieanto de Panel derecho
   panRightPanel.Align := alRight;
   splRight.Align := alRight;
   //Frame de editores
   fraEditView1.Align := alClient;
   fraEditView1.tmpPath := patTemp;   //fija ruta de trabajo
+  // Crea explorador de archivo en el Panel izquierdo
+  //Crea Explorador de archivos por defecto
+  fraFileExplor1:= TfraFileExplor.Create(self);
+  fraLaterPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
+  //COnfigura Explorador de archivos
+  fraFileExplor1.InternalPopupFile:= true;
+  fraFileExplor1.InternalPopupFolder:= true;
+  fraFileExplor1.OnDoubleClickFile:= @FileExplor1_OpenFile;
+  fraFileExplor1.OnKeyEnterOnFile := @FileExplor1_OpenFile;
+  fraFileExplor1.OnMenuOpenFile   := @FileExplor1_OpenFile;
+  fraFileExplor1.OnCloseFile      := @FileExplor1_CloseFile;
+  fraFileExplor1.OnRenamedFile    := @FileExplor1_RenamedFile;
+  fraFileExplor1.OnOpenFolder     := @acFilOpenFolderExecute;
+  fraFileExplor1.OnCloseFolder    := @acFilCloseFolderExecute;
 
   /////////// Crea adaptadores para compiladores soportados ///////////
   adapter6502:= TAdapter6502.Create(fraEditView1, panRightPanel);
-  adapter6502.Init(fraLeftPanel.PageControl1, ImgActions16, ImgActions32, ActionList);
+  adapter6502.Init(fraLaterPanel, ImgActions16, ImgActions32, ActionList);
   adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
   adapter6502.OnAfterCompile   := @comp_AfterCompile;
   adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
@@ -416,13 +452,9 @@ begin
   //Fija compilador por defecto
   acToolSel_P65pasExecute(self);
   //Configura Panel lateral
-  fraLeftPanel.OnOpenFile := @fraLeftPanel_OpenFile;
-  fraLeftPanel.OnSelecFileExplorer := @fraLeftPanel_selecFileExplorer;
-  fraLeftPanel.fraFileExplor1.OnOpenFolder := @acFilOpenFolderExecute;
-  fraLeftPanel.fraFileExplor1.OnCloseFolder:= @acFilCloseFolderExecute;
-  fraLeftPanel.fraFileExplor1.OnCloseFile  := @FileExplor1_CloseFile;
-  fraLeftPanel.fraFileExplor1.OnRenamedFile:= @FileExplor1_RenamedFile;
-  fraLeftPanel.OpenFolder(Config.currFolder);
+  fraLaterPanel.OnSelectedPage := @fraLeftPanel_selectedPage;
+  //Abre el directorio de trabajo actual
+  OpenFolder(Config.currFolder);
   //Termina configuración
   fraEditView1.InitMenuRecents(mnRecents, Config.fraCfgSynEdit.ArcRecientes, 15);  //inicia el menú "Recientes"
   //Primera actualización.
@@ -459,7 +491,7 @@ begin
   end;
   Config.PanRightWidth := panRightPanel.Width;
 
-  Config.PanLeftWidth := fraLeftPanel.Width;   //Guarda ancho
+  Config.PanLeftWidth := fraLaterPanel.Width;   //Guarda ancho
   Config.SaveToFile;  //guarda la configuración actual
 end;
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
@@ -559,16 +591,16 @@ begin
   if (Shift = [ssCtrl]) and (Key = VK_F4) then begin
     if fraEditView1.HasFocus then acFilCloseFileExecute(self);
 //*** Comportamiento en el explorador de archivos.
-//    if fraLeftPanel.HasFocus and (fraLeftPanel.FileSelected<>'') then
+//    if fraLaterPanel.HasFocus and (fraLaterPanel.FileSelected<>'') then
 //       //Hay un archivo seleccionado
-//       if fraEditView1.SelectEditor(fraLeftPanel.FileSelected) then begin
+//       if fraEditView1.SelectEditor(fraLaterPanel.FileSelected) then begin
 //         //Está abierto
-//         curNode := fraLeftPanel.FileSelected;  //Guarda nodo seleccionado
+//         curNode := fraLaterPanel.FileSelected;  //Guarda nodo seleccionado
 //         acArcCloseFileExecute(self);  //Cierra archivo actual
-//         fraLeftPanel.LocateFile(curNode);  //Restaura nodo seleccionado, porque
+//         fraLaterPanel.LocateFile(curNode);  //Restaura nodo seleccionado, porque
 //         //Despues de cerrar
-//         if fraLeftPanel.fraFileExplor1.TreeView1.Visible then
-//           fraLeftPanel.fraFileExplor1.TreeView1.SetFocus;
+//         if fraLaterPanel.fraFileExplor1.TreeView1.Visible then
+//           fraLaterPanel.fraFileExplor1.TreeView1.SetFocus;
 //       end;
     Shift := []; Key := 0;  //para qie no pase
   end;
@@ -626,8 +658,8 @@ begin
     self.Width  := Config.winWidth;
   end;
   //Visibilidad del Panel izquierdo (explorador de archivo)
-  fraLeftPanel.Visible := Config.ViewPanLeft;
-  fraLeftPanel.Width   := Config.PanLeftWidth;
+  fraLaterPanel.Visible := Config.ViewPanLeft;
+  fraLaterPanel.Width   := Config.PanLeftWidth;
   splLeft.Visible := Config.ViewPanLeft;
   acViewPanLeft.Checked := Config.ViewPanLeft;
 
@@ -670,13 +702,13 @@ begin
   end;
   end;
   //Configura el panel lateral izquierdo
-  fraLeftPanel.PanelColor:= Config.PanelsCol;
-  fraLeftPanel.TextColor := Config.FilExplText;
+  fraLaterPanel.PanelColor:= Config.PanelsCol;
+  fraLaterPanel.TextColor := Config.FilExplText;
   //Configura Explorador de archivos
-  fraLeftPanel.fraFileExplor1.BackColor := Config.FilExplBack;;
-  fraLeftPanel.fraFileExplor1.TextColor := Config.FilExplText;
-  fraLeftPanel.fraFileExplor1.Filter.ItemIndex := Config.FilExpFiltyp;
-  fraLeftPanel.fraFileExplor1.FilterChange(self);
+  fraFileExplor1.BackColor := Config.FilExplBack;;
+  fraFileExplor1.TextColor := Config.FilExplText;
+  fraFileExplor1.Filter.ItemIndex := Config.FilExpFiltyp;
+  fraFileExplor1.FilterChange(self);
   //Configura Visor de Mensajes
   fraMessages.BackColor := Config.MessPanBack;
   fraMessages.TextColor := Config.MessPanText;
@@ -772,7 +804,7 @@ begin
   end;
   if (ed<>nil) and (ed.FileName<>'') then begin
 //*** Verificar si es necesario
-     fraLeftPanel.fraFileExplor1.LocateFileOnTree(ed.FileName);
+     fraFileExplor1.LocateFileOnTree(ed.FileName);
   end;
 end;
 procedure TfrmPrincipal.FindDialog1Find(Sender: TObject);
@@ -901,12 +933,12 @@ begin
   if SelectDirectoryDialog1.Execute then begin
     //Actualiza Config.currFolder para que se guarde también el directorio de trabajo.
     Config.currFolder := SelectDirectoryDialog1.FileName;
-    fraLeftPanel.OpenFolder(Config.currFolder);
+    OpenFolder(Config.currFolder);
   end;
 end;
 procedure TfrmPrincipal.acFilCloseFolderExecute(Sender: TObject);
 begin
-  fraLeftPanel.CloseFolder();
+  CloseFolder();
   Config.currFolder := '';
 end;
 //////////// Acciones de Edición ////////////////

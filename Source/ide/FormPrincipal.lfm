@@ -310,9 +310,9 @@ object frmPrincipal: TfrmPrincipal
     end
   end
   object panRightPanel: TPanel
-    Left = 872
+    Left = 848
     Height = 552
-    Top = 72
+    Top = 48
     Width = 261
     BevelOuter = bvNone
     ParentFont = False

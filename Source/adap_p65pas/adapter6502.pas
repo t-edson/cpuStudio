@@ -9,8 +9,8 @@ uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
   Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, LexPas,
   FrameEditView, Globales, FrameCfgSynEdit, MisUtils, SynFacilHighlighter,
-  EditView, MiConfigXML, FrameStatist6502, FrameSynTree6502, FormAdapter6502,
-  FrameCfgAfterChg6502, FrameCfgCompiler6502, FormDebugger6502,
+  EditView, FrameLateralPanel, MiConfigXML, FrameStatist6502, FrameSynTree6502,
+  FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502, FormDebugger6502,
   FormRAMExplorer6502, FrameCfgAsmOut6502, FrameMIR6502;
 type
   { TAdapter6502 }
@@ -93,7 +93,7 @@ type
     fraCfgCompiler: TfraCfgCompiler6502;
     fraCfgAsmOut  : TfraCfgAsmOut6502;
   public      //Inicialización
-    procedure Init(pagControl: TPageControl; imgList16, imglist32: TImageList;
+    procedure Init(leftPanel: TfraLateralPanel; imgList16, imglist32: TImageList;
       actList: TActionList);
     procedure ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
       _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage); override;
@@ -471,7 +471,7 @@ begin
     MsgErr(MSG_SYNFIL_NOF, [synFile]);
   end;
 end;
-procedure TAdapter6502.Init(pagControl: TPageControl; imgList16,
+procedure TAdapter6502.Init(leftPanel: TfraLateralPanel; imgList16,
   imglist32: TImageList; actList: TActionList);
 {Inicializa el adaptador. Eso implica preparar la IDE para que soporte a este nuevo
 compilador que se está registrando.
@@ -496,25 +496,13 @@ begin
   //Agrega los íconos de "adapterForm" a los ImageList
   adapterForm.AddActions(imgList16, imgList32, actList, COMP_NAME);
   //Agrega la herramienta de árbol de sintaxis
-  tab := pagControl.AddTabSheet;    //Agrega nuevo panel
-  tab.Name := 'SyntaxTree_'+ COMP_NAME;
-  tab.Caption := 'Syntax Tree';
-  tab.Hint := COMP_NAME;     //Lo marca aquí para saber que es de este compilador.
-  fraSynTree.Parent := tab;
-  fraSynTree.Visible := true;
-  fraSynTree.Align := alClient;
+  leftPanel.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
   fraSynTree.OnLocateElemen  := @SynTree_LocateElemen;
   fraSynTree.OnReqAnalysis  := @SynTree_ReqAnalysis;
   fraSynTree.OnReqOptimizat  := @SynTree_ReqOptimizat;
   fraSynTree.OnReqSynthesis  := @SynTree_ReqSynthesis;
-  //Agrega la herramienta de árbol de sintaxis
-  tab := pagControl.AddTabSheet;    //Agrega nuevo panel
-  tab.Name := 'mir_'+ COMP_NAME;
-  tab.Caption := 'MIR';
-  tab.Hint := COMP_NAME;     //Lo marca aquí para saber que es de este compilador.
-  fraMir.Parent := tab;
-  fraMir.Visible := true;
-  fraMir.Align := alClient;
+  //Agrega visor para la representación MIR
+  leftPanel.AddPage(fraMir, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
 
   //Configura editor de ensamblador
   edAsm.Parent := panRightPanel;

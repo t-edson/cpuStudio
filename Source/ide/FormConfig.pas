@@ -35,6 +35,7 @@ type
     colPanTextCol: TColorBox;
     colSplitCol: TColorBox;
     cmbLanguage: TComboBox;
+    grpEditLocat: TRadioGroup;
     txtThemLoaded: TEdit;
     grpTabEdiState: TRadioGroup;
     ImageList1: TImageList;
@@ -54,7 +55,7 @@ type
     Panel1: TPanel;
     Panel2: TPanel;
     grpToolbarSta: TRadioGroup;
-    grpFilType: TRadioGroup;
+    grpFExpFilType: TRadioGroup;
     sclEnvThemes: TScrollBox;
     sclExtTool: TScrollBox;
     sclEdiAppear: TScrollBox;
@@ -125,9 +126,12 @@ type
     PanTextCol : TColor;   //Color del texto mostrado en la barra de herramientas
 
     StateToolbar: TStyleToolbar;
-    PanLeftWidth: integer; //Ancho del panel del árbol de sintaxis.
-    PanRightWidth:integer; //Ancho del editor de ensamblador.
+    EditLocat   : Integer;
+
     //Propiedades sin control
+    PanLeftWidth: integer; //Ancho del panel izquierdo.
+    PanRightWidth:integer; //Ancho del panel derecho.
+
     currFolder : string;   //Folder de trabajo actual
     filesClosed: string;   {Lista de archivos cargados. Usado para restaurar los archivos
                             abiertos al abrir nuevamente el programa.}
@@ -455,6 +459,8 @@ begin
   s:=cfgFile.Asoc_Str ('language'    , @language   , cmbLanguage , 'en - English');
   s:=cfgFile.Asoc_Bol ('chkLoadLast' , @LoadLast   , chkLoadLast , true);
   s:=cfgFile.Asoc_Enum('grpToolbarSta',@StateToolbar, SizeOf(TStyleToolbar), grpToolbarSta, 1);
+  s:=cfgFile.Asoc_Int ('grpEditLocat', @EditLocat, grpEditLocat, 1);
+
   s:=cfgFile.Asoc_TCol('PanelsCol'  , @PanelsCol  , colPanelsCol, clDefault);
   s.categ := 1;   //marca como propiedad de tipo "Tema"
   s:=cfgFile.Asoc_TCol('SplitterCol' , @SplitterCol, colSplitCol , clDefault);
@@ -488,7 +494,7 @@ begin
   s.categ := 1;   //marca como propiedad de tipo "Tema"
   s:=cfgFile.Asoc_TCol('CodExplText',@FilExplText, colCodExplText, clDefault);
   s.categ := 1;   //marca como propiedad de tipo "Tema"
-  s:=cfgFile.Asoc_Int ('grpFiltypes',@FilExpFiltyp, grpFiltype, 0);
+  s:=cfgFile.Asoc_Int ('grpFiltypes',@FilExpFiltyp, grpFExpFilType, 0);
 
   ///////// Configuraciones del Panel de mensajes
   s:=cfgFile.Asoc_TCol('MessPanBack',@MessPanBack, colMessPanBack, clWindow);
