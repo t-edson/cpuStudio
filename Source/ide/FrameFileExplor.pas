@@ -72,10 +72,10 @@ type
     ImageList2: TImageList;
     lblOpenFolder: TLabel;
     MenuItem1: TMenuItem;
+    mnOtherRefresh: TMenuItem;
     mnCloseFolder: TMenuItem;
     mnOpenFolder: TMenuItem;
     mnFilCreCopFrom: TMenuItem;
-    mnFilRefrescar: TMenuItem;
     mnFolChanName: TMenuItem;
     mnFolDelete: TMenuItem;
     mnFolRefresh: TMenuItem;
@@ -98,7 +98,6 @@ type
     procedure mnFilCreCopFromClick(Sender: TObject);
     procedure mnFilOpenClick(Sender: TObject);
     procedure mnFilChanNameClick(Sender: TObject);
-    procedure mnFilRefrescarClick(Sender: TObject);
     procedure mnFolOpenInExplorClick(Sender: TObject);
     procedure mnFilDeleteClick(Sender: TObject);
     procedure mnFolChanNameClick(Sender: TObject);
@@ -109,6 +108,7 @@ type
     procedure mnFolRefreshClick(Sender: TObject);
     procedure mnOpenFolderClick(Sender: TObject);
     procedure mnCloseFolderClick(Sender: TObject);
+    procedure mnOtherRefreshClick(Sender: TObject);
     procedure PopupFolderPopup(Sender: TObject);
     procedure TreeView1CreateNodeClass(Sender: TCustomTreeView;
       var NodeClass: TTreeNodeClass);
@@ -128,6 +128,7 @@ type
     function AddNodeBehind(friendNode: TTreeNode; const txt: string;
       nodType: TNodeType): TExplorNode;
     function SelectedNode: TExplorNode;
+    function rootNode: TExplorNode;
     function SelectedFile: TExplorNode;
   public
     procedure LocateFileOnTree(arch8: string);
@@ -264,6 +265,14 @@ begin
   nod := TreeView1.Selected;   //lee seleccionado
   if nod = nil then exit(nil);     //verifica
   Result := TExplorNode(nod);
+end;
+function TfraFileExplor.rootNode: TExplorNode;
+var
+  nod: TTreeNode;
+begin
+  if TreeView1.Items.Count=0 then exit(nil);
+  nod := TreeView1.Items[0];   //lee seleccionado
+  exit(TExplorNode(nod));
 end;
 function TfraFileExplor.SelectedFile: TExplorNode;
 //Lee el nodo seleccionado. Si no hay ninguno seleccionado o no es archivo, devuelve NIL.
@@ -878,6 +887,7 @@ begin
   MsgExc(TXT_NOTDELFOL);
 end;
 procedure TfraFileExplor.mnFolRefreshClick(Sender: TObject);
+{Refresca el contenido de una carpeta}
 begin
   curNod := SelectedNode;
   if curNod = nil then exit;
@@ -938,10 +948,6 @@ begin
   end;
   if curNod.Parent.Expanded then ExpandNodeFile(curNod.parent, true);   //refresca
 end;
-procedure TfraFileExplor.mnFilRefrescarClick(Sender: TObject);
-begin
-
-end;
 //Explorer actions
 procedure TfraFileExplor.mnOpenFolderClick(Sender: TObject);
 begin
@@ -954,6 +960,13 @@ begin
   if OnCloseFolder<>nil then begin
     OnCloseFolder(nil);
   end;
+end;
+procedure TfraFileExplor.mnOtherRefreshClick(Sender: TObject);
+begin
+  curNod := rootNode;
+  if curNod = nil then exit;
+  if curNod.Visible and curNod.Expanded then
+    ExpandNodeFile(curNod, true);   //mantiene expansión
 end;
 
 end.

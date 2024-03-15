@@ -313,10 +313,6 @@ object fraFileExplor: TfraFileExplor
     object MenuItem1: TMenuItem
       Caption = '-'
     end
-    object mnFilRefrescar: TMenuItem
-      Caption = '&Refresh'
-      OnClick = mnFilRefrescarClick
-    end
   end
   object PopupOther: TPopupMenu
     Left = 45
@@ -328,6 +324,10 @@ object fraFileExplor: TfraFileExplor
     object mnCloseFolder: TMenuItem
       Caption = '&Close Folder'
       OnClick = mnCloseFolderClick
+    end
+    object mnOtherRefresh: TMenuItem
+      Caption = '&Refresh'
+      OnClick = mnOtherRefreshClick
     end
   end
 end

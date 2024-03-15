@@ -662,6 +662,71 @@ msgstr ""
 msgid "Units Path:"
 msgstr ""
 
+#: tfrafileexplor.lblopenfolder.caption
+msgid ">&Open Folder ..."
+msgstr ""
+
+#: tfrafileexplor.mnclosefolder.caption
+msgid "&Close Folder"
+msgstr ""
+
+#: tfrafileexplor.mnfilchanname.caption
+msgid "C&hange Name"
+msgstr ""
+
+#: tfrafileexplor.mnfilcrecopfrom.caption
+msgid "Create Co&py from"
+msgstr ""
+
+#: tfrafileexplor.mnfildelete.caption
+msgctxt "tfrafileexplor.mnfildelete.caption"
+msgid "&Delete"
+msgstr ""
+
+#: tfrafileexplor.mnfilopen.caption
+msgid "&Open"
+msgstr ""
+
+#: tfrafileexplor.mnfolchanname.caption
+msgid "Cha&nge Name"
+msgstr ""
+
+#: tfrafileexplor.mnfoldelete.caption
+msgctxt "tfrafileexplor.mnfoldelete.caption"
+msgid "&Delete"
+msgstr ""
+
+#: tfrafileexplor.mnfolexpandcol.caption
+msgctxt "tfrafileexplor.mnfolexpandcol.caption"
+msgid "E&xpand"
+msgstr ""
+
+#: tfrafileexplor.mnfolnewfile.caption
+msgid "&New File"
+msgstr ""
+
+#: tfrafileexplor.mnfolnewfolder.caption
+msgid "New &Folder"
+msgstr ""
+
+#: tfrafileexplor.mnfolopeninexplor.caption
+msgid "Open on &Windows Explorer"
+msgstr ""
+
+#: tfrafileexplor.mnfolrefresh.caption
+msgctxt "tfrafileexplor.mnfolrefresh.caption"
+msgid "&Refresh"
+msgstr ""
+
+#: tfrafileexplor.mnopenfolder.caption
+msgid "&Open Folder..."
+msgstr ""
+
+#: tfrafileexplor.mnotherrefresh.caption
+msgctxt "tfrafileexplor.mnotherrefresh.caption"
+msgid "&Refresh"
+msgstr ""
+
 #: tfralateralpanel.label1.caption
 msgid " File Explorer"
 msgstr ""

@@ -198,7 +198,8 @@ type
     PopupEdit_N : integer;       //Contador de ítems de menú
     fraEditView1: TfraEditView;  //Panel de editores
     fraFileExplor1: TfraFileExplor;  //Explorador de archivos
-    fraLaterPanel: TfraLateralPanel; //Panel lateral para explorador de archivos y Árbol de sintaxis
+    fraLeftPanel: TfraLateralPanel; //Panel lateral derecho. (Usdo para explorador de archivos)
+    fraRigthPanel: TfraLateralPanel; //Panel lateral de la izquierda.
     fraMessages : TfraMessagesWin;
     procedure OpenFolder(folderPath: string);
     procedure CloseFolder;
@@ -292,7 +293,7 @@ begin
      ed := fraEditView1.ActiveEditor;
      if (ed<>nil) and (ed.FileName<>'') then begin
         //¿Vale la pena hacer esto?
-        //fraLaterPanel.LocateFile(ed.FileName);
+        //fraLeftPanel.LocateFile(ed.FileName);
      end;
   end;
 end;
@@ -383,8 +384,8 @@ end;
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
 begin
 
-  fraLaterPanel := TfraLateralPanel.Create(self);
-  fraLaterPanel.Parent := self;
+  fraLeftPanel := TfraLateralPanel.Create(self);
+  fraLeftPanel.Parent := self;
   //Configura panel de mensajes
   fraMessages := TfraMessagesWin.Create(self);
   fraMessages.Parent := panMessages;  //Ubica
@@ -411,21 +412,20 @@ end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   //Alineamiento de panel izquierdo
-  fraLaterPanel.Align := alLeft;
-  fraLaterPanel.Visible := true;
+  fraLeftPanel.Align := alLeft;
+  fraLeftPanel.Visible := true;
   splLeft.Align := alLeft;
-  AnchorTo(splLeft, akLeft, fraLaterPanel);
+  AnchorTo(splLeft, akLeft, fraLeftPanel);
   //Alineamieanto de Panel derecho
   panRightPanel.Align := alRight;
   splRight.Align := alRight;
   //Frame de editores
   fraEditView1.Align := alClient;
   fraEditView1.tmpPath := patTemp;   //fija ruta de trabajo
-  // Crea explorador de archivo en el Panel izquierdo
-  //Crea Explorador de archivos por defecto
+  //Crea explorador de archivo en el Panel izquierdo
   fraFileExplor1:= TfraFileExplor.Create(self);
-  fraLaterPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
-  //COnfigura Explorador de archivos
+  fraLeftPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
+  //Configura Explorador de archivos
   fraFileExplor1.InternalPopupFile:= true;
   fraFileExplor1.InternalPopupFolder:= true;
   fraFileExplor1.OnDoubleClickFile:= @FileExplor1_OpenFile;
@@ -437,8 +437,8 @@ begin
   fraFileExplor1.OnCloseFolder    := @acFilCloseFolderExecute;
 
   /////////// Crea adaptadores para compiladores soportados ///////////
-  adapter6502:= TAdapter6502.Create(fraEditView1, panRightPanel);
-  adapter6502.Init(fraLaterPanel, ImgActions16, ImgActions32, ActionList);
+  adapter6502:= TAdapter6502.Create(fraEditView1);
+  adapter6502.Init(fraLeftPanel, panRightPanel, ImgActions16, ImgActions32, ActionList);
   adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
   adapter6502.OnAfterCompile   := @comp_AfterCompile;
   adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
@@ -452,7 +452,7 @@ begin
   //Fija compilador por defecto
   acToolSel_P65pasExecute(self);
   //Configura Panel lateral
-  fraLaterPanel.OnSelectedPage := @fraLeftPanel_selectedPage;
+  fraLeftPanel.OnSelectedPage := @fraLeftPanel_selectedPage;
   //Abre el directorio de trabajo actual
   OpenFolder(Config.currFolder);
   //Termina configuración
@@ -491,7 +491,7 @@ begin
   end;
   Config.PanRightWidth := panRightPanel.Width;
 
-  Config.PanLeftWidth := fraLaterPanel.Width;   //Guarda ancho
+  Config.PanLeftWidth := fraLeftPanel.Width;   //Guarda ancho
   Config.SaveToFile;  //guarda la configuración actual
 end;
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
@@ -591,16 +591,16 @@ begin
   if (Shift = [ssCtrl]) and (Key = VK_F4) then begin
     if fraEditView1.HasFocus then acFilCloseFileExecute(self);
 //*** Comportamiento en el explorador de archivos.
-//    if fraLaterPanel.HasFocus and (fraLaterPanel.FileSelected<>'') then
+//    if fraLeftPanel.HasFocus and (fraLeftPanel.FileSelected<>'') then
 //       //Hay un archivo seleccionado
-//       if fraEditView1.SelectEditor(fraLaterPanel.FileSelected) then begin
+//       if fraEditView1.SelectEditor(fraLeftPanel.FileSelected) then begin
 //         //Está abierto
-//         curNode := fraLaterPanel.FileSelected;  //Guarda nodo seleccionado
+//         curNode := fraLeftPanel.FileSelected;  //Guarda nodo seleccionado
 //         acArcCloseFileExecute(self);  //Cierra archivo actual
-//         fraLaterPanel.LocateFile(curNode);  //Restaura nodo seleccionado, porque
+//         fraLeftPanel.LocateFile(curNode);  //Restaura nodo seleccionado, porque
 //         //Despues de cerrar
-//         if fraLaterPanel.fraFileExplor1.TreeView1.Visible then
-//           fraLaterPanel.fraFileExplor1.TreeView1.SetFocus;
+//         if fraLeftPanel.fraFileExplor1.TreeView1.Visible then
+//           fraLeftPanel.fraFileExplor1.TreeView1.SetFocus;
 //       end;
     Shift := []; Key := 0;  //para qie no pase
   end;
@@ -658,8 +658,8 @@ begin
     self.Width  := Config.winWidth;
   end;
   //Visibilidad del Panel izquierdo (explorador de archivo)
-  fraLaterPanel.Visible := Config.ViewPanLeft;
-  fraLaterPanel.Width   := Config.PanLeftWidth;
+  fraLeftPanel.Visible := Config.ViewPanLeft;
+  fraLeftPanel.Width   := Config.PanLeftWidth;
   splLeft.Visible := Config.ViewPanLeft;
   acViewPanLeft.Checked := Config.ViewPanLeft;
 
@@ -702,8 +702,8 @@ begin
   end;
   end;
   //Configura el panel lateral izquierdo
-  fraLaterPanel.PanelColor:= Config.PanelsCol;
-  fraLaterPanel.TextColor := Config.FilExplText;
+  fraLeftPanel.PanelColor:= Config.PanelsCol;  //{ #todo : Sería mejor enviar un mensaje (puede ser como texto) a todo el panel para indicarle colores que pide el tema.  }
+  fraLeftPanel.TextColor := Config.FilExplText;
   //Configura Explorador de archivos
   fraFileExplor1.BackColor := Config.FilExplBack;;
   fraFileExplor1.TextColor := Config.FilExplText;
@@ -897,6 +897,7 @@ begin
   end;
   fraMessages.EndCompilation(true);  //Muestra resúmenes.
 end;
+{$region "Acciones"}
 /////////////////// Acciones de Archivo /////////////////////
 procedure TfrmPrincipal.acFilNewFileExecute(Sender: TObject);
 begin
@@ -1157,6 +1158,6 @@ begin
       if Config.ShowErMsg Then MsgErr(msg);
     end;
 End;
-
+{$EndRegion}
 end.
 //1285

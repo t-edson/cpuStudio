@@ -93,15 +93,15 @@ type
     fraCfgCompiler: TfraCfgCompiler6502;
     fraCfgAsmOut  : TfraCfgAsmOut6502;
   public      //Inicialización
-    procedure Init(leftPanel: TfraLateralPanel; imgList16, imglist32: TImageList;
-      actList: TActionList);
+    procedure Init(leftPanel: TfraLateralPanel; panRightPanel0: TPanel; imgList16,
+      imglist32: TImageList; actList: TActionList);
     procedure ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
       _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage); override;
     procedure ConfigInit(cfgFile: TMiConfigXML); override;
     procedure ConfigActivate; override;
     procedure setMenusAndToolbar(menu1, menu2, menu3: TMenuItem; toolbar: TToolBar;
       popupEdit: TPopupMenu; popupEditCount: integer); override;
-    constructor Create(fraEdit0: TfraEditView; panRightPanel0: TPanel);
+    constructor Create(fraEdit0: TfraEditView);
     destructor Destroy; override;
   end;
 resourcestring
@@ -471,21 +471,20 @@ begin
     MsgErr(MSG_SYNFIL_NOF, [synFile]);
   end;
 end;
-procedure TAdapter6502.Init(leftPanel: TfraLateralPanel; imgList16,
-  imglist32: TImageList; actList: TActionList);
+procedure TAdapter6502.Init(leftPanel: TfraLateralPanel; panRightPanel0: TPanel;
+  imgList16, imglist32: TImageList; actList: TActionList);
 {Inicializa el adaptador. Eso implica preparar la IDE para que soporte a este nuevo
 compilador que se está registrando.
 Solo se debe ejecutar esta rutina una vez al inicio.
 Parámetros:
-  * pagControl -> Es el contenedor de la barra lateral izquierda (donde está el navegador
-  de archivos), donde se crearán las herramientas que ofrece este compilador en esta
+  * leftPanel -> Es el panel lateral de la izquierda (donde está el navegador de
+  archivos), donde se crearán las herramientas que ofrece este compilador en esta
   barra. Lo más común es solo crear el árbol de sintaxis.
+
   * imgList16, imgList32 -> Son las listas de imágenes del formulario principal donde se
   deben registrar los íconos para ser usados por el menú y la barra de herramientas.
   * actList -> Control TActionList del formulario principal a donde se insertarán las
   acciones.
-  * mainMenu -> MEnú principal de la IDE. En ese menú se creará una entrada adicional
-  para acceder a las opciones del compilador.
 }
 var
   tab: TTabSheet;
@@ -495,6 +494,9 @@ begin
   Compiler_PIC16.SetLanguage;
   //Agrega los íconos de "adapterForm" a los ImageList
   adapterForm.AddActions(imgList16, imgList32, actList, COMP_NAME);
+  //Guarda referencia a editor lateral.
+  panRightPanel := panRightPanel0;
+
   //Agrega la herramienta de árbol de sintaxis
   leftPanel.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
   fraSynTree.OnLocateElemen  := @SynTree_LocateElemen;
@@ -599,7 +601,7 @@ end;
 //  fraEditView1.LoadFile(SamFil);
 //end;
 
-constructor TAdapter6502.Create(fraEdit0: TfraEditView; panRightPanel0: TPanel);
+constructor TAdapter6502.Create(fraEdit0: TfraEditView);
 begin
   inherited Create;
   fraEditView1 := fraEdit0;
@@ -629,16 +631,16 @@ begin
   frmDebug    := TfrmDebugger6502.Create(nil);
   //Crea formulario explorador de RAM
   frmRAMExplorer:= TfrmRAMExplorer6502.Create(nil);
-  //Guarda referencia a editor lateral.
-  panRightPanel := panRightPanel0;
+
   //Crea editor y resaltador
-  edAsm := TSynEdit.Create(panRightPanel);
+  edAsm := TSynEdit.Create(nil);
   hlAssem := TSynFacilSyn.Create(edAsm);
   LoadAsmSyntaxEd;
 end;
 destructor TAdapter6502.Destroy;
 begin
   hlAssem.Free;
+  edAsm.Destroy;
   frmRAMExplorer.Destroy;
   frmDebug.Destroy;
   adapterForm.Destroy;
