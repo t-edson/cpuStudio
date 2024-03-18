@@ -74,7 +74,7 @@ object Config: TConfig
         Height = 431
         Top = 0
         Width = 506
-        HorzScrollBar.Page = 442
+        HorzScrollBar.Page = 452
         VertScrollBar.Page = 383
         Align = alClient
         BorderStyle = bsNone
@@ -92,7 +92,7 @@ object Config: TConfig
         object lblSplitCol: TLabel
           Left = 290
           Height = 20
-          Top = 196
+          Top = 304
           Width = 95
           Caption = 'Splitters color:'
           ParentColor = False
@@ -100,7 +100,7 @@ object Config: TConfig
         object colSplitCol: TColorBox
           Left = 290
           Height = 26
-          Top = 216
+          Top = 324
           Width = 152
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor]
           ItemHeight = 20
@@ -110,11 +110,11 @@ object Config: TConfig
           Left = 290
           Height = 20
           Top = 136
-          Width = 84
-          Caption = 'Panels Color:'
+          Width = 137
+          Caption = 'Panels Header Color:'
           ParentColor = False
         end
-        object colPanelsCol: TColorBox
+        object colPanHeadCol: TColorBox
           Left = 290
           Height = 26
           Top = 156
@@ -174,17 +174,17 @@ object Config: TConfig
           TabOrder = 4
         end
         object lblSplitCol1: TLabel
-          Left = 288
+          Left = 290
           Height = 20
-          Top = 252
-          Width = 109
-          Caption = 'Panel Text Color:'
+          Top = 192
+          Width = 162
+          Caption = 'Panel Header Text Color:'
           ParentColor = False
         end
-        object colPanTextCol: TColorBox
-          Left = 288
+        object colPanHeadTxtCol: TColorBox
+          Left = 290
           Height = 26
-          Top = 272
+          Top = 212
           Width = 152
           DefaultColorColor = clGray
           Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor]
@@ -213,6 +213,24 @@ object Config: TConfig
             'At Right'
           )
           TabOrder = 6
+        end
+        object lblSplitCol2: TLabel
+          Left = 290
+          Height = 20
+          Top = 248
+          Width = 113
+          Caption = 'Panel Back Color:'
+          ParentColor = False
+        end
+        object colPanBackCol: TColorBox
+          Left = 290
+          Height = 26
+          Top = 268
+          Width = 152
+          DefaultColorColor = clGray
+          Style = [cbStandardColors, cbExtendedColors, cbSystemColors, cbCustomColor]
+          ItemHeight = 20
+          TabOrder = 7
         end
       end
     end

@@ -8,9 +8,9 @@ interface
 uses
   Classes, SysUtils, SynEdit, SynEditTypes, LazUTF8, Forms, Controls, Dialogs,
   Menus, ComCtrls, ActnList, StdActns, ExtCtrls, LCLIntf, LCLType, LCLProc,
-  StdCtrls, Graphics, MisUtils,
-  FrameLateralPanel, FormConfig, EditView, FrameEditView, FrameMessagesWin,
-  FrameCfgExtTool, Globales, adapterBase, FrameFileExplor, adapter6502
+  StdCtrls, Graphics, MisUtils, FrameLateralPanel, FormConfig, EditView,
+  FrameEditView, FrameMessagesWin, FrameCfgExtTool, Globales, adapterBase,
+  FrameFileExplor, adapter6502, adapterEditor
   ;
 type
   { TfrmPrincipal }
@@ -34,7 +34,7 @@ type
     acSearFindPrv: TAction;
     acFilOpenFolder: TAction;
     acFilCloseFolder: TAction;
-    acToolSel_kickc: TAction;
+    acToolSel_Editor: TAction;
     acToolSel_P65pas: TAction;
     acViewPanRight: TAction;
     acToolExt4: TAction;
@@ -64,8 +64,6 @@ type
     MenuItem17: TMenuItem;
     extraMenu1: TMenuItem;
     extraMenu2: TMenuItem;
-    MenuItem18: TMenuItem;
-    MenuItem19: TMenuItem;
     MenuItem20: TMenuItem;
     MenuItem21: TMenuItem;
     MenuItem22: TMenuItem;
@@ -89,7 +87,6 @@ type
     MenuItem42: TMenuItem;
     MenuItem45: TMenuItem;
     MenuItem46: TMenuItem;
-    panRightPanel: TPanel;
     SelectDirectoryDialog1: TSelectDirectoryDialog;
     Separator1: TMenuItem;
     MenuItem51: TMenuItem;
@@ -171,7 +168,7 @@ type
     procedure acToolExt5Execute(Sender: TObject);
     procedure acToolFindDecExecute(Sender: TObject);
     procedure acToolSel_P65pasExecute(Sender: TObject);
-    procedure acToolSel_kickcExecute(Sender: TObject);
+    procedure acToolSel_EditorExecute(Sender: TObject);
     procedure acViewPanRightExecute(Sender: TObject);
     procedure acViewPanLeftExecute(Sender: TObject);
     procedure acViewStatbarExecute(Sender: TObject);
@@ -193,14 +190,17 @@ type
     procedure Timer1Timer(Sender: TObject);
   private
     tic         : integer;       //Contador para temporización
+    curDistrib  : Integer;
     ticSynCheck : integer;       //Contador para temporizar la verifiación de sintaxis
     actSynCheck : Boolean;       //Activa la verificación de sintaxis
     PopupEdit_N : integer;       //Contador de ítems de menú
     fraEditView1: TfraEditView;  //Panel de editores
     fraFileExplor1: TfraFileExplor;  //Explorador de archivos
     fraLeftPanel: TfraLateralPanel; //Panel lateral derecho. (Usdo para explorador de archivos)
-    fraRigthPanel: TfraLateralPanel; //Panel lateral de la izquierda.
+    fraCentPanel: TfraLateralPanel; //Panel central. Usado para el Editor de archivos.
+    fraRightPanel:TfraLateralPanel; //Panel lateral de la izquierda.
     fraMessages : TfraMessagesWin;
+    procedure fraPanel_NewOrDelPage(latPanel: TfraLateralPanel);
     procedure OpenFolder(folderPath: string);
     procedure CloseFolder;
     procedure comp_AfterCheckSyn;
@@ -213,7 +213,7 @@ type
     procedure FileExplor1_CloseFile(file0: string; var Cancel: boolean);
     procedure FileExplor1_RenamedFile(oldFile, newFile: string);
     procedure fraMessagesStatisDBlClick;
-    procedure fraLeftPanel_selectedPage(pagName: string);
+    procedure fraPanel_SelectedPage(pagName: string);
     procedure fraEdit_RequireSynEditConfig(ed: TsynEdit);
     procedure ConfigChanged;
     procedure fraEdit_SelectEditor;
@@ -224,7 +224,8 @@ type
     procedure UpdateIDE(CompName: string);
   public     //Compilers adapters
     currComp   : TAdapterBase;   //Compialdor actual
-    adapter6502: TAdapter6502;  //Adaptador para compilado 6502
+    adapEditor : TAdapterEditor; //Adaptador para editor normal
+    adapter6502: TAdapter6502;   //Adaptador para compilado 6502
   end;
 
 var
@@ -265,13 +266,14 @@ end;
 procedure TfrmPrincipal.FileExplor1_OpenFile(nod: TExplorNode);
 begin
   fraEditView1.LoadFile(nod.GetPath);
-  Config.SaveToFile;  //guarda la configuración actual
+  Config.SaveToFile;  //Guarda la configuración actual
 end;
 procedure TfrmPrincipal.FileExplor1_CloseFile(file0: string; var Cancel: boolean);
 {Se pide cerrar un archivo en el editor.}
 begin
   if fraEditView1.SelectEditor(file0) then begin
      if not fraEditView1.CloseEditor then Cancel := true;
+     Config.SaveToFile;  //Guarda la configuración actual
   end;
 end;
 procedure TfrmPrincipal.FileExplor1_RenamedFile(oldFile, newFile: string);
@@ -283,7 +285,16 @@ begin
      fraEditView1.ChangeFileName(idEdit, newFile);
   end;
 end;
-procedure TfrmPrincipal.fraLeftPanel_selectedPage(pagName: string);
+procedure TfrmPrincipal.fraPanel_NewOrDelPage(latPanel: TfraLateralPanel);
+{Verifica si debe ocultar la barra de título.}
+begin
+  if latPanel.ActivePageName = 'editor' then begin
+    latPanel.HideHeader;
+  end else begin
+    latPanel.ShowHeader;
+  end;
+end;
+procedure TfrmPrincipal.fraPanel_SelectedPage(pagName: string);
 {Se ha seleccionado el modo de explorador de archivo,}
 var
   ed: TSynEditor;
@@ -360,7 +371,9 @@ procedure TfrmPrincipal.fraEdit_RequireSetCompletion(ed: TSynEditor);
 {Solicita configurar el completado de código al resaltador.}
 begin
   //Pasa requerimiento al compilador actual
-  currComp.SetCompletion(ed);
+  if currComp<> nil then begin
+    currComp.SetCompletion(ed);
+  end;
 end;
 procedure TfrmPrincipal.fraMessagesStatisDBlClick;
 //Doble clcik en la sección de estadísticas
@@ -382,10 +395,45 @@ begin
   end;
 end;
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
+  procedure FillPopupCompilers;
+  {Llena el menú que permite seleccionar al compilador o herramienta actual.
+  El menú se llena a partir de "ACtionList"}
+  var
+    i: Integer;
+    act: TContainedAction;
+    men: TMenuItem;
+  begin
+    PopupCompiler.Items.Clear;
+    for i:=0 to ActionList.ActionCount-1 do begin //limpia todos
+      act := ActionList.Actions[i];
+      if act.Category = 'comp' then begin
+         men := AddItemToMenu(PopupCompiler.Items, 'aaa', Nil);
+         men.Action := act;
+      end;
+    end;
+  end;
 begin
+  curDistrib := -1;  //Para forzar la actualización.
 
+  //Crea paneles laterales
   fraLeftPanel := TfraLateralPanel.Create(self);
+  fraLeftPanel.Name := 'leftPanel';
   fraLeftPanel.Parent := self;
+  fraLeftPanel.OnNewOrDeletePage := @fraPanel_NewOrDelPage;
+  fraLeftPanel.OnSelectedPage    := @fraPanel_SelectedPage;
+
+  fraCentPanel:= TfraLateralPanel.Create(self);
+  fraCentPanel.Name := 'centPanel';
+  fraCentPanel.Parent := self;
+  fraCentPanel.OnNewOrDeletePage := @fraPanel_NewOrDelPage;
+  fraCentPanel.OnSelectedPage    := @fraPanel_SelectedPage;
+
+  fraRightPanel := TfraLateralPanel.Create(self);
+  fraRightPanel.Name := 'rightPanel';
+  fraRightPanel.Parent := self;
+  fraRightPanel.OnNewOrDeletePage:= @fraPanel_NewOrDelPage;
+  fraRightPanel.OnSelectedPage   := @fraPanel_SelectedPage;
+
   //Configura panel de mensajes
   fraMessages := TfraMessagesWin.Create(self);
   fraMessages.Parent := panMessages;  //Ubica
@@ -394,38 +442,18 @@ begin
   fraMessages.OnStatisDBlClick  := @fraMessagesStatisDBlClick;
   //Configura panel de edición
   fraEditView1 := TfraEditView.Create(self);
-  fraEditView1.Parent := self;
   fraEditView1.OnChangeEditorState    := @fraEdit_ChangeEditorState;
   fraEditView1.OnSelectEditor         := @fraEdit_SelectEditor;
   fraEditView1.OnRequireSynEditConfig := @fraEdit_RequireSynEditConfig;
   fraEditview1.OnRequireSetCompletion := @fraEdit_RequireSetCompletion;
   fraEditView1.OnLocateInFileExpl     := @fraEdit_LocateInFileExpl;
+  fraEditView1.tmpPath := patTemp;   //Fija ruta de trabajo temporal
   //Guarda cantidad de ítems en menú contextul del editor para dar esa información a los
   //adaptadores.
   PopupEdit_N := PopupEdit.Items.Count;
   actSynCheck := true;
-end;
-procedure TfrmPrincipal.FormDestroy(Sender: TObject);
-begin
-  adapter6502.Destroy;
-end;
-procedure TfrmPrincipal.FormShow(Sender: TObject);
-begin
-  //Alineamiento de panel izquierdo
-  fraLeftPanel.Align := alLeft;
-  fraLeftPanel.Visible := true;
-  splLeft.Align := alLeft;
-  AnchorTo(splLeft, akLeft, fraLeftPanel);
-  //Alineamieanto de Panel derecho
-  panRightPanel.Align := alRight;
-  splRight.Align := alRight;
-  //Frame de editores
-  fraEditView1.Align := alClient;
-  fraEditView1.tmpPath := patTemp;   //fija ruta de trabajo
-  //Crea explorador de archivo en el Panel izquierdo
+  //Crea explorador de archivos y lo conecta al Editor
   fraFileExplor1:= TfraFileExplor.Create(self);
-  fraLeftPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
-  //Configura Explorador de archivos
   fraFileExplor1.InternalPopupFile:= true;
   fraFileExplor1.InternalPopupFolder:= true;
   fraFileExplor1.OnDoubleClickFile:= @FileExplor1_OpenFile;
@@ -435,10 +463,29 @@ begin
   fraFileExplor1.OnRenamedFile    := @FileExplor1_RenamedFile;
   fraFileExplor1.OnOpenFolder     := @acFilOpenFolderExecute;
   fraFileExplor1.OnCloseFolder    := @acFilCloseFolderExecute;
-
-  /////////// Crea adaptadores para compiladores soportados ///////////
+  //Llena menú de compiladores disponibles
+  FillPopupCompilers;
+  //Crea Adaptador
+  adapEditor := TAdapterEditor.Create(fraEditView1);
   adapter6502:= TAdapter6502.Create(fraEditView1);
-  adapter6502.Init(fraLeftPanel, panRightPanel, ImgActions16, ImgActions32, ActionList);
+
+end;
+procedure TfrmPrincipal.FormDestroy(Sender: TObject);
+begin
+  adapter6502.Destroy;
+  adapEditor.Destroy;
+end;
+procedure TfrmPrincipal.FormShow(Sender: TObject);
+begin
+  /////////// Configuración por defecto ///////////
+  //Crea explorador de archivo en el Panel izquierdo
+  fraLeftPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
+  //Agrega el Frame de editores
+  fraCentPanel.AddPage(fraEditView1, 'editor', 'Editor', '');
+  //Oculta panel derecho
+  Config.ViewPanRight := false;
+  /////////// Crea adaptadores para compiladores soportados ///////////
+  adapter6502.Init(fraLeftPanel, fraRightPanel, ImgActions16, ImgActions32, ActionList);
   adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
   adapter6502.OnAfterCompile   := @comp_AfterCompile;
   adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
@@ -451,8 +498,7 @@ begin
   Config.fraCfgExtTool.OnReplaceParams := @ConfigExtTool_RequirePar;
   //Fija compilador por defecto
   acToolSel_P65pasExecute(self);
-  //Configura Panel lateral
-  fraLeftPanel.OnSelectedPage := @fraLeftPanel_selectedPage;
+
   //Abre el directorio de trabajo actual
   OpenFolder(Config.currFolder);
   //Termina configuración
@@ -489,9 +535,8 @@ begin
     Config.winHeight := self.Height;
     Config.winWidth  := self.Width;
   end;
-  Config.PanRightWidth := panRightPanel.Width;
-
   Config.PanLeftWidth := fraLeftPanel.Width;   //Guarda ancho
+  Config.PanRightWidth := fraRightPanel.Width;
   Config.SaveToFile;  //guarda la configuración actual
 end;
 procedure TfrmPrincipal.Timer1Timer(Sender: TObject);
@@ -522,7 +567,7 @@ begin
     {Se cumplió el tiempo para iniciar la verificación automática de sintaxis y hay
     archivos abiertos.}
 //debugln('--Verif. Syntax.' + TimeToStr(now) + ':');
-    currComp.CheckSyntax();
+    if currComp<>nil then currComp.CheckSyntax();
   end;
 end;
 procedure TfrmPrincipal.ToolBar5PaintButton(Sender: TToolButton; State: integer
@@ -541,7 +586,7 @@ begin
   txtAlt := cv.TextHeight('X');
   //Dibuja flecha
   yArr := (but.height div 2) - 4;
-  cv.Pen.Color := Config.PanTextCol;
+  cv.Pen.Color := Config.PanHeadTxtCol;
   cv.Line(2,yArr  , 8, yArr);
   cv.Line(2,yArr+1, 8, yArr+1);
 
@@ -557,7 +602,7 @@ begin
   //Dibuja ícono y texto
   ImgActions16.Draw(cv, bRect.Left+11, bRect.Top + (but.height div 2) - 8, 14);
   cv.Brush.Style := bsClear;  //Texto sin fondo
-  cv.Font.Color := Config.PanTextCol;
+  cv.Font.Color := Config.PanHeadTxtCol;
   cv.Textout(31, but.height div 2 - (txtAlt div 2), but.Caption);
 end;
 procedure TfrmPrincipal.FormDropFiles(Sender: TObject; const FileNames: array of String);
@@ -579,9 +624,9 @@ begin
         fraEditView1.SelectNextEditor;
       end else begin
         //Debe haber solo una ventana
-        if panRightPanel.Visible then panRightPanel.SetFocus;
+        if fraRightPanel.Visible then fraRightPanel.SetFocus;
       end;
-    end else if panRightPanel.Focused then begin
+    end else if fraRightPanel.Focused then begin
       fraEditView1.SetFocus;
     end;
   end;
@@ -605,7 +650,7 @@ begin
     Shift := []; Key := 0;  //para qie no pase
   end;
   //Pasa evento a COde Tool
-  currComp.CTKeyDown(Sender, Key, Shift);
+  if currComp<>nil then currComp.CTKeyDown(Sender, Key, Shift);
 end;
 procedure TfrmPrincipal.fraMessagesDblClickMessage(fileSrc: string; row,
   col: integer);
@@ -638,6 +683,36 @@ procedure TfrmPrincipal.ConfigChanged;
     tb.Height:=42;
     tb.Images:=ImgActions32;
   end;
+  procedure LocatePanels(panelsDistrib: integer);
+  {Configura la visibilidad, distribución y tamaño de los Paneles izquierdo, derecho y
+  central}
+  begin
+    //Configura visibilidad
+    fraLeftPanel.Visible := Config.ViewPanLeft;
+    splLeft.Visible := Config.ViewPanLeft;
+    fraRightPanel.Visible := Config.ViewPanRight;
+    splRight.Visible := Config.ViewPanRight;
+
+    //Alineamiento de panel izquierdo
+    fraLeftPanel.Align := alLeft;
+    fraLeftPanel.Width   := Config.PanLeftWidth;
+    splLeft.Align := alLeft;
+    AnchorTo(splLeft, akLeft, fraLeftPanel);
+    //Alineamieanto de Panel derecho
+    fraRightPanel.Align := alRight;
+    fraRightPanel.Width := Config.PanRightWidth;
+    splRight.Align := alRight;
+    AnchorTo(splRight, akRight, fraRightPanel);
+    //Alineamiento de editor
+    fraCentPanel.Align := alClient;
+    //Actualiza menús
+    acViewPanLeft.Checked := Config.ViewPanLeft;
+    acViewPanRight.Checked := Config.ViewPanRight;
+
+    if curDistrib = panelsDistrib then Exit; //Ya tenemos la distribución
+    curDistrib := panelsDistrib;
+
+  end;
 var
   cad: String;
   i: Integer;
@@ -657,15 +732,13 @@ begin
     self.Height := Config.winHeight;
     self.Width  := Config.winWidth;
   end;
-  //Visibilidad del Panel izquierdo (explorador de archivo)
-  fraLeftPanel.Visible := Config.ViewPanLeft;
-  fraLeftPanel.Width   := Config.PanLeftWidth;
-  splLeft.Visible := Config.ViewPanLeft;
-  acViewPanLeft.Checked := Config.ViewPanLeft;
 
   //Visibilidad de La Barra de Estado
   StatusBar1.Visible := Config.ViewStatusbar;
   acViewStatbar.Checked:= Config.ViewStatusbar;
+
+  //Distribuye paneles
+  LocatePanels(Config.EditLocat);
 
   //Visibilidad de la Barra de Herramientas
   CoolBar1.Visible    := Config.ViewToolbar;
@@ -675,12 +748,6 @@ begin
   panMessages.Visible:= Config.ViewPanMsg;
   Splitter2.Visible  := Config.ViewPanMsg;
   acViewMsgPan.Checked:= Config.ViewPanMsg;
-
-  //Visibilidad del Panel derecho (Ensamblador)
-  panRightPanel.Visible:= Config.ViewPanRight;
-  splRight.Visible     := Config.ViewPanRight;
-  acViewPanRight.Checked := Config.ViewPanRight;
-  panRightPanel.Width  := Config.PanRightWidth;
 
   //Tamaño de la Barra de Herramientas
   case Config.StateToolbar of
@@ -701,9 +768,9 @@ begin
     CoolBar1.AutosizeBands;  //Update size
   end;
   end;
-  //Configura el panel lateral izquierdo
-  fraLeftPanel.PanelColor:= Config.PanelsCol;  //{ #todo : Sería mejor enviar un mensaje (puede ser como texto) a todo el panel para indicarle colores que pide el tema.  }
-  fraLeftPanel.TextColor := Config.FilExplText;
+  //Configura colores de los paneles laterales
+  fraLeftPanel.SetPanelColor(Config.PanHeadCol, Config.PanHeadTxtCol, Config.PanBackCol);
+  fraRightPanel.SetPanelColor(Config.PanHeadCol, Config.PanHeadTxtCol, Config.PanBackCol);
   //Configura Explorador de archivos
   fraFileExplor1.BackColor := Config.FilExplBack;;
   fraFileExplor1.TextColor := Config.FilExplText;
@@ -714,24 +781,24 @@ begin
   fraMessages.TextColor := Config.MessPanText;
   fraMessages.TextErrColor := Config.MessPanErr;
   fraMessages.BackSelColor := Config.MessPanSel;
-  fraMessages.PanelColor := Config.PanelsCol;
+  fraMessages.PanelColor := Config.PanHeadCol;
 
   //Set color to Toolbars
-  ToolBar2.Color := Config.PanelsCol;
-  ToolBar3.Color := Config.PanelsCol;
-  ToolBar4.Color := Config.PanelsCol;
-  ToolBar5.Color := Config.PanelsCol;
-  ToolBar6.Color := Config.PanelsCol;
+  ToolBar2.Color := Config.PanHeadCol;
+  ToolBar3.Color := Config.PanHeadCol;
+  ToolBar4.Color := Config.PanHeadCol;
+  ToolBar5.Color := Config.PanHeadCol;
+  ToolBar6.Color := Config.PanHeadCol;
 
   //Set color to Coolbars
-  CoolBar1.Color := Config.PanelsCol;
-  CoolBar1.Bands[0].Color := Config.PanelsCol;
-  CoolBar1.Bands[1].Color := Config.PanelsCol;
-  CoolBar1.Bands[2].Color := Config.PanelsCol;
-  CoolBar1.Bands[3].Color := Config.PanelsCol;
-  CoolBar1.Bands[4].Color := Config.PanelsCol;
+  CoolBar1.Color := Config.PanHeadCol;
+  CoolBar1.Bands[0].Color := Config.PanHeadCol;
+  CoolBar1.Bands[1].Color := Config.PanHeadCol;
+  CoolBar1.Bands[2].Color := Config.PanHeadCol;
+  CoolBar1.Bands[3].Color := Config.PanHeadCol;
+  CoolBar1.Bands[4].Color := Config.PanHeadCol;
 
-  fraEditView1.Panel1.Color := Config.PanelsCol;
+  fraEditView1.Panel1.Color := Config.PanHeadCol;
 
   //Color de separadores
   Splitter2.Color := Config.SplitterCol;
@@ -748,8 +815,11 @@ begin
   acToolExt4.Visible := false;
   acToolExt5.Visible := false;
   //Notifica al adaptador actual por si lo necesita
-  currComp.NotifyConfigChanged( Config.MessPanBack,
-    Config.MessPanText, Config.MessPanErr, Config.MessPanSel, Config.fraCfgSynEdit);
+  if currComp<>nil then begin
+     currComp.NotifyConfigChanged( Config.MessPanBack,
+       Config.MessPanText, Config.MessPanErr, Config.MessPanSel, Config.fraCfgSynEdit);
+  end;
+  //COnfigura herramientas externas
   for i:=0 to config.fraCfgExtTool.ExternTools.Count-1 do begin
     cad := config.fraCfgExtTool.ExternTools[i];
     tool.ReadFromString(cad);  //lee campos
@@ -1038,13 +1108,17 @@ begin
      fraEdit_ChangeEditorState(fraEditView1.ActiveEditor);
   end;
 end;
-procedure TfrmPrincipal.acToolSel_P65pasExecute(Sender: TObject);
-{Se pide seleccionar el compilador P65pas}
+procedure TfrmPrincipal.acToolSel_EditorExecute(Sender: TObject);
+{Se pide seleccionar el compilador PicPas}
+var
+  act: TAction;
 begin
+  MsgBox(Sender.ClassName);
+  act := TAction(Sender);
   currComp := adapter6502;         //Apunta a compilador
   //Actualiza lista de compiladores
-  acToolSel_P65pas.Checked := true;
-  acToolSel_kickc.Checked := false;
+  acToolSel_P65pas.Checked := false;
+  acToolSel_Editor.Checked := true;
   //Actualiza configuración
   Config.ActivateAdapter(currComp);
   //Configura menús y Toolbar
@@ -1053,20 +1127,20 @@ begin
   //Termina configuración
   UpdateIDE(adapter6502.CompilerName);
 end;
-procedure TfrmPrincipal.acToolSel_kickcExecute(Sender: TObject);
-{Se pide seleccionar el compilador PicPas}
+procedure TfrmPrincipal.acToolSel_P65pasExecute(Sender: TObject);
+{Se pide seleccionar el compilador P65pas}
 begin
   currComp := adapter6502;         //Apunta a compilador
   //Actualiza lista de compiladores
-  acToolSel_P65pas.Checked := false;
-  acToolSel_kickc.Checked := true;
+  acToolSel_P65pas.Checked := true;
+  acToolSel_Editor.Checked := false;
   //Actualiza configuración
   Config.ActivateAdapter(currComp);
   //Configura menús y Toolbar
   currComp.setMenusAndToolbar(extraMenu1, extraMenu2, extraMenu3, ToolBar4, PopupEdit,
     PopupEdit_N);
   //Termina configuración
-  UpdateIDE(adapter6502.CompilerName+'65C02');
+  UpdateIDE(adapter6502.CompilerName);
 end;
 procedure TfrmPrincipal.acToolExt1Execute(Sender: TObject);
 begin

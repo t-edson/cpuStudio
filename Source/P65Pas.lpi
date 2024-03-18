@@ -76,7 +76,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="44">
+    <Units Count="45">
       <Unit0>
         <Filename Value="P65Pas.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -305,6 +305,10 @@
         <Filename Value="comp_p65pas\Compiler_PIC16.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit43>
+      <Unit44>
+        <Filename Value="adap_editor\adapterEditor.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit44>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -315,7 +319,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);comp_p65pas"/>
-      <OtherUnitFiles Value="ide;_libraries\SynFacilUtils-1.24;_libraries\MisUtils-0.6;_libraries\MiConfig-0.4;_libraries\UtilsGrilla-0.8;_libraries\epiktimer;comp_p65pas;comp_p65pas\_libraries\P65Utils-0.5;adap_p65pas"/>
+      <OtherUnitFiles Value="ide;_libraries\SynFacilUtils-1.24;_libraries\MisUtils-0.6;_libraries\MiConfig-0.4;_libraries\UtilsGrilla-0.8;_libraries\epiktimer;comp_p65pas;comp_p65pas\_libraries\P65Utils-0.5;adap_p65pas;adap_editor"/>
       <UnitOutputDirectory Value="lib\$(TargetCPU)-$(TargetOS)"/>
     </SearchPaths>
     <Parsing>

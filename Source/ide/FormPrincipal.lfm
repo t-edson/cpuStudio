@@ -309,15 +309,6 @@ object frmPrincipal: TfrmPrincipal
       end
     end
   end
-  object panRightPanel: TPanel
-    Left = 848
-    Height = 552
-    Top = 48
-    Width = 261
-    BevelOuter = bvNone
-    ParentFont = False
-    TabOrder = 6
-  end
   object ImgActions16: TImageList
     Left = 338
     Top = 548
@@ -827,15 +818,15 @@ object frmPrincipal: TfrmPrincipal
       ImageIndex = 13
       OnExecute = acToolExt5Execute
     end
+    object acToolSel_Editor: TAction
+      Category = 'comp'
+      Caption = 'Plain Editor'
+      OnExecute = acToolSel_EditorExecute
+    end
     object acToolSel_P65pas: TAction
-      Category = 'Tool'
+      Category = 'comp'
       Caption = 'P65Pas'
       OnExecute = acToolSel_P65pasExecute
-    end
-    object acToolSel_kickc: TAction
-      Category = 'Tool'
-      Caption = 'KickC'
-      OnExecute = acToolSel_kickcExecute
     end
     object acFilOpen: TAction
       Category = 'Arc'
@@ -998,7 +989,7 @@ object frmPrincipal: TfrmPrincipal
           Action = acToolSel_P65pas
         end
         object MenuItem53: TMenuItem
-          Action = acToolSel_kickc
+          Action = acToolSel_Editor
         end
         object MenuItem54: TMenuItem
           Caption = 'Enhanced Mid-range Compiler'
@@ -2246,12 +2237,6 @@ object frmPrincipal: TfrmPrincipal
   object PopupCompiler: TPopupMenu
     Left = 338
     Top = 228
-    object MenuItem18: TMenuItem
-      Action = acToolSel_P65pas
-    end
-    object MenuItem19: TMenuItem
-      Action = acToolSel_kickc
-    end
   end
   object SelectDirectoryDialog1: TSelectDirectoryDialog
     Left = 88

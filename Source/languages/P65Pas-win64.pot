@@ -7,6 +7,12 @@ msgctxt "adapter6502.msg_synfil_nof"
 msgid "Syntax file not found: %s"
 msgstr ""
 
+#: adaptereditor.msg_synfil_nof
+#, object-pascal-format
+msgctxt "adaptereditor.msg_synfil_nof"
+msgid "Syntax file not found: %s"
+msgstr ""
+
 #: analyzer.er_arr_siz_big
 msgid "Array size to big."
 msgstr ""
@@ -532,7 +538,7 @@ msgid "Selection color:"
 msgstr ""
 
 #: tconfig.lblpanelcol.caption
-msgid "Panels Color:"
+msgid "Panels Header Color:"
 msgstr ""
 
 #: tconfig.lblsplitcol.caption
@@ -540,7 +546,11 @@ msgid "Splitters color:"
 msgstr ""
 
 #: tconfig.lblsplitcol1.caption
-msgid "Panel Text Color:"
+msgid "Panel Header Text Color:"
+msgstr ""
+
+#: tconfig.lblsplitcol2.caption
+msgid "Panel Back Color:"
 msgstr ""
 
 #: tconfig.lblthemload.caption
@@ -662,6 +672,38 @@ msgstr ""
 msgid "Units Path:"
 msgstr ""
 
+#: tfraeditview.lblbackground.caption
+msgid "<<No files>>"
+msgstr ""
+
+#: tfraeditview.mnclearproject.caption
+msgid "Clear Main file"
+msgstr ""
+
+#: tfraeditview.mncloseall.caption
+msgid "Close &All"
+msgstr ""
+
+#: tfraeditview.mncloseothers.caption
+msgid "Close &Others"
+msgstr ""
+
+#: tfraeditview.mnclosetab.caption
+msgid "&Close"
+msgstr ""
+
+#: tfraeditview.mnlocfileexp.caption
+msgid "&Locate on File Explorer"
+msgstr ""
+
+#: tfraeditview.mnnewtab.caption
+msgid "&New"
+msgstr ""
+
+#: tfraeditview.mnsetproject.caption
+msgid "Set as Main file"
+msgstr ""
+
 #: tfrafileexplor.lblopenfolder.caption
 msgid ">&Open Folder ..."
 msgstr ""
@@ -728,7 +770,7 @@ msgid "&Refresh"
 msgstr ""
 
 #: tfralateralpanel.label1.caption
-msgid " File Explorer"
+msgid "<No Tab>"
 msgstr ""
 
 #: tframir6502.acgendoanalys.caption
@@ -1216,8 +1258,8 @@ msgstr ""
 msgid "External Tool 5"
 msgstr ""
 
-#: tfrmprincipal.actoolsel_kickc.caption
-msgid "KickC"
+#: tfrmprincipal.actoolsel_editor.caption
+msgid "Plain Editor"
 msgstr ""
 
 #: tfrmprincipal.actoolsel_p65pas.caption

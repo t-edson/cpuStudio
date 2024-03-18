@@ -1108,25 +1108,21 @@ begin
   lblBackground.Left := self.Width div 2 - lblBackground.Width div 2;
   lblBackground.Top := self.Height div 2;
 end;
-
 procedure TfraEditView.mnClearProjectClick(Sender: TObject);
 begin
   LastProject := '';
   Panel1Paint(Self);
 end;
-
 procedure TfraEditView.mnNewTabClick(Sender: TObject);
 begin
   NewPasFile;
   SetFocus;
 end;
-
 procedure TfraEditView.mnSetProjectClick(Sender: TObject);
 begin
   LastProject := ActiveEditor.FileName;
   Panel1Paint(Self);
 end;
-
 procedure TfraEditView.UpDown1Click(Sender: TObject; Button: TUDBtnType);
 begin
   case Button of

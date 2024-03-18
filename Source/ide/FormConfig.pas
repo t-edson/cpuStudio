@@ -29,13 +29,15 @@ type
     colCodExplText: TColorBox;
     colMessPanBack: TColorBox;
     colMessPanErr: TColorBox;
-    colPanelsCol: TColorBox;
+    colPanHeadCol: TColorBox;
     colMessPanSel: TColorBox;
     colMessPanText: TColorBox;
-    colPanTextCol: TColorBox;
+    colPanHeadTxtCol: TColorBox;
+    colPanBackCol: TColorBox;
     colSplitCol: TColorBox;
     cmbLanguage: TComboBox;
     grpEditLocat: TRadioGroup;
+    lblSplitCol2: TLabel;
     txtThemLoaded: TEdit;
     grpTabEdiState: TRadioGroup;
     ImageList1: TImageList;
@@ -121,9 +123,10 @@ type
     language   : string;   //Lenguaje
     LoadLast   : boolean;  //Cargar el último archivo editado
 
-    PanelsCol  : TColor;   //Color de los paneles de toda la IDE.
+    PanHeadCol : TColor;   //Color de las barras de título de los paneles.
+    PanHeadTxtCol: TColor; //Color del texto de las barras de título de los paneles.
+    PanBackCol : TColor;   //Color de fondo de los paneles.
     SplitterCol: TColor;   //Color de separadores
-    PanTextCol : TColor;   //Color del texto mostrado en la barra de herramientas
 
     StateToolbar: TStyleToolbar;
     EditLocat   : Integer;
@@ -408,7 +411,7 @@ begin
   cfgFilePropertiesChanges;
 end;
 procedure TConfig.RegisterAdapter(adapt: TAdapterBase);
-{Regsitra el adaptador de un compilador nuevo, para poder usar sus frames de
+{Registra el adaptador de un compilador nuevo, para poder usar sus frames de
 configuración.}
 begin
   //Agrega a la lista de adaptadores
@@ -461,11 +464,13 @@ begin
   s:=cfgFile.Asoc_Enum('grpToolbarSta',@StateToolbar, SizeOf(TStyleToolbar), grpToolbarSta, 1);
   s:=cfgFile.Asoc_Int ('grpEditLocat', @EditLocat, grpEditLocat, 1);
 
-  s:=cfgFile.Asoc_TCol('PanelsCol'  , @PanelsCol  , colPanelsCol, clDefault);
+  s:=cfgFile.Asoc_TCol('PanelsCol'  , @PanHeadCol  , colPanHeadCol, clDefault);
+  s.categ := 1;   //marca como propiedad de tipo "Tema"
+  s:=cfgFile.Asoc_TCol('TextPanel'   , @PanHeadTxtCol , colPanHeadTxtCol, clGray);
+  s.categ := 1;   //marca como propiedad de tipo "Tema"
+  s:=cfgFile.Asoc_TCol('PanBackCol'   , @PanBackCol , colPanBackCol, clWhite);
   s.categ := 1;   //marca como propiedad de tipo "Tema"
   s:=cfgFile.Asoc_TCol('SplitterCol' , @SplitterCol, colSplitCol , clDefault);
-  s.categ := 1;   //marca como propiedad de tipo "Tema"
-  s:=cfgFile.Asoc_TCol('TextPanel'   , @PanTextCol , colPanTextCol, clGray);
   s.categ := 1;   //marca como propiedad de tipo "Tema"
   //Propiedades sin control
   s:=cfgFile.asoc_str ('currPath'    , @currFolder   , '');

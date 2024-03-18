@@ -43,7 +43,7 @@ type
     //Referencia al frame de edición
     fraEditView1: TfraEditView;
     //Referencia al editor lateral (Ensamblador)
-    panRightPanel: TPanel;
+    fraRightPanel: TfraLateralPanel;
     edAsm        : TSynEdit;
     hlAssem      : TSynFacilSyn;   //resaltador para ensamblador
     procedure LoadAsmSyntaxEd;
@@ -93,7 +93,7 @@ type
     fraCfgCompiler: TfraCfgCompiler6502;
     fraCfgAsmOut  : TfraCfgAsmOut6502;
   public      //Inicialización
-    procedure Init(leftPanel: TfraLateralPanel; panRightPanel0: TPanel; imgList16,
+    procedure Init(leftPanel, fraRightPanel0: TfraLateralPanel; imgList16,
       imglist32: TImageList; actList: TActionList);
     procedure ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
       _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage); override;
@@ -471,7 +471,7 @@ begin
     MsgErr(MSG_SYNFIL_NOF, [synFile]);
   end;
 end;
-procedure TAdapter6502.Init(leftPanel: TfraLateralPanel; panRightPanel0: TPanel;
+procedure TAdapter6502.Init(leftPanel, fraRightPanel0: TfraLateralPanel;
   imgList16, imglist32: TImageList; actList: TActionList);
 {Inicializa el adaptador. Eso implica preparar la IDE para que soporte a este nuevo
 compilador que se está registrando.
@@ -495,7 +495,7 @@ begin
   //Agrega los íconos de "adapterForm" a los ImageList
   adapterForm.AddActions(imgList16, imgList32, actList, COMP_NAME);
   //Guarda referencia a editor lateral.
-  panRightPanel := panRightPanel0;
+  fraRightPanel := fraRightPanel0;
 
   //Agrega la herramienta de árbol de sintaxis
   leftPanel.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
@@ -506,11 +506,10 @@ begin
   //Agrega visor para la representación MIR
   leftPanel.AddPage(fraMir, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
 
-  //Configura editor de ensamblador
-  edAsm.Parent := panRightPanel;
-  edAsm.Align := alClient;
-  edAsm.Highlighter := hlAssem;
-  InicEditorC1(edAsm);
+  fraRightPanel.AddPage(edAsm, 'asm'+COMP_NAME, 'Assembler Output', COMP_NAME);
+  ////Configura editor de ensamblador
+  //edAsm.Parent := fraRightPanel;
+  //edAsm.Align := alClient;
 end;
 procedure TAdapter6502.ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
   _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage);
@@ -635,6 +634,8 @@ begin
   //Crea editor y resaltador
   edAsm := TSynEdit.Create(nil);
   hlAssem := TSynFacilSyn.Create(edAsm);
+  edAsm.Highlighter := hlAssem;
+  InicEditorC1(edAsm);
   LoadAsmSyntaxEd;
 end;
 destructor TAdapter6502.Destroy;
