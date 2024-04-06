@@ -138,6 +138,7 @@
         <Filename Value="adap_p65pas\FormAdapter6502.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="frmAdapter6502"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit9>
       <Unit10>
@@ -222,6 +223,8 @@
         <Filename Value="adap_p65pas\FrameSynTree6502.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraSynxTree6502"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
       </Unit24>
       <Unit25>
         <Filename Value="ide\FrameCfgExtTool.pas"/>

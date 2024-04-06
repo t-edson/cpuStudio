@@ -221,7 +221,7 @@ type
     procedure FileExplor1_OpenFile(nod: TExplorNode);
     procedure MarkErrors;
     procedure ShowErrorInDialogBox;
-    procedure UpdateIDE(CompName: string);
+    procedure UpdateIDE(CompName: string; actSelected: TAction);
   public     //Compilers adapters
     currComp   : TAdapterBase;   //Compialdor actual
     adapEditor : TAdapterEditor; //Adaptador para editor normal
@@ -465,9 +465,14 @@ begin
   fraFileExplor1.OnCloseFolder    := @acFilCloseFolderExecute;
   //Llena menú de compiladores disponibles
   FillPopupCompilers;
-  //Crea Adaptador
+  //Crea Adaptador para editor
   adapEditor := TAdapterEditor.Create(fraEditView1);
-  adapter6502:= TAdapter6502.Create(fraEditView1);
+  //Crea Adaptador para P65pas
+  adapter6502:= TAdapter6502.Create(fraEditView1, fraFileExplor1);
+  adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
+  adapter6502.OnAfterCompile   := @comp_AfterCompile;
+  adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
+  adapter6502.OnAfterCheckSyn  := @comp_AfterCheckSyn;
 
 end;
 procedure TfrmPrincipal.FormDestroy(Sender: TObject);
@@ -478,18 +483,18 @@ end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
   /////////// Configuración por defecto ///////////
-  //Crea explorador de archivo en el Panel izquierdo
-  fraLeftPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
-  //Agrega el Frame de editores
-  fraCentPanel.AddPage(fraEditView1, 'editor', 'Editor', '');
+//  //Crea explorador de archivo en el Panel izquierdo
+//  fraLeftPanel.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
+//  //Agrega el Frame de editores
+//  fraCentPanel.AddPage(fraEditView1, 'editor', 'Editor', '');
   //Oculta panel derecho
   Config.ViewPanRight := false;
-  /////////// Crea adaptadores para compiladores soportados ///////////
-  adapter6502.Init(fraLeftPanel, fraRightPanel, ImgActions16, ImgActions32, ActionList);
-  adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
-  adapter6502.OnAfterCompile   := @comp_AfterCompile;
-  adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
-  adapter6502.OnAfterCheckSyn  := @comp_AfterCheckSyn;
+  /////////// Inicia adaptadores para compiladores soportados ///////////
+  adapEditor.Init(fraLeftPanel, fraCentPanel, fraRightPanel,
+                  ImgActions16, ImgActions32, ActionList);
+
+  adapter6502.Init(fraLeftPanel, fraCentPanel, fraRightPanel,
+                  ImgActions16, ImgActions32, ActionList);
   Config.RegisterAdapter(adapter6502);    //Registra adaptador en configuración. Se debe hacer antes de Config.Init.
   ///////////////////////////////////////////////////////
 
@@ -497,7 +502,7 @@ begin
   Config.OnPropertiesChanges := @ConfigChanged;
   Config.fraCfgExtTool.OnReplaceParams := @ConfigExtTool_RequirePar;
   //Fija compilador por defecto
-  acToolSel_P65pasExecute(self);
+  acToolSel_P65pas.Execute;
 
   //Abre el directorio de trabajo actual
   OpenFolder(Config.currFolder);
@@ -687,6 +692,26 @@ procedure TfrmPrincipal.ConfigChanged;
   {Configura la visibilidad, distribución y tamaño de los Paneles izquierdo, derecho y
   central}
   begin
+//    if curDistrib <> panelsDistrib then begin
+//       curDistrib := panelsDistrib;
+//       case curDistrib of
+//       0: begin     //Editor a la izquierda
+//         fLeftPanel := fraCentPanel;
+//         fCentPanel := fraLeftPanel;
+//         fRightPanel := fraRightPanel;
+//       end;
+//       1: begin     //Editor al centro
+//         fLeftPanel := fraLeftPanel;
+//         fCentPanel := fraCentPanel;
+//         fRightPanel := fraRightPanel;
+//       end;
+//       2: begin     //Editor a la derecha
+//         fLeftPanel := fraLeftPanel;
+//         fCentPanel := fraRightPanel;
+//         fRightPanel := fraCentPanel;
+//       end;
+//       end;
+//    end;
     //Configura visibilidad
     fraLeftPanel.Visible := Config.ViewPanLeft;
     splLeft.Visible := Config.ViewPanLeft;
@@ -708,10 +733,6 @@ procedure TfrmPrincipal.ConfigChanged;
     //Actualiza menús
     acViewPanLeft.Checked := Config.ViewPanLeft;
     acViewPanRight.Checked := Config.ViewPanRight;
-
-    if curDistrib = panelsDistrib then Exit; //Ya tenemos la distribución
-    curDistrib := panelsDistrib;
-
   end;
 var
   cad: String;
@@ -1090,9 +1111,20 @@ begin
   Config.Mostrar;
 end;
 //Seleccion del compilador
-procedure TfrmPrincipal.UpdateIDE(CompName: string);
+procedure TfrmPrincipal.UpdateIDE(CompName: string; actSelected: TAction);
 {Termina de hacer las configuraciones finales de la IDE al elegir un compilador.}
+var
+  act: TContainedAction;
+  i: Integer;
 begin
+  //Marca la acción elegida y desmarca a las otras.
+  for i:=0 to ActionList.ActionCount-1 do begin
+    act := ActionList.Actions[i];
+    if act.Category = 'comp' then begin
+      if act.Name = actSelected.Name then TAction(act).Checked := true
+      else TAction(act).Checked := false;
+    end;
+  end;
   {Solicita la actualización de los resaltadores de sintaxis (con completado) y la
   herramienta Codetools para todos los editores abiertos.}
   fraEditView1.UpdateSynEditCompletion;
@@ -1109,38 +1141,28 @@ begin
   end;
 end;
 procedure TfrmPrincipal.acToolSel_EditorExecute(Sender: TObject);
-{Se pide seleccionar el compilador PicPas}
-var
-  act: TAction;
+{Se pide seleccionar el modo Editor}
 begin
-  MsgBox(Sender.ClassName);
-  act := TAction(Sender);
-  currComp := adapter6502;         //Apunta a compilador
-  //Actualiza lista de compiladores
-  acToolSel_P65pas.Checked := false;
-  acToolSel_Editor.Checked := true;
+  currComp := adapEditor;         //Apunta a compilador
   //Actualiza configuración
   Config.ActivateAdapter(currComp);
   //Configura menús y Toolbar
   currComp.setMenusAndToolbar(extraMenu1, extraMenu2, extraMenu3, ToolBar4, PopupEdit,
     PopupEdit_N);
   //Termina configuración
-  UpdateIDE(adapter6502.CompilerName);
+  UpdateIDE(currComp.CompilerName, TAction(Sender));
 end;
 procedure TfrmPrincipal.acToolSel_P65pasExecute(Sender: TObject);
 {Se pide seleccionar el compilador P65pas}
 begin
   currComp := adapter6502;         //Apunta a compilador
-  //Actualiza lista de compiladores
-  acToolSel_P65pas.Checked := true;
-  acToolSel_Editor.Checked := false;
   //Actualiza configuración
   Config.ActivateAdapter(currComp);
   //Configura menús y Toolbar
   currComp.setMenusAndToolbar(extraMenu1, extraMenu2, extraMenu3, ToolBar4, PopupEdit,
     PopupEdit_N);
   //Termina configuración
-  UpdateIDE(adapter6502.CompilerName);
+  UpdateIDE(currComp.CompilerName, TAction(Sender));
 end;
 procedure TfrmPrincipal.acToolExt1Execute(Sender: TObject);
 begin

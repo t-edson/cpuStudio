@@ -9,9 +9,9 @@ uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
   Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, LexPas,
   FrameEditView, Globales, FrameCfgSynEdit, MisUtils, SynFacilHighlighter,
-  EditView, FrameLateralPanel, MiConfigXML, FrameStatist6502, FrameSynTree6502,
-  FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502, FormDebugger6502,
-  FormRAMExplorer6502, FrameCfgAsmOut6502, FrameMIR6502;
+  EditView, FrameLateralPanel, FrameFileExplor, MiConfigXML, FrameStatist6502,
+  FrameSynTree6502, FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502,
+  FormDebugger6502, FormRAMExplorer6502, FrameCfgAsmOut6502, FrameMIR6502;
 type
   { TAdapter6502 }
   TAdapter6502 = class(TAdapterBase)
@@ -42,8 +42,8 @@ type
     Compiler    : TCompiler_PIC16;
     //Referencia al frame de edición
     fraEditView1: TfraEditView;
+    fraFileExplor1: TfraFileExplor;
     //Referencia al editor lateral (Ensamblador)
-    fraRightPanel: TfraLateralPanel;
     edAsm        : TSynEdit;
     hlAssem      : TSynFacilSyn;   //resaltador para ensamblador
     procedure LoadAsmSyntaxEd;
@@ -93,15 +93,15 @@ type
     fraCfgCompiler: TfraCfgCompiler6502;
     fraCfgAsmOut  : TfraCfgAsmOut6502;
   public      //Inicialización
-    procedure Init(leftPanel, fraRightPanel0: TfraLateralPanel; imgList16,
-      imglist32: TImageList; actList: TActionList);
+    procedure Init(leftPanel0, centPanel0, rightPanel0: TfraLateralPanel;
+      imgList16, imglist32: TImageList; actList: TActionList);
     procedure ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
       _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage); override;
     procedure ConfigInit(cfgFile: TMiConfigXML); override;
     procedure ConfigActivate; override;
     procedure setMenusAndToolbar(menu1, menu2, menu3: TMenuItem; toolbar: TToolBar;
       popupEdit: TPopupMenu; popupEditCount: integer); override;
-    constructor Create(fraEdit0: TfraEditView);
+    constructor Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor);
     destructor Destroy; override;
   end;
 resourcestring
@@ -471,16 +471,15 @@ begin
     MsgErr(MSG_SYNFIL_NOF, [synFile]);
   end;
 end;
-procedure TAdapter6502.Init(leftPanel, fraRightPanel0: TfraLateralPanel;
-  imgList16, imglist32: TImageList; actList: TActionList);
+procedure TAdapter6502.Init(leftPanel0, centPanel0,
+  rightPanel0: TfraLateralPanel; imgList16, imglist32: TImageList;
+  actList: TActionList);
 {Inicializa el adaptador. Eso implica preparar la IDE para que soporte a este nuevo
 compilador que se está registrando.
 Solo se debe ejecutar esta rutina una vez al inicio.
 Parámetros:
-  * leftPanel -> Es el panel lateral de la izquierda (donde está el navegador de
-  archivos), donde se crearán las herramientas que ofrece este compilador en esta
-  barra. Lo más común es solo crear el árbol de sintaxis.
-
+  * leftPanel0, centPanel0, rightPanel0 -> Son los paneles de la IDE donde se crearán
+  las herramientas que ofrece este compilador en esta barra.
   * imgList16, imgList32 -> Son las listas de imágenes del formulario principal donde se
   deben registrar los íconos para ser usados por el menú y la barra de herramientas.
   * actList -> Control TActionList del formulario principal a donde se insertarán las
@@ -494,22 +493,22 @@ begin
   Compiler_PIC16.SetLanguage;
   //Agrega los íconos de "adapterForm" a los ImageList
   adapterForm.AddActions(imgList16, imgList32, actList, COMP_NAME);
-  //Guarda referencia a editor lateral.
-  fraRightPanel := fraRightPanel0;
 
-  //Agrega la herramienta de árbol de sintaxis
-  leftPanel.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
-  fraSynTree.OnLocateElemen  := @SynTree_LocateElemen;
-  fraSynTree.OnReqAnalysis  := @SynTree_ReqAnalysis;
-  fraSynTree.OnReqOptimizat  := @SynTree_ReqOptimizat;
-  fraSynTree.OnReqSynthesis  := @SynTree_ReqSynthesis;
-  //Agrega visor para la representación MIR
-  leftPanel.AddPage(fraMir, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
+  //Quita las páginas de herramienta, porque vamos a crear un distribucíon nueva.
+  leftPanel0.DeleteAllPages;
+  centPanel0.DeleteAllPages;
+  //Creamos nuestra distribucíon.
+  leftPanel0.AddPage(fraEditView1, 'editor', 'Editor', '');
+  centPanel0.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
+  centPanel0.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
 
-  fraRightPanel.AddPage(edAsm, 'asm'+COMP_NAME, 'Assembler Output', COMP_NAME);
-  ////Configura editor de ensamblador
-  //edAsm.Parent := fraRightPanel;
-  //edAsm.Align := alClient;
+//  //Agrega la herramienta de árbol de sintaxis
+//  leftPanel0.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
+//  //Agrega visor para la representación MIR
+//  leftPanel0.AddPage(fraMir, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
+
+//Agrega editor de ensamblador
+  rightPanel0.AddPage(edAsm, 'asm'+COMP_NAME, 'Assembler Output', COMP_NAME);
 end;
 procedure TAdapter6502.ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
   _Compiler, CompExt1, CompExt2, CompExt3: TConfigPage);
@@ -600,25 +599,32 @@ end;
 //  fraEditView1.LoadFile(SamFil);
 //end;
 
-constructor TAdapter6502.Create(fraEdit0: TfraEditView);
+constructor TAdapter6502.Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor);
 begin
   inherited Create;
-  fraEditView1 := fraEdit0;
+  //Guarda referencias a las herramientas que ofrece la IDE
+  fraEditView1 := fraEditView;
+  fraFileExplor1 := fraFilExplor;
+  //Crea compilador y configura eventos
   Compiler:= TCompiler_PIC16.Create;
-  //COnfigura eventos
   Compiler.OnRequireFileString:=@Compiler_RequireFileString;
   Compiler.OnError           := @CompilerError;
   Compiler.OnWarning         := @CompilerWarning;
   Compiler.OnInfo            := @CompilerInfo;
   Compiler.OnMessageBox      := @CompilerMessageBox;
   //Configura CodeTool
-  CodeTool  := TCodeTool.Create(fraEdit0);
+  CodeTool  := TCodeTool.Create(fraEditView);
   CodeTool.Init(compiler);  //Asigna compilador
   //Crea frame de estadísticas
   fraStatis  := TfraStatist6502.Create(nil);
   //Crea frame del árbol de sintaxis
   fraSynTree := TfraSynxTree6502.Create(nil);
   fraSynTree.Init(Compiler);    //Conecta al compilador
+  fraSynTree.OnLocateElemen := @SynTree_LocateElemen;
+  fraSynTree.OnReqAnalysis  := @SynTree_ReqAnalysis;
+  fraSynTree.OnReqOptimizat := @SynTree_ReqOptimizat;
+  fraSynTree.OnReqSynthesis := @SynTree_ReqSynthesis;
+
   //Crea frame del MIR
   fraMir     := TfraMIR6502.Create(nil);
   fraMir.Init(Compiler);    //Conecta al compilador

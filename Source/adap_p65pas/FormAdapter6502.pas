@@ -126,6 +126,7 @@ begin
   //Primero copia los íconos de nuestras listas de imágenes a "imgList16, imglist32".
   CopyIconsTo(ImgActions16, ImgActions32, imgList16, imgList32, transImgIndexes);
   actionsAddedCompiler.Clear;
+  actionsAddedCodetool.Clear;
   //Ahora agregamos nuestras acciones a "actList".
   for i:=0 to ActionList.ActionCount-1 do begin
       actSrc := TAction(ActionList.Actions[i]);   //Asumimos que ActionList.Actions[i] es TAction

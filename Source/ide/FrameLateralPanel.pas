@@ -28,8 +28,10 @@ type
     procedure HideHeader;
     procedure ShowHeader;
   public  //Inicialización
-    function AddPage(frm: TCustomControl; tabName, tabCaption, compName: String
+    function AddPage(frm: TCustomControl; pagName, tabCaption, compName: String
       ): TTabSheet;
+    procedure DeletePage(pagName: string);
+    procedure DeleteAllPages;
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -104,7 +106,7 @@ begin
   end;
 end;
 //Inicialización
-function TfraLateralPanel.AddPage(frm: TCustomControl; tabName, tabCaption, compName: String
+function TfraLateralPanel.AddPage(frm: TCustomControl; pagName, tabCaption, compName: String
   ): TTabSheet;
 {Agrega una nueva pestaña en el panel lateral y coloca el control "frm" dentro de la
 página creada.
@@ -114,7 +116,7 @@ var
 begin
   //Crea nueva página
   tab := PageControl1.AddTabSheet;
-  tab.Name := tabName;      //El nombre debe ser único.
+  tab.Name := pagName;      //El nombre debe ser único.
   tab.Caption := tabCaption;
   tab.Hint := compName;     //Lo marca aquí para saber que es de este compilador.
   //Agrega el Frame
@@ -130,6 +132,29 @@ begin
   if OnNewOrDeletePage<>Nil then OnNewOrDeletePage(self);
   exit(tab);
 end;
+procedure TfraLateralPanel.DeletePage(pagName: string);
+{Elimina una página del panel, identificándola por su nombre.}
+var
+  tab: TTabSheet;
+  i: Integer;
+begin
+  for i:=0 to PageControl1.PageCount-1 do begin
+    tab := PageControl1.Pages[i];
+    if tab.Name = pagName then begin
+      tab.Free;
+      Exit;
+    end;
+  end;
+end;
+procedure TfraLateralPanel.DeleteAllPages;
+{Elimina todas las página del panel.}
+begin
+  while PageControl1.PageCount>0 do begin
+    PageControl1.Pages[0].Free;
+  end;
+
+end;
+
 constructor TfraLateralPanel.Create(AOwner: TComponent);
 begin
   inherited Create(AOwner);

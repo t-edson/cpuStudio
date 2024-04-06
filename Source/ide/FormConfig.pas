@@ -248,7 +248,6 @@ begin
   TreeView1.Items.Clear;
   //Configuración de entorno
   pEnviron := AddConfigPage(CPAGE_ENVIRON,nil, 0, tabEnviron , sclEnviron);
-  ItemIni := pEnviron.treeNode;   //ítem inicial
     pEnvThemes := AddConfigPage (CPAGE_ENV_THEMES, pEnviron.treeNode, 0, tabEnvThemes, sclEnvThemes); //Temas
     pEnvFilExp := AddConfigPage (CPAGE_ENV_FILEXP, pEnviron.treeNode, 0, tabEnvFilExp, sclEnvFilExp); //Explorador de archivos
     pEnvMesPan := AddConfigPage (CPAGE_ENV_MESPAN, pEnviron.treeNode, 0, tabEnvMesPan, sclEnvMesPan); //Panel de mensajes
@@ -270,6 +269,7 @@ begin
   pExtTool := AddConfigPage(CPAGE_EXTOOL, nil, 0, tabExtTool, sclExtTool);
 
   //Termina llenado.
+  ItemIni := pEnviron.treeNode;   //ítem inicial
   ItemIni.Selected := true;
   TreeView1Click(self);
   //Lee lista de temas

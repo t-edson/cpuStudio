@@ -1,8 +1,8 @@
 object fraLateralPanel: TfraLateralPanel
   Left = 0
-  Height = 482
+  Height = 529
   Top = 0
-  Width = 284
+  Width = 302
   ClientHeight = 482
   ClientWidth = 284
   DesignTimePPI = 120

@@ -1271,11 +1271,11 @@ msgid "&Messages Panel"
 msgstr ""
 
 #: tfrmprincipal.acviewpanleft.caption
-msgid "&File Explorer"
+msgid "View &Left Panel"
 msgstr ""
 
 #: tfrmprincipal.acviewpanright.caption
-msgid "&Assembler Panel"
+msgid "View &Right Panel"
 msgstr ""
 
 #: tfrmprincipal.acviewstatbar.caption

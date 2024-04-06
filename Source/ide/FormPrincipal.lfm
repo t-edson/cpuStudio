@@ -741,7 +741,7 @@ object frmPrincipal: TfrmPrincipal
     end
     object acViewPanLeft: TAction
       Category = 'View'
-      Caption = '&File Explorer'
+      Caption = 'View &Left Panel'
       OnExecute = acViewPanLeftExecute
       ShortCut = 32881
     end
@@ -777,7 +777,7 @@ object frmPrincipal: TfrmPrincipal
     end
     object acViewPanRight: TAction
       Category = 'View'
-      Caption = '&Assembler Panel'
+      Caption = 'View &Right Panel'
       OnExecute = acViewPanRightExecute
       ShortCut = 115
     end

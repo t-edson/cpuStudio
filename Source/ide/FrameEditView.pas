@@ -733,8 +733,18 @@ begin
   exit(false);
 end;
 procedure TfraEditView.SetFocus;
+var
+  pag: TTabSheet;
+  pagCOntrol: TPageControl;
 begin
 //  inherited SetFocus;
+  if Self.Parent.ClassName = 'TTabSheet' then begin
+    //Está dentro de un TPageControl.
+    pag := TTabSheet(Self.Parent);
+    pagCOntrol := pag.PageControl;
+    //Lo activamos por si acaso
+    pagCOntrol.ActivePage := pag;
+  end;
   if TabIndex = -1 then exit;
   if editors[TabIndex].sedit.Visible then begin
     editors[TabIndex].sedit.SetFocus;
