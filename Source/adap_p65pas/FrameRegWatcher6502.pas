@@ -4,7 +4,8 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Grids, ExtCtrls, StdCtrls,
   Buttons, Graphics, LCLType, Menus, LCLProc, ActnList, P65c02utils, MisUtils,
-  UtilsGrilla, CibGrillas, CompBase, CPUCore, Globales, AstElemP65, Analyzer;
+  UtilsGrilla, CibGrillas, CompBase, CPUCore, Globales, AstElemP65, Analyzer,
+  SIF_P65pas;
 type
 
   { TfraRegWatcher }
@@ -406,7 +407,7 @@ end;
 procedure TfraRegWatcher.SetCompiler(cxp0: TAnalyzer);
 begin
   cxp := cxp0;
-  pic := cxp0.picCore;
+  pic := SIF_P65pas.picCore;
 end;
 constructor TfraRegWatcher.Create(AOwner: TComponent);
 var

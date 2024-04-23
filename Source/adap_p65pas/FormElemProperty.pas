@@ -143,10 +143,8 @@ begin
     dirSolic := IntToStr(xvar.adicPar.absAddr);
     adicInformation :=
            'Variable Type: ' + xvar.typ.name + LineEnding +
-           'Storage: '  + xvar.stoStr + LineEnding +
            'Allocated: '  + ifthen(xvar.allocated, 'true', 'false') + LineEnding +
-           'Required address: ' + dirSolic + LineEnding +
-           'Asigned address: ' + xvar.AddrString;
+           'Required address: ' + dirSolic + LineEnding;
   end else if elem.idClass = eleFuncDec then begin
     fundec := TEleFunDec(elem);
     txtEleType.Caption := 'Function Dec.('+elem.ClassName+')';;

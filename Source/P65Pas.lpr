@@ -15,9 +15,10 @@ uses
   adapter6502, CodeTools6502, FormDebugger6502, FormElemProperty,
   FormRAMExplorer6502, FrameAsm6502, FrameCfgAfterChg6502, FrameCfgAsmOut6502,
   FrameCfgCompiler6502, FrameMIR6502, FrameRamExplorer6502, FrameRegisters6502,
-  FrameRegWatcher6502, FrameStatist6502, FrameSynTree6502, GenCod_PIC16,
-  GenCodBas_PIC16, LexPas, MirList, ParserASM_6502, ParserDirec, Analyzer,
-  AstElemP65, AstTree, CompBase, CompContexts, CompGlobals, Compiler_PIC16;
+  FrameRegWatcher6502, FrameStatist6502, FrameSynTree6502,
+  LexPas, MirList, ParserASM_6502, ParserDirec, Analyzer,
+  AstElemP65, AstTree, CompBase, CompContexts, CompGlobals, Compiler_PIC16,
+  SIF_P65pas;
 
 {$R *.res}
 

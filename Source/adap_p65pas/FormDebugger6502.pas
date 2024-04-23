@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs,
   ComCtrls, ExtCtrls, StdCtrls, Grids, ActnList, Menus, LCLType, CompBase,
   P65c02utils, CPUCore, FrameRamExplorer6502, FrameRegisters6502,
-  FrameRegWatcher6502, FrameAsm6502, MisUtils, Analyzer;
+  FrameRegWatcher6502, FrameAsm6502, MisUtils, Analyzer, SIF_P65pas;
 type
   { TfrmDebugger6502 }
   TfrmDebugger6502 = class(TForm)
@@ -154,7 +154,7 @@ procedure TfrmDebugger6502.Exec(cxp0: TAnalyzer);
 {Inicia el prcceso de depuración, mostrando la ventana.}
 begin
   cxp := cxp0;
-  pic := cxp0.picCore;
+  pic := SIF_P65pas.picCore;
 
   //Muestra Frames
   fraRamExp.SetCompiler(cxp);
@@ -284,7 +284,7 @@ begin
   lstMessages.Clear;
   lstMessages.AddItem('Restarting.', nil);
   //Start at the begin of code
-  pc := cxp.GeneralORG;
+  pc := SIF_P65pas.GeneralORG;
 //  while (pc < high(pic.ram)) and (pic.ram[pc].used <> ruCode) do begin
 //    pc := pc + 1;  //Incrementa
 //  end;

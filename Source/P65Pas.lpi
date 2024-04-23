@@ -76,7 +76,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="45">
+    <Units Count="44">
       <Unit0>
         <Filename Value="P65Pas.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -253,65 +253,61 @@
         <IsPartOfProject Value="True"/>
       </Unit29>
       <Unit30>
-        <Filename Value="comp_p65pas\GenCod_PIC16.pas"/>
+        <Filename Value="comp_p65pas\LexPas.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit30>
       <Unit31>
-        <Filename Value="comp_p65pas\GenCodBas_PIC16.pas"/>
+        <Filename Value="comp_p65pas\MirList.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit31>
       <Unit32>
-        <Filename Value="comp_p65pas\LexPas.pas"/>
+        <Filename Value="comp_p65pas\ParserASM_6502.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit32>
       <Unit33>
-        <Filename Value="comp_p65pas\MirList.pas"/>
+        <Filename Value="comp_p65pas\ParserDirec.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit33>
       <Unit34>
-        <Filename Value="comp_p65pas\ParserASM_6502.pas"/>
+        <Filename Value="comp_p65pas\ParserDirec.inc"/>
         <IsPartOfProject Value="True"/>
       </Unit34>
       <Unit35>
-        <Filename Value="comp_p65pas\ParserDirec.pas"/>
+        <Filename Value="comp_p65pas\Analyzer.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit35>
       <Unit36>
-        <Filename Value="comp_p65pas\ParserDirec.inc"/>
+        <Filename Value="comp_p65pas\AstElemP65.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit36>
       <Unit37>
-        <Filename Value="comp_p65pas\Analyzer.pas"/>
+        <Filename Value="comp_p65pas\AstTree.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit37>
       <Unit38>
-        <Filename Value="comp_p65pas\AstElemP65.pas"/>
+        <Filename Value="comp_p65pas\CompBase.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit38>
       <Unit39>
-        <Filename Value="comp_p65pas\AstTree.pas"/>
+        <Filename Value="comp_p65pas\CompContexts.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit39>
       <Unit40>
-        <Filename Value="comp_p65pas\CompBase.pas"/>
+        <Filename Value="comp_p65pas\CompGlobals.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit40>
       <Unit41>
-        <Filename Value="comp_p65pas\CompContexts.pas"/>
+        <Filename Value="comp_p65pas\Compiler_PIC16.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit41>
       <Unit42>
-        <Filename Value="comp_p65pas\CompGlobals.pas"/>
+        <Filename Value="adap_editor\adapterEditor.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit42>
       <Unit43>
-        <Filename Value="comp_p65pas\Compiler_PIC16.pas"/>
+        <Filename Value="..\..\comp_p65pas\src\SIF_P65pas.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit43>
-      <Unit44>
-        <Filename Value="adap_editor\adapterEditor.pas"/>
-        <IsPartOfProject Value="True"/>
-      </Unit44>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

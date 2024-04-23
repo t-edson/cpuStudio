@@ -3,7 +3,7 @@ unit FrameRegisters6502;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, StdCtrls, LCLProc,
-  LCLIntf, LCLType, Grids, ExtCtrls, CompBase, Analyzer,
+  LCLIntf, LCLType, Grids, ExtCtrls, CompBase, Analyzer, SIF_P65pas,
   CPUCore, P65c02utils;
 type
 
@@ -60,7 +60,7 @@ var
   pic : TCPUCore;
 begin
   cxp := cxp0;
-  pic := cxp0.picCore;
+  pic := SIF_P65pas.picCore;
   //Configura registros de acuerdo al tipo de arquitectura del compilador
   WREGptr := nil;
   STATptr := nil;

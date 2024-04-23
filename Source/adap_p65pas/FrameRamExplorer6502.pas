@@ -3,7 +3,8 @@ unit FrameRamExplorer6502;
 interface
 uses
   Classes, SysUtils, Math, FileUtil, Forms, Controls, Graphics, StdCtrls,
-  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, CompBase, Analyzer;
+  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, CompBase, Analyzer,
+  SIF_P65pas;
 type
   //Define a un bloque de RAM, que servirá para dibujo
   {Los bloques de RAM se usan para separar la memoria en bloques de acuerdo a
@@ -332,7 +333,7 @@ begin
 end;
 procedure TfraRamExplorer6502.SetCompiler(cxp0: TAnalyzer);
 begin
-  pic := cxp0.picCore;
+  pic := SIF_P65pas.picCore;
   cxp := cxp0;
 end;
 constructor TfraRamExplorer6502.Create(AOwner: TComponent);

@@ -3,7 +3,7 @@ unit FrameAsm6502;
 interface
 uses
   Classes, SysUtils, Types, FileUtil, Forms, Controls, StdCtrls, Grids, Graphics,
-  ExtCtrls, Buttons, Menus, LCLType, Analyzer, CPUCore, MisUtils;
+  ExtCtrls, Buttons, Menus, LCLType, Analyzer, SIF_P65pas, CPUCore, MisUtils;
 type
 
   { TfraPicAsm }
@@ -402,7 +402,7 @@ var
   nBytes: byte;
   opCode: String;
 begin
-  pic := cxp0.picCore;
+  pic := SIF_P65pas.picCore;
   StringGrid1.DefaultDrawing:=false;
   StringGrid1.OnDrawCell := @StringGrid1DrawCell;
   //Dimensiona la grilla para que pueda mostrar las etIquetas
