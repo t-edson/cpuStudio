@@ -155,11 +155,6 @@ begin
       nod.ImageIndex := 17;
       nod.SelectedIndex := 17;
     end;
-  end else if elem.idClass = eleCondit then begin
-    //sen := TEleSentence(elem);
-    nod.Text :=   'condit';
-    nod.ImageIndex := 21;
-    nod.SelectedIndex := 21;
   end else begin
     nod.ImageIndex := 0;
     nod.SelectedIndex := 0;

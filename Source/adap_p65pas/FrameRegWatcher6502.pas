@@ -171,14 +171,14 @@ var
   newValue{, addrStr, bitStr}: String;
   addr: Longint;
   //bit, valByte: byte;
-  v: TEleVarDec;
+  v: TAstVarDec;
 begin
   //Lee dirección
   //addrStr := grilla.Cells[col_adr,f];
   //bitStr := grilla.Cells[col_bit,f];
 
   addr := StrToIntDef(grilla.Cells[col_adr,f], -1);
-  v := TEleVarDec(grilla.Objects[0, f]);
+  v := TAstVarDec(grilla.Objects[0, f]);
   if addr = -1 then newValue := ''
   else if (v <> nil) and v.typ.IsWordSize then
     newValue := '$'+IntToHex(pic.ram[addr].value + 256*pic.ram[addr+1].value, 4)
@@ -318,7 +318,7 @@ procedure TfraRegWatcher.acAddVarsExecute(Sender: TObject);
 const
   cRegName: array[stRegistA .. stRegistY] of char = ('A', 'X', 'Y');
 var
-  v: TEleVarDec;
+  v: TAstVarDec;
   i, maxBytes: Integer;
 
   procedure AddRow;

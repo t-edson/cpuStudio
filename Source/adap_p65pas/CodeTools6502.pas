@@ -236,7 +236,7 @@ procedure TCodeTool.FieldsComplet(ident: string; opEve: TFaOpenEvent;
 editor.}
 var
   ele: TAstElement;
-  xVar: TEleVarDec;
+  xVar: TAstVarDec;
 begin
   opEve.ClearItems;  //limpia primero
   //Asegurarse que "synTree" está actualizado.
@@ -254,7 +254,7 @@ begin
   end;
   if ele.idClass = eleVarDec then begin
     //Es una variable, vemos el tipo
-    xVar := TEleVarDec(ele);
+    xVar := TAstVarDec(ele);
     if xVar.typ = cxp.typByte then begin
       opEve.AddItem('bit0', 11);
       opEve.AddItem('bit1', 11);

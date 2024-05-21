@@ -102,15 +102,15 @@ end;
 procedure TfrmElemProperty.Exec(cIn: TContexts; elem0: TAstElement);
 var
   adicInformation, dirSolic, tmp, hasImplem: String;
-  xcon: TEleConsDec;
+  xcon: TAstConsDec;
   funimp: TEleFunImp;
   fundec: TEleFunDec;
   xbod: TEleBody;
-  xvar: TEleVarDec;
+  xvar: TAstVarDec;
   //ecall : TxpExitCall;
   xexp: TEleExpress;
   sen: TEleSentence;
-  xtyp: TEleTypeDec;
+  xtyp: TAstTypeDec;
   asmInst: TEleAsmInstr;
   asmBlock: TEleAsmBlock;
 begin
@@ -127,7 +127,7 @@ begin
   SetCalledInfo(elem);
   //Ícono e información adicional
   if          elem.idClass = eleConsDec then begin
-    xcon := TEleConsDec(elem);
+    xcon := TAstConsDec(elem);
     txtEleType.Caption := 'Constant ('+elem.ClassName+')';
     ImageList1.GetBitmap(23, Image1.Picture.Bitmap);
     adicInformation :=
@@ -137,7 +137,7 @@ begin
       adicInformation += LineEnding + 'Value: ' + xcon.value^.valuesAsString;
     end;
   end else if elem.idClass = eleVarDec then begin
-    xvar := TEleVarDec(elem);
+    xvar := TAstVarDec(elem);
     txtEleType.Caption := 'Variable ('+elem.ClassName+')';
     ImageList1.GetBitmap(24, Image1.Picture.Bitmap);
     dirSolic := IntToStr(xvar.adicPar.absAddr);
@@ -238,7 +238,7 @@ begin
     end;
     end;
   end else if elem.idClass = eleTypeDec then begin
-    xtyp := TEleTypeDec(elem);
+    xtyp := TAstTypeDec(elem);
     txtEleType.Caption := 'Type ('+elem.ClassName+')';
     ImageList1.GetBitmap(14, Image1.Picture.Bitmap);
     adicInformation :=
@@ -246,11 +246,6 @@ begin
            'Cat. Type: '  + xtyp.catTypeStr + LineEnding +
            'Size: ' + IntToStr(xtyp.size) + LineEnding +
            '' ;
-  end else if elem.idClass = eleCondit then begin
-    sen := TEleSentence(elem);
-    txtEleType.Caption := 'Condition ('+elem.ClassName+')';
-    ImageList1.GetBitmap(21, Image1.Picture.Bitmap);
-    adicInformation := '';
   end else if elem.idClass = eleBlock then begin
     //sen := TEleSentence(elem);
     txtEleType.Caption := 'Block ('+elem.ClassName+')';
