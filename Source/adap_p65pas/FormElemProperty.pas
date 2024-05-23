@@ -103,16 +103,16 @@ procedure TfrmElemProperty.Exec(cIn: TContexts; elem0: TAstElement);
 var
   adicInformation, dirSolic, tmp, hasImplem: String;
   xcon: TAstConsDec;
-  funimp: TEleFunImp;
-  fundec: TEleFunDec;
-  xbod: TEleBody;
+  funimp: TAstFunImp;
+  fundec: TAstFunDec;
+  xbod: TAstBody;
   xvar: TAstVarDec;
   //ecall : TxpExitCall;
-  xexp: TEleExpress;
-  sen: TEleSentence;
+  xexp: TAstExpress;
+  sen: TAstSentence;
   xtyp: TAstTypeDec;
-  asmInst: TEleAsmInstr;
-  asmBlock: TEleAsmBlock;
+  asmInst: TAstAsmInstr;
+  asmBlock: TAstAsmBlock;
 begin
   if elem0 = nil then exit;
   elem := elem0;
@@ -146,7 +146,7 @@ begin
            'Allocated: '  + ifthen(xvar.allocated, 'true', 'false') + LineEnding +
            'Required address: ' + dirSolic + LineEnding;
   end else if elem.idClass = eleFuncDec then begin
-    fundec := TEleFunDec(elem);
+    fundec := TAstFunDec(elem);
     txtEleType.Caption := 'Function Dec.('+elem.ClassName+')';;
 
     ImageList1.GetBitmap(16, Image1.Picture.Bitmap);
@@ -171,7 +171,7 @@ begin
            'Nº params: ' + IntToStr(length(fundec.pars)) + LineEnding +
            tmp;
   end else if elem.idClass = eleFuncImp then begin
-    funimp := TEleFunImp(elem);
+    funimp := TAstFunImp(elem);
     txtEleType.Caption := 'Function ('+elem.ClassName+')';;
 
     ImageList1.GetBitmap(3, Image1.Picture.Bitmap);
@@ -198,7 +198,7 @@ begin
     ImageList1.GetBitmap(6, Image1.Picture.Bitmap);
     adicInformation := '';
   end else if elem.idClass = eleBody then begin
-    xbod:= TEleBody(elem);
+    xbod:= TAstBody(elem);
     txtEleType.Caption := 'Body ('+elem.ClassName+')';
     ImageList1.GetBitmap(5, Image1.Picture.Bitmap);
     adicInformation := 'Address: $' + IntToHex(xbod.adrr, 3) + LineEnding +
@@ -209,12 +209,12 @@ begin
     ImageList1.GetBitmap(1, Image1.Picture.Bitmap);
     adicInformation := '';
   end else if elem.idClass = eleSenten then begin
-    sen := TEleSentence(elem);
+    sen := TAstSentence(elem);
     txtEleType.Caption := 'Sentence ('+elem.ClassName+')';
     ImageList1.GetBitmap(12, Image1.Picture.Bitmap);
     adicInformation := 'Sentence type: ' + sen.sntTypeAsStr;
   end else if elem.idClass = eleExpress then begin
-    xexp := TEleExpress(elem);
+    xexp := TAstExpress(elem);
     txtEleType.Caption := 'Expression ('+elem.ClassName+')';
     ImageList1.GetBitmap(3, Image1.Picture.Bitmap);
     adicInformation :=
@@ -247,18 +247,18 @@ begin
            'Size: ' + IntToStr(xtyp.size) + LineEnding +
            '' ;
   end else if elem.idClass = eleBlock then begin
-    //sen := TEleSentence(elem);
+    //sen := TAstSentence(elem);
     txtEleType.Caption := 'Block ('+elem.ClassName+')';
     ImageList1.GetBitmap(0, Image1.Picture.Bitmap);
     adicInformation := '';
   end else if elem.idClass = eleAsmBlock then begin
-    asmBlock := TEleAsmBlock(elem);
+    asmBlock := TAstAsmBlock(elem);
     txtEleType.Caption := 'ASM Block ('+elem.ClassName+')';
     ImageList1.GetBitmap(0, Image1.Picture.Bitmap);
     adicInformation := 'Instructions: ' + IntToStr(asmBlock.elements.Count) + LineEnding +
                     'Incomplete instructions: ' + IntToStr(asmBlock.undefInstrucs.Count);
   end else if elem.idClass = eleAsmInstr then begin
-    asmInst := TEleAsmInstr(elem);
+    asmInst := TAstAsmInstr(elem);
     txtEleType.Caption := 'ASM instruction ('+elem.ClassName+')';
     ImageList1.GetBitmap(19, Image1.Picture.Bitmap);
     if asmInst.iType = itOpcode then begin

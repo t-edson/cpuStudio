@@ -93,9 +93,9 @@ function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TAstElement): TT
 {Agrega un elemento a un noco.}
 var
   nod: TTreeNode;
-  eleExp: TEleExpress;
-  sen: TEleSentence;
-  asmInst: TEleAsmInstr;
+  eleExp: TAstExpress;
+  sen: TAstSentence;
+  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
     nod := TreeView1.Items.AddChild(nodParent, '???');
@@ -126,13 +126,13 @@ begin
     nod.ImageIndex := 5;
     nod.SelectedIndex := 5;
   end else if elem.idClass = eleSenten then begin
-    sen := TEleSentence(elem);
+    sen := TAstSentence(elem);
     nod.Text :=   '<sentnc: ' + sen.sntTypeAsStr + '>';
     //nod.Text := '<sentence>';
     nod.ImageIndex := 12;
     nod.SelectedIndex := 12;
   end else if elem.idClass = eleAsmInstr then begin
-    asmInst := TEleAsmInstr(elem);
+    asmInst := TAstAsmInstr(elem);
     if asmInst.iType = itLabel then begin  //Etiquetas
       nod.ImageIndex := 22;
       nod.SelectedIndex := 22;
@@ -141,7 +141,7 @@ begin
       nod.SelectedIndex := 19;
     end;
   end else if elem.idClass = eleExpress then begin
-    eleExp := TEleExpress(elem);
+    eleExp := TAstExpress(elem);
     if eleExp.opType = otFunct then begin
       nod.ImageIndex := 3;
       nod.SelectedIndex := 3;

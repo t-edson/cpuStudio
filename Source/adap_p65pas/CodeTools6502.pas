@@ -118,7 +118,7 @@ begin
       if ele <> nil then begin
         //Es el punto donde se declara
         if ele.idClass = eleUnit then begin
-          fraEdit.SelectOrLoad(TEleUnit(ele).srcFile);
+          fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
   //        MsgBox(ele.name);
         end else begin
           //Es otra declaración
@@ -183,11 +183,11 @@ end;
 //Completado de código
 procedure TCodeTool.cxpTreeElemsFindElement(elem: TAstElement);
 var
-  xfun: TEleFunImp;
+  xfun: TAstFunImp;
 begin
   if elem.idClass = eleFuncImp then begin
     //Es función
-    xfun := TEleFunImp(elem);
+    xfun := TAstFunImp(elem);
     if high(xfun.pars) = -1 then begin
       //Sin parámetros
       opEve0.AddItem(elem.name+'', 5);
