@@ -49,8 +49,9 @@ type
     procedure LoadAsmSyntaxEd;
   private     //Herramientas adicionales
     fraStatis     : TfraStatist6502;  //Frame de estadísticas
-    fraSynTree    : TfraSynxTree6502; //Frame de árbol de sintaxis
-    fraMir        : TfraMIR6502;      //Frame del MIR
+    fraAstMir     : TFrame;
+    fraASTview    : TfraSynxTree6502; //Frame de árbol de sintaxis
+    fraMIRview    : TfraMIR6502;      //Frame del MIR
     adapterForm   : TfrmAdapter6502;   //Formulario principal
     frmDebug      : TfrmDebugger6502;
     frmRAMExplorer: TfrmRAMExplorer6502;
@@ -282,8 +283,8 @@ var
   usedRAM, usedROM, usedSTK, zoom: single;
 begin
   //Actualiza el árbol de sintaxis
-  fraSynTree.Refresh;
-  fraMir.Refresh;
+  fraASTview.Refresh;
+  fraMIRview.Refresh;
   //Actualiza frame de estadísticas de uso
   if nErrors=0 then begin
     //No hay error
@@ -415,8 +416,8 @@ de las propiedades que usa este adaptador.}
 begin
   //Actualizamos la apariencia del árbol de sintaxis, usando colores de la configuración
   //global, en vez de manejar nuestro propio Frame de configuración.
-  fraSynTree.SetBackColor(MessPanBack);
-  fraSynTree.SetTextColor(MessPanText);
+  fraASTview.SetBackColor(MessPanBack);
+  fraASTview.SetTextColor(MessPanText);
   //Configuramos nuestro editor ASM usando la misma configuración que el editor principal.
   {Otra opción sería crear nuestro propio Frame de configuración, pero mejor usamos el
   de la IDE y aprovechamos sus facilidades de manejo de temas.}
@@ -439,22 +440,22 @@ procedure TAdapter6502.SynTree_ReqAnalysis;
 {Se pide realizar Análisis.}
 begin
   CompileLevel(1);
-  fraSynTree.Refresh;
-  fraMir.Refresh;
+  fraASTview.Refresh;
+  fraMIRview.Refresh;
 end;
 procedure TAdapter6502.SynTree_ReqOptimizat;
 {Se pide realizar Análisis y Optimización.}
 begin
   CompileLevel(2);
-  fraSynTree.Refresh;
-  fraMir.Refresh;
+  fraASTview.Refresh;
+  fraMIRview.Refresh;
 end;
 procedure TAdapter6502.SynTree_ReqSynthesis;
 {Se pide realizar Análisis, Optimización y Síntesis.}
 begin
   CompileLevel(3);
-  fraSynTree.Refresh;
-  fraMir.Refresh;
+  fraASTview.Refresh;
+  fraMIRview.Refresh;
 end;
 
 //Inicialización
@@ -500,14 +501,18 @@ begin
   //Creamos nuestra distribucíon.
   leftPanel0.AddPage(fraEditView1, 'editor', 'Editor', '');
   centPanel0.AddPage(fraFileExplor1, 'file_exp','File Explorer', '');
-  centPanel0.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
 
-//  //Agrega la herramienta de árbol de sintaxis
-//  leftPanel0.AddPage(fraSynTree, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
-//  //Agrega visor para la representación MIR
-//  leftPanel0.AddPage(fraMir, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
+  //Junta el AST y el MIR en "fraAstMir" y lo agrega junto
+  fraASTview.Parent := fraAstMir;
+  fraASTview.Align := alLeft;
+  fraMIRview.Parent := fraAstMir;
+  fraMIRview.Align := alClient;
+  centPanel0.AddPage(fraAstMir, 'ast_mir', 'AST and MIR', COMP_NAME);
 
-//Agrega editor de ensamblador
+  //centPanel0.AddPage(fraASTview, 'ast_'+ COMP_NAME, 'Syntax Tree', COMP_NAME);
+  //centPanel0.AddPage(fraMIRview, 'mir_'+ COMP_NAME, 'MIR', COMP_NAME);
+
+  //Agrega editor de ensamblador
   rightPanel0.AddPage(edAsm, 'asm'+COMP_NAME, 'Assembler Output', COMP_NAME);
 end;
 procedure TAdapter6502.ConfigCreate(frmConfig: TComponent; EnvExt1, EdiExt1,
@@ -617,17 +622,21 @@ begin
   CodeTool.Init(compiler);  //Asigna compilador
   //Crea frame de estadísticas
   fraStatis  := TfraStatist6502.Create(nil);
+
+  //Crea panel para juntar el AST con el MIR
+  fraAstMir := TFrame.Create(nil);
+
   //Crea frame del árbol de sintaxis
-  fraSynTree := TfraSynxTree6502.Create(nil);
-  fraSynTree.Init(Compiler);    //Conecta al compilador
-  fraSynTree.OnLocateElemen := @SynTree_LocateElemen;
-  fraSynTree.OnReqAnalysis  := @SynTree_ReqAnalysis;
-  fraSynTree.OnReqOptimizat := @SynTree_ReqOptimizat;
-  fraSynTree.OnReqSynthesis := @SynTree_ReqSynthesis;
+  fraASTview := TfraSynxTree6502.Create(nil);
+  fraASTview.Init(Compiler);    //Conecta al compilador
+  fraASTview.OnLocateElemen := @SynTree_LocateElemen;
+  fraASTview.OnReqAnalysis  := @SynTree_ReqAnalysis;
+  fraASTview.OnReqOptimizat := @SynTree_ReqOptimizat;
+  fraASTview.OnReqSynthesis := @SynTree_ReqSynthesis;
 
   //Crea frame del MIR
-  fraMir     := TfraMIR6502.Create(nil);
-  fraMir.Init(Compiler);    //Conecta al compilador
+  fraMIRview     := TfraMIR6502.Create(nil);
+  fraMIRview.Init(Compiler);    //Conecta al compilador
 
   //Crea formulario principal
   adapterForm:= TfrmAdapter6502.Create(nil);
@@ -651,8 +660,9 @@ begin
   frmRAMExplorer.Destroy;
   frmDebug.Destroy;
   adapterForm.Destroy;
-  fraMir.Destroy;
-  fraSynTree.Destroy;
+  fraMIRview.Destroy;
+  fraASTview.Destroy;
+  fraAstMir.Destroy;
   fraStatis.Destroy;
   CodeTool.Destroy;
   Compiler.Destroy;
