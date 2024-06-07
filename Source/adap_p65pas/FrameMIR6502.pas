@@ -39,7 +39,8 @@ type
     FTextColor: TColor;
     cpx       : TCompilerBase;   //Reference to lexer
     mirCont: TMirList;
-    function AddNodeTo(nodParent: TTreeNode; elem: TMirElement): TTreeNode;
+    function AddNodeTo(nodParent: TTreeNode; elem: TMirElement; nodLabel: String =
+      ''): TTreeNode;
     procedure RefreshByDeclar(nodMain: TTreeNode; elems: TMirElements);
     procedure SetBackColor(AValue: TColor);
     procedure SetTextColor(AValue: TColor);
@@ -60,19 +61,23 @@ implementation
 {$R *.lfm}
 
 { TfraMIR6502 }
-function TfraMIR6502.AddNodeTo(nodParent: TTreeNode; elem: TMirElement): TTreeNode;
+function TfraMIR6502.AddNodeTo(nodParent: TTreeNode; elem: TMirElement;
+         nodLabel: String = ''): TTreeNode;
 {Agrega un elemento a un nodo.}
 var
   nod: TTreeNode;
 begin
   if elem = nil then begin
-    //Agrega un elemento con nombre "???" y sin ícono.
-    nod := TreeView1.Items.AddChild(nodParent, '???');
+    //Agrega un elemento con nombre "nodLabel" y con el ícono por defecto.
+    nod := TreeView1.Items.AddChild(nodParent, nodLabel);
+    nod.ImageIndex := 0;
+    nod.SelectedIndex := 0;
     nod.Data := elem;
     Result := nod;
     exit;
   end;
-  nod := TreeView1.Items.AddChild(nodParent, elem.text);
+  if nodLabel='' then nodLabel := elem.text;
+  nod := TreeView1.Items.AddChild(nodParent, nodLabel);
   if elem.mirType = mtyVarDec then begin
     //    nod.Text :=   '<Assign>';
     nod.ImageIndex := 2;
@@ -129,8 +134,10 @@ var
   elem: TMirElement;
   nodElem: TTreeNode;
   mirFunct: TMirFunDec;
+  nodFunDec: TTreeNode;
+  nodFunIns: TTreeNode;
   mirDecs: TMirDeclars;
-  mirCode: TMirCode;
+  mirCode: TMirContainer;
 begin
   //Agrega elementos
   if elems = nil then exit;
@@ -138,14 +145,18 @@ begin
       nodElem := AddNodeTo(nodMain, elem);
       if elem.mirType = mtyFunDec then begin  //Tiene nodos hijos
          mirFunct:= TMirFunDec(elem);
-         RefreshByDeclar(nodElem, mirFunct.items);  //Llamada recursiva
+         //Functions have declaration and instructions
+         nodFunDec := AddNodeTo(nodElem, nil, 'Declarations');
+         nodFunIns := AddNodeTo(nodElem, nil, 'Instructions');
+         RefreshByDeclar(nodFunDec, mirFunct.declars.items);  //Llamada recursiva
+         RefreshByDeclar(nodFunIns, mirFunct.instrucs.items);  //Llamada recursiva
       //   nodElem.Expanded := true;
       end else if elem.mirType = mtyDeclars then begin  //Tiene nodos hijos
          mirDecs:= TMirDeclars(elem);
          RefreshByDeclar(nodElem, mirDecs.items);  //Llamada recursiva
          nodElem.Expanded := true;
       end else if elem.mirType = mtyCode then begin  //Tiene nodos hijos
-         mirCode:= TMirCode(elem);
+         mirCode:= TMirContainer(elem);
          RefreshByDeclar(nodElem, mirCode.items);  //Llamada recursiva
          nodElem.Expanded := true;
       end;
@@ -156,7 +167,7 @@ end;
 procedure TfraMIR6502.Refresh;
 {Actualiza el árbol de sintaxis con el AST del compilador}
 var
-  nodMain: TTreeNode;
+  nodMain, nodFunDec, nodFunIns: TTreeNode;
 begin
   TreeView1.Visible := true;
 
@@ -166,7 +177,12 @@ begin
   //nodMain.ImageIndex := 1;
   //nodMain.SelectedIndex := 1;
   ////nodMain.Data := syntaxTree.main;  //Elemento raiz
-  RefreshByDeclar(nil, mirCont.root.items);
+  nodFunDec := AddNodeTo(nil, nil, 'Declarations');
+  nodFunIns := AddNodeTo(nil, nil, 'Instructions');
+  RefreshByDeclar(nodFunDec, mirCont.root.declars.items);
+  RefreshByDeclar(nodFunIns, mirCont.root.instrucs.items);
+  nodFunDec.Expand(false);
+  nodFunIns.Expand(false);
   //nodMain.Expanded := true;    //Expande nodo raiz
   TreeView1.Items.EndUpdate;
 end;
