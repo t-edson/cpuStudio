@@ -140,7 +140,7 @@ begin
     xvar := TAstVarDec(elem);
     txtEleType.Caption := 'Variable ('+elem.ClassName+')';
     ImageList1.GetBitmap(24, Image1.Picture.Bitmap);
-    dirSolic := IntToStr(xvar.adicPar.absAddr);
+    dirSolic := '0'; //IntToStr(xvar.adicPar.absAddr);
     adicInformation :=
            'Variable Type: ' + xvar.typ.name + LineEnding +
            'Allocated: '  + ifthen(xvar.allocated, 'true', 'false') + LineEnding +
@@ -229,8 +229,7 @@ begin
     end;
     otVariab: begin
       adicInformation +=
-            'Allocated: '  + ifthen(xexp.allocated, 'true', 'false') + LineEnding +
-            'Address: ' + xexp.add.ToString;
+            'Type: ' + xexp.opTypeAsStr;
     end;
     otFunct: begin
       adicInformation +=

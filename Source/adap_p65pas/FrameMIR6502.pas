@@ -146,9 +146,10 @@ begin
       if elem.mirType = mtyFunDec then begin  //Tiene nodos hijos
          mirFunct:= TMirFunDec(elem);
          //Functions have declaration and instructions
-         nodFunDec := AddNodeTo(nodElem, nil, 'Declarations');
+//         nodFunDec := AddNodeTo(nodElem, nil, 'Declarations');
+//         RefreshByDeclar(nodFunDec, mirFunct.declars.items);  //Llamada recursiva
+         RefreshByDeclar(nodElem, mirFunct.declars.items);  //Por simplicidad mostramos las declaraciones denro de la función.
          nodFunIns := AddNodeTo(nodElem, nil, 'Instructions');
-         RefreshByDeclar(nodFunDec, mirFunct.declars.items);  //Llamada recursiva
          RefreshByDeclar(nodFunIns, mirFunct.instrucs.items);  //Llamada recursiva
       //   nodElem.Expanded := true;
       end else if elem.mirType = mtyDeclars then begin  //Tiene nodos hijos
@@ -177,11 +178,12 @@ begin
   //nodMain.ImageIndex := 1;
   //nodMain.SelectedIndex := 1;
   ////nodMain.Data := syntaxTree.main;  //Elemento raiz
-  nodFunDec := AddNodeTo(nil, nil, 'Declarations');
+//  nodFunDec := AddNodeTo(nil, nil, 'Declarations');
+//  RefreshByDeclar(nodFunDec, mirCont.root.declars.items);
+  RefreshByDeclar(nil, mirCont.root.declars.items);  //Por simplicidad mostramos las declaraciones denro de la función.
   nodFunIns := AddNodeTo(nil, nil, 'Instructions');
-  RefreshByDeclar(nodFunDec, mirCont.root.declars.items);
   RefreshByDeclar(nodFunIns, mirCont.root.instrucs.items);
-  nodFunDec.Expand(false);
+//  nodFunDec.Expand(false);
   nodFunIns.Expand(false);
   //nodMain.Expanded := true;    //Expande nodo raiz
   TreeView1.Items.EndUpdate;
