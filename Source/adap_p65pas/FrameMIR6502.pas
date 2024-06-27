@@ -97,6 +97,9 @@ begin
   end else if elem.mirType = mtyLabel then begin
     nod.ImageIndex := 9;
     nod.SelectedIndex := 9;
+  end else if elem.mirType = mtyTypDec then begin
+    nod.ImageIndex := 15;
+    nod.SelectedIndex := 15;
   end else begin
     nod.ImageIndex := 0;
     nod.SelectedIndex := 0;

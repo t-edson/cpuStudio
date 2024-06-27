@@ -195,6 +195,8 @@
         <Filename Value="adap_p65pas\FrameMIR6502.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="fraMIR6502"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Frame"/>
       </Unit19>
       <Unit20>
         <Filename Value="adap_p65pas\FrameRamExplorer6502.pas"/>

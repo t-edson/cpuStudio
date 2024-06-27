@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, FileUtil, Forms, Controls, Grids, ExtCtrls, StdCtrls,
   Buttons, Graphics, LCLType, Menus, LCLProc, ActnList, P65c02utils, MisUtils,
   UtilsGrilla, CibGrillas, CompBase, CPUCore, Globales, AstElemP65, Analyzer,
-  SIF_P65pas;
+  SIF_P65pas, CompGlobals;
 type
 
   { TfraRegWatcher }
