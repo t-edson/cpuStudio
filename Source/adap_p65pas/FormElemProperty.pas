@@ -216,8 +216,8 @@ begin
     ImageList1.GetBitmap(3, Image1.Picture.Bitmap);
     adicInformation :=
            'Expression type: ' + xexp.opTypeAsStr +
-           ' --> ' + xexp.Typ.name + LineEnding +
-           'Storage: ' + xexp.StoAsStr + LineEnding;
+           ' --> ' + xexp.Typ.name + LineEnding {+
+           'Storage: ' + xexp.StoAsStr + LineEnding};
     case xexp.opType of
     otConst: begin
       adicInformation +=
