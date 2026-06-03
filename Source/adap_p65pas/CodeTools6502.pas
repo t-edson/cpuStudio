@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LCLType, LCLProc, SynEdit, SynEditHighlighter, LazUTF8,
   MisUtils, SynFacilCompletion, SynFacilHighlighter, SynFacilBasic,
-  FrameEditView, Globales, AstElemP65, LexPas, Compiler_PIC16,
+  FrameEditView, Globales, AstElemP65, alexiaLex, Compiler_PIC16,
   EditView, FrameCfgCompiler6502;
 type
   { TCodeTool }
