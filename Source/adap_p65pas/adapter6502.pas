@@ -7,7 +7,7 @@ unit adapter6502;
 interface
 uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
-  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, alexiaLex, CompContexts,
+  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, alexiaLex,
   FrameEditView, Globales, FrameCfgSynEdit, MisUtils, SynFacilHighlighter,
   EditView, FrameLateralPanel, FrameFileExplor, MiConfigXML, FrameStatist6502,
   FrameSynTree6502, FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502,

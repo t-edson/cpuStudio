@@ -4,7 +4,7 @@ unit FormElemProperty;
 interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons,
-  StdCtrls, ExtCtrls, MisUtils, AstElemP65, CompContexts, StrUtils;
+  StdCtrls, ExtCtrls, MisUtils, AstElemP65, alexiaLex, StrUtils;
 type
 
   { TfrmElemProperty }
