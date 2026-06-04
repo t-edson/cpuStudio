@@ -7,7 +7,7 @@ unit adapter6502;
 interface
 uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
-  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, alexiaLex,
+  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, alexiaLex, CompContexts,
   FrameEditView, Globales, FrameCfgSynEdit, MisUtils, SynFacilHighlighter,
   EditView, FrameLateralPanel, FrameFileExplor, MiConfigXML, FrameStatist6502,
   FrameSynTree6502, FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502,
@@ -59,9 +59,8 @@ type
     Compiling   : Boolean;  //Bandera. Indica que se ha pedido ejceutar una compilación.
     procedure Compiler_RequireFileString(FilePath: string;
       var strList: TStrings);
-    procedure CompilerError(errTxt: string; const srcPos: TSrcPos);
-    procedure CompilerInfo(infTxt: string; const srcPos: TSrcPos);
-    procedure CompilerWarning(warTxt: string; const srcPos: TSrcPos);
+    procedure CompilerMsg(msgKind: TMessageKind;
+                             const Msg: string; const srcPos: TSrcPos);
     procedure SynTree_LocateElemen(fileSrc: string; row, col: integer);
     procedure UpdateTools;
   public      //Acciones adicionales de "adapterForm"
@@ -132,27 +131,24 @@ begin
     strList := ed.sedit.Lines;
   end;
 end;
-procedure TAdapter6502.CompilerError(errTxt: string; const srcPos: TSrcPos);
-var
-  fName: String;
-begin
-  inc(nErrors);  //Lleva la cuenta
-  fName := compiler.ctxFile(srcPos);
-  if OnError<>nil then OnError(errTxt, fname, srcPos.row, srcPos.col);
-end;
-procedure TAdapter6502.CompilerWarning(warTxt: string; const srcPos: TSrcPos);
+procedure TAdapter6502.CompilerMsg(msgKind: TMessageKind;
+                         const msg: string; const srcPos: TSrcPos);
+{Procesa los mensajaes que genera el compilador}
 var
   fName: String;
 begin
   fName := compiler.ctxFile(srcPos);
-  if OnWarning<>nil then OnWarning(warTxt, fname, srcPos.row, srcPos.col);
-end;
-procedure TAdapter6502.CompilerInfo(infTxt: string; const srcPos: TSrcPos);
-var
-  fName: String;
-begin
-  fName := compiler.ctxFile(srcPos);
-  if OnInfo<>nil then OnInfo(infTxt, fname, srcPos.row, srcPos.col);
+  case msgKind of
+    mkInfo:
+      if OnInfo<>nil then OnInfo(msg, fname, srcPos.row, srcPos.col);
+    mkWarning:
+      if OnWarning<>nil then OnWarning(msg, fname, srcPos.row, srcPos.col);
+    mkError:begin
+        inc(nErrors);  //Lleva la cuenta
+        if OnError<>nil then OnError(msg, fname, srcPos.row, srcPos.col);
+    end;
+  else ;
+  end;
 end;
 //Acciones adicionales de "adapterForm"
 procedure TAdapter6502.CompileAndExec(Sender: TObject);
@@ -613,9 +609,7 @@ begin
   //Crea compilador y configura eventos
   Compiler:= TCompiler_PIC16.Create;
   Compiler.OnRequireFileString:=@Compiler_RequireFileString;
-  Compiler.OnError           := @CompilerError;
-  Compiler.OnWarning         := @CompilerWarning;
-  Compiler.OnInfo            := @CompilerInfo;
+  Compiler.OnMessage         := @CompilerMsg;
   Compiler.OnMessageBox      := @CompilerMessageBox;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);

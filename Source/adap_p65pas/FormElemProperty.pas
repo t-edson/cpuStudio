@@ -37,7 +37,7 @@ type
   public
     OnExplore: procedure(elem0: TAstElement) of object;
     procedure Clear;
-    procedure Exec(cIn: TContexts; elem0: TAstElement);
+    procedure Exec(cIn: TAleLexer; elem0: TAstElement);
   end;
 
 var
@@ -99,7 +99,7 @@ begin
     butDetails.Enabled := true;
   end;
 end;
-procedure TfrmElemProperty.Exec(cIn: TContexts; elem0: TAstElement);
+procedure TfrmElemProperty.Exec(cIn: TAleLexer; elem0: TAstElement);
 var
   adicInformation, dirSolic, tmp, hasImplem: String;
   xcon: TAstConsDec;
