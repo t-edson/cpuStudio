@@ -315,7 +315,7 @@
         <IsPartOfProject Value="True"/>
       </Unit44>
       <Unit45>
-        <Filename Value="comp_p65pas\_libraries\alexia_lib\alexiaErr.pas"/>
+        <Filename Value="comp_p65pas\_libraries\alexia_lib\alexiaMsg.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit45>
     </Units>

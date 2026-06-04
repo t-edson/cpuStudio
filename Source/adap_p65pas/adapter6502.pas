@@ -7,11 +7,12 @@ unit adapter6502;
 interface
 uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
-  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16, alexiaLex,
-  FrameEditView, Globales, FrameCfgSynEdit, MisUtils, SynFacilHighlighter,
-  EditView, FrameLateralPanel, FrameFileExplor, MiConfigXML, FrameStatist6502,
-  FrameSynTree6502, FormAdapter6502, FrameCfgAfterChg6502, FrameCfgCompiler6502,
-  FormDebugger6502, FormRAMExplorer6502, FrameCfgAsmOut6502, FrameMIR6502;
+  Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16,
+  alexiaLex, alexiaMsg, FrameEditView, Globales, FrameCfgSynEdit, MisUtils,
+  SynFacilHighlighter, EditView, FrameLateralPanel, FrameFileExplor,
+  MiConfigXML, FrameStatist6502, FrameSynTree6502, FormAdapter6502,
+  FrameCfgAfterChg6502, FrameCfgCompiler6502, FormDebugger6502,
+  FormRAMExplorer6502, FrameCfgAsmOut6502, FrameMIR6502;
 type
   { TAdapter6502 }
   TAdapter6502 = class(TAdapterBase)
@@ -101,7 +102,8 @@ type
     procedure ConfigActivate; override;
     procedure setMenusAndToolbar(menu1, menu2, menu3: TMenuItem; toolbar: TToolBar;
       popupEdit: TPopupMenu; popupEditCount: integer); override;
-    constructor Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor);
+    constructor Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor;
+      msgManager: TMessageManager);
     destructor Destroy; override;
   end;
 resourcestring
@@ -600,7 +602,8 @@ end;
 //  fraEditView1.LoadFile(SamFil);
 //end;
 
-constructor TAdapter6502.Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor);
+constructor TAdapter6502.Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor;
+                                msgManager: TMessageManager);
 begin
   inherited Create;
   //Guarda referencias a las herramientas que ofrece la IDE
@@ -610,6 +613,7 @@ begin
   Compiler:= TCompiler_PIC16.Create;
   Compiler.OnRequireFileString:=@Compiler_RequireFileString;
   Compiler.OnMessage         := @CompilerMsg;
+  Compiler.msg  := msgManager;
   Compiler.OnMessageBox      := @CompilerMessageBox;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);

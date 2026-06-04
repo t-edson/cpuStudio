@@ -8,9 +8,9 @@ interface
 uses
   Classes, SysUtils, SynEdit, SynEditTypes, LazUTF8, Forms, Controls, Dialogs,
   Menus, ComCtrls, ActnList, StdActns, ExtCtrls, LCLIntf, LCLType, LCLProc,
-  StdCtrls, Graphics, MisUtils, FrameLateralPanel, FormConfig, EditView,
-  FrameEditView, FrameMessagesWin, FrameCfgExtTool, Globales, adapterBase,
-  FrameFileExplor, adapter6502, adapterEditor
+  StdCtrls, Graphics, alexiaMsg, MisUtils, FrameLateralPanel, FormConfig,
+  EditView, FrameEditView, FrameMessagesWin, FrameCfgExtTool, Globales,
+  adapterBase, FrameFileExplor, adapter6502, adapterEditor
   ;
 type
   { TfrmPrincipal }
@@ -223,7 +223,8 @@ type
     procedure ShowErrorInDialogBox;
     procedure UpdateIDE(CompName: string; actSelected: TAction);
   public     //Compilers adapters
-    currComp   : TAdapterBase;   //Compialdor actual
+    currComp   : TAdapterBase;   //Compilador actual
+    msgManager : TMessageManager;  //Gestro de mensajes
     adapEditor : TAdapterEditor; //Adaptador para editor normal
     adapter6502: TAdapter6502;   //Adaptador para compilado 6502
   end;
@@ -465,10 +466,12 @@ begin
   fraFileExplor1.OnCloseFolder    := @acFilCloseFolderExecute;
   //Llena menú de compiladores disponibles
   FillPopupCompilers;
+  //Crea gestor de mensajes
+  msgManager := TMessageManager.Create;
   //Crea Adaptador para editor
   adapEditor := TAdapterEditor.Create(fraEditView1);
   //Crea Adaptador para P65pas
-  adapter6502:= TAdapter6502.Create(fraEditView1, fraFileExplor1);
+  adapter6502:= TAdapter6502.Create(fraEditView1, fraFileExplor1, msgManager);
   adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
   adapter6502.OnAfterCompile   := @comp_AfterCompile;
   adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
@@ -479,6 +482,7 @@ procedure TfrmPrincipal.FormDestroy(Sender: TObject);
 begin
   adapter6502.Destroy;
   adapEditor.Destroy;
+  msgManager.Destroy;
 end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
