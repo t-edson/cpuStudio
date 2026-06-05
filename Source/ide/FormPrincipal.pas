@@ -8,7 +8,7 @@ interface
 uses
   Classes, SysUtils, SynEdit, SynEditTypes, LazUTF8, Forms, Controls, Dialogs,
   Menus, ComCtrls, ActnList, StdActns, ExtCtrls, LCLIntf, LCLType, LCLProc,
-  StdCtrls, Graphics, alexiaMsg, MisUtils, FrameLateralPanel, FormConfig,
+  StdCtrls, Graphics, alexiaLex, MisUtils, FrameLateralPanel, FormConfig,
   EditView, FrameEditView, FrameMessagesWin, FrameCfgExtTool, Globales,
   adapterBase, FrameFileExplor, adapter6502, adapterEditor
   ;

@@ -110,7 +110,7 @@ begin
     end;
     callPos.col := curX;
     callPos.row := ed.sedit.CaretY;
-    callPos.idCtx := cxp.ctxId(ed.FileName);
+    callPos.idCtx := cxp.lex.ctxId(ed.FileName);
     ele := cxp.TreeElems.GetElementCalledAt(callPos);
     if ele = nil then begin
       //No lo ubica, puede ser que esté en la sección de declaración
@@ -132,7 +132,7 @@ begin
   //    end;
     end else begin
       //Ubica la declaración del elemento
-      fileSrc := cxp.ctxFile(ele.srcDec);
+      fileSrc := cxp.lex.ctxFile(ele.srcDec);
       if not fraEdit.SelectOrLoad(fileSrc, ele.srcDec.row, ele.srcDec.col, false) then begin
         MsgExc('Cannot load file: %s', [fileSrc]);
       end;
@@ -396,7 +396,7 @@ begin
   //Calcula la posición del elemento
   tokPos.row := fraEdit.ActiveEditor.sedit.CaretY;
   tokPos.col := curEnv.tok_2^.posIni+1;
-  tokPos.idCtx := cxp.ctxId(fraEdit.ActiveEditor.FileName);
+  tokPos.idCtx := cxp.lex.ctxId(fraEdit.ActiveEditor.FileName);
   //Dispara evento
   FieldsComplet(ident, opEve, tokPos);
   Cancel := false;
@@ -412,7 +412,7 @@ begin
   //Calcula la posición del elemento
   tokPos.row := fraEdit.ActiveEditor.sedit.CaretY;
   tokPos.col := curEnv.tok_3^.posIni+1;
-  tokPos.idCtx := cxp.ctxId(fraEdit.ActiveEditor.FileName);
+  tokPos.idCtx := cxp.lex.ctxId(fraEdit.ActiveEditor.FileName);
   //Dispara evento
   FieldsComplet(ident, opEve, tokPos);
   Cancel := false;

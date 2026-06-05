@@ -8,7 +8,7 @@ interface
 uses
   Classes, SysUtils, Types, ComCtrls, Controls, ActnList, Menus, ExtCtrls,
   Graphics, Forms, SynEdit, adapterBase, CodeTools6502, Compiler_PIC16,
-  alexiaLex, alexiaMsg, FrameEditView, Globales, FrameCfgSynEdit, MisUtils,
+  alexiaLex, FrameEditView, Globales, FrameCfgSynEdit, MisUtils,
   SynFacilHighlighter, EditView, FrameLateralPanel, FrameFileExplor,
   MiConfigXML, FrameStatist6502, FrameSynTree6502, FormAdapter6502,
   FrameCfgAfterChg6502, FrameCfgCompiler6502, FormDebugger6502,
@@ -83,7 +83,6 @@ type
     procedure CTKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState); override;
     procedure GoToDeclaration; override;
   public      //Ejecución
-    nErrors: Integer;
     procedure Compile; override;
     procedure CheckSyntax; override;
 //    procedure UpdateCompletionForEditors; override;
@@ -139,15 +138,14 @@ procedure TAdapter6502.CompilerMsg(msgKind: TMessageKind;
 var
   fName: String;
 begin
-  fName := compiler.ctxFile(srcPos);
+  fName := compiler.lex.ctxFile(srcPos);
   case msgKind of
     mkInfo:
       if OnInfo<>nil then OnInfo(msg, fname, srcPos.row, srcPos.col);
     mkWarning:
       if OnWarning<>nil then OnWarning(msg, fname, srcPos.row, srcPos.col);
     mkError:begin
-        inc(nErrors);  //Lleva la cuenta
-        if OnError<>nil then OnError(msg, fname, srcPos.row, srcPos.col);
+      if OnError<>nil then OnError(msg, fname, srcPos.row, srcPos.col);
     end;
   else ;
   end;
@@ -158,7 +156,7 @@ procedure TAdapter6502.CompileAndExec(Sender: TObject);
 begin
   Compile;
   if Compiler.IsUnit then exit;  //No es programa
-  if nErrors=0 then begin
+  if Compiler.msg.nErrors=0 then begin
      frmDebug.Exec(Compiler);
      frmDebug.acGenRunExecute(self);
   end;
@@ -284,7 +282,7 @@ begin
   fraASTview.Refresh;
   fraMIRview.Refresh;
   //Actualiza frame de estadísticas de uso
-  if nErrors=0 then begin
+  if Compiler.msg.nErrors=0 then begin
     //No hay error
     compiler.GetResourcesUsed(usedRAM, usedROM, usedSTK);
     fraStatis.Update(usedRAM, usedROM, usedSTK);
@@ -363,7 +361,7 @@ begin
     end;
   end;
   //Inicio de compilación
-  nErrors := 0;
+  Compiler.msg.nErrors := 0;
   if OnBeforeCheckSyn<>nil then OnBeforeCheckSyn();
   Compiler.Exec(ed.FileName, '', pars);
   if OnAfterCheckSyn<>nil then OnAfterCheckSyn();
@@ -388,7 +386,7 @@ begin
   //Lee configuración de compilación
   ReadCompilerSettings(pars);
   //Inicio de compilación
-  nErrors := 0;
+  Compiler.msg.nErrors := 0;
   if OnBeforeCompile<>nil then OnBeforeCompile();
   Compiling := true;   //Activa bandera para saber que queremos compilar.
   Compiler.Exec(ed.FileName, '', pars);
@@ -610,11 +608,10 @@ begin
   fraEditView1 := fraEditView;
   fraFileExplor1 := fraFilExplor;
   //Crea compilador y configura eventos
-  Compiler:= TCompiler_PIC16.Create;
-  Compiler.OnRequireFileString:=@Compiler_RequireFileString;
-  Compiler.OnMessage         := @CompilerMsg;
-  Compiler.msg  := msgManager;
-  Compiler.OnMessageBox      := @CompilerMessageBox;
+  Compiler:= TCompiler_PIC16.Create(msgManager);
+  Compiler.lex.OnRequireFileString:=@Compiler_RequireFileString;
+  msgManager.OnMessage         := @CompilerMsg;
+  msgManager.OnMessageBox      := @CompilerMessageBox;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);
   CodeTool.Init(compiler);  //Asigna compilador

@@ -260,7 +260,7 @@ begin
     exit;
   end;
   elem := TAstElement(TreeView1.Selected.Data);
-  frmElemProp.Exec(cpx, elem);
+  frmElemProp.Exec(cpx.lex, elem);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
 begin
@@ -278,7 +278,7 @@ var
 begin
   if SelectedIsElement then begin
     elem := TAstElement(TreeView1.Selected.Data);
-    fileName := cpx.ctxFile(elem.srcDec);
+    fileName := cpx.lex.ctxFile(elem.srcDec);
     if OnLocateElemen <> nil  then OnLocateElemen(fileName, elem.srcDec.row, elem.srcDec.col);
   end;
 end;
@@ -297,7 +297,7 @@ begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
   elem := TAstElement(TreeView1.Selected.Data);
-  frmElemProp.Exec(cpx, elem);
+  frmElemProp.Exec(cpx.lex, elem);
   frmElemProp.Show;
 end;
 procedure TfraSynxTree6502.acGenDoAnalysExecute(Sender: TObject);

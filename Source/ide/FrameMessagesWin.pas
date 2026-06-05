@@ -387,9 +387,9 @@ procedure TfraMessagesWin.InitCompilation(cxp0: TAdapterBase; InitMsg: boolean
 begin
   cxp := cxp0;   //Guarda referencia
   grilla.RowCount := 1;   //Limpia Grilla
+  cxp.OnInfo   := @AddInformation;
   cxp.OnWarning:= @AddWarning;  //Inicia evento
   cxp.OnError  := @AddError;
-  cxp.OnInfo   := @AddInformation;
 
   eTimer.Clear;
   eTimer.Start;   //Star counting time
