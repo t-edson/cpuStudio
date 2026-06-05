@@ -5,11 +5,13 @@ object frmPrincipal: TfrmPrincipal
   Width = 1166
   AllowDropFiles = True
   Caption = 'frmPrincipal'
-  ClientHeight = 765
+  ClientHeight = 790
   ClientWidth = 1166
   DesignTimePPI = 120
   KeyPreview = True
   Menu = MainMenu1
+  Position = poScreenCenter
+  LCLVersion = '4.6.0.0'
   OnClose = FormClose
   OnCloseQuery = FormCloseQuery
   OnCreate = FormCreate
@@ -17,12 +19,10 @@ object frmPrincipal: TfrmPrincipal
   OnDropFiles = FormDropFiles
   OnKeyDown = FormKeyDown
   OnShow = FormShow
-  Position = poScreenCenter
-  LCLVersion = '2.2.6.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 29
-    Top = 736
+    Top = 761
     Width = 1166
     Panels = <    
       item
@@ -54,7 +54,7 @@ object frmPrincipal: TfrmPrincipal
   object panMessages: TPanel
     Left = 0
     Height = 102
-    Top = 634
+    Top = 659
     Width = 1166
     Align = alBottom
     ParentFont = False
@@ -64,7 +64,7 @@ object frmPrincipal: TfrmPrincipal
     Cursor = crVSplit
     Left = 0
     Height = 6
-    Top = 628
+    Top = 653
     Width = 1166
     Align = alBottom
     ResizeAnchor = akBottom
@@ -675,24 +675,24 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'New &File'
       Hint = 'New File'
       ImageIndex = 2
-      OnExecute = acFilNewFileExecute
       ShortCut = 16462
+      OnExecute = acFilNewFileExecute
     end
     object acEdUndo: TAction
       Category = 'Edit'
       Caption = '&Undo'
       Hint = 'Undo'
       ImageIndex = 8
-      OnExecute = acEdUndoExecute
       ShortCut = 16474
+      OnExecute = acEdUndoExecute
     end
     object acEdRedo: TAction
       Category = 'Edit'
       Caption = '&Redo'
       Hint = 'Redo'
       ImageIndex = 9
-      OnExecute = acEdRedoExecute
       ShortCut = 24666
+      OnExecute = acEdRedoExecute
     end
     object acEdCut: TEditCut
       Category = 'Edit'
@@ -713,16 +713,16 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'Find...'
       Hint = 'Find'
       ImageIndex = 15
-      OnExecute = acSearFindExecute
       ShortCut = 16454
+      OnExecute = acSearFindExecute
     end
     object acSearFindNxt: TAction
       Category = 'Sear'
       Caption = 'Find &Next'
       Hint = 'Find Next'
       ImageIndex = 16
-      OnExecute = acSearFindNxtExecute
       ShortCut = 114
+      OnExecute = acSearFindNxtExecute
     end
     object acViewMsgPan: TAction
       Category = 'View'
@@ -742,8 +742,8 @@ object frmPrincipal: TfrmPrincipal
     object acViewPanLeft: TAction
       Category = 'View'
       Caption = 'View &Left Panel'
-      OnExecute = acViewPanLeftExecute
       ShortCut = 32881
+      OnExecute = acViewPanLeftExecute
     end
     object acEdPaste: TEditPaste
       Category = 'Edit'
@@ -764,22 +764,22 @@ object frmPrincipal: TfrmPrincipal
       Caption = 'Find &Previous'
       Hint = 'Find Previous'
       ImageIndex = 16
-      OnExecute = acSearFindPrvExecute
       ShortCut = 8306
+      OnExecute = acSearFindPrvExecute
     end
     object acSearReplac: TAction
       Category = 'Sear'
       Caption = '&Replace...'
       Hint = 'Replace'
       ImageIndex = 17
-      OnExecute = acSearReplacExecute
       ShortCut = 16466
+      OnExecute = acSearReplacExecute
     end
     object acViewPanRight: TAction
       Category = 'View'
       Caption = 'View &Right Panel'
-      OnExecute = acViewPanRightExecute
       ShortCut = 115
+      OnExecute = acViewPanRightExecute
     end
     object acToolConfig: TAction
       Category = 'Tool'
@@ -833,16 +833,16 @@ object frmPrincipal: TfrmPrincipal
       Caption = '&Open...'
       Hint = 'Open File'
       ImageIndex = 3
-      OnExecute = acFilOpenExecute
       ShortCut = 16463
+      OnExecute = acFilOpenExecute
     end
     object acFilSave: TAction
       Category = 'Arc'
       Caption = '&Save'
       Hint = 'Save File'
       ImageIndex = 4
-      OnExecute = acFilSaveExecute
       ShortCut = 16467
+      OnExecute = acFilSaveExecute
     end
     object acFilSaveAs: TAction
       Category = 'Arc'

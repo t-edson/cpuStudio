@@ -468,6 +468,7 @@ begin
   FillPopupCompilers;
   //Crea gestor de mensajes
   msgManager := TMessageManager.Create;
+  fraMessages.Inic(msgmanager);   //Conecta el gestor de mensajes
   //Crea Adaptador para editor
   adapEditor := TAdapterEditor.Create(fraEditView1);
   //Crea Adaptador para P65pas
