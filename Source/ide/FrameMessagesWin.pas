@@ -83,6 +83,10 @@ type
     procedure AddInformation(infTxt, fname: string; row, col: integer);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
   public //Inicialización
+    procedure CompilerMsg(msgKind: TMessageKind; const msg: string;
+      const msgInfo: TMsgInfo);
+    procedure CompilerMessageBox(txt: string; mode: integer);
+    procedure Inic(msgManager: TMessageManager);
     constructor Create(AOwner: TComponent) ; override;
     destructor Destroy; override;
   end;
@@ -387,9 +391,6 @@ procedure TfraMessagesWin.InitCompilation(cxp0: TAdapterBase; InitMsg: boolean
 begin
   cxp := cxp0;   //Guarda referencia
   grilla.RowCount := 1;   //Limpia Grilla
-  cxp.OnInfo   := @AddInformation;
-  cxp.OnWarning:= @AddWarning;  //Inicia evento
-  cxp.OnError  := @AddError;
 
   eTimer.Clear;
   eTimer.Start;   //Star counting time
@@ -435,6 +436,34 @@ begin
   end;
 end;
 //Inicialización
+procedure TfraMessagesWin.CompilerMsg(msgKind: TMessageKind; const msg: string;
+  const msgInfo: TMsgInfo);
+{Procesa los mensajaes que genera el compilador}
+begin
+  case msgKind of
+    mkInfo:
+      AddInformation(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+    mkWarning:
+      AddWarning(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+    mkError:begin
+      AddError(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+    end;
+  else ;
+  end;
+end;
+procedure TfraMessagesWin.CompilerMessageBox(txt: string; mode: integer);
+{Se pide mostrar un cuadro de diálogo con mensaje.}
+begin
+  if mode = 0 then MsgBox(txt);
+  if mode = 1 then MsgExc(txt);
+  if mode = 2 then MsgErr(txt);
+end;
+procedure TfraMessagesWin.Inic(msgManager: TMessageManager);
+{COnfigura a la ventana de mensajes para que se conecte al gestor de mensajes}
+begin
+  msgManager.OnMessage     := @CompilerMsg;
+  msgManager.OnMessageBox  := @CompilerMessageBox;
+end;
 constructor TfraMessagesWin.Create(AOwner: TComponent);
 var
   enc: TugGrillaCol;

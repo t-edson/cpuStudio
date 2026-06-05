@@ -30,9 +30,6 @@ type
     OnAfterCompile: procedure of object;   //Al finalizar la compilación (No verif. de sintaxis).
     OnBeforeCheckSyn: procedure of object; //Al iniciar la verif. de sintaxis.
     OnAfterCheckSyn: procedure of object;  //Al finalizar la verif. de sintaxis.
-    OnWarning: procedure(warTxt, fname: string; row, col: integer) of object;
-    OnError  : procedure(errTxt, fname: string; row, col: integer) of object;
-    OnInfo   : procedure(infTxt, fname: string; row, col: integer) of object;
   public      //Información
     function CompilerName: string; virtual; abstract;
     function hexFilePath: string; virtual; abstract;

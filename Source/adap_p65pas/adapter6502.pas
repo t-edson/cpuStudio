@@ -31,7 +31,6 @@ type
     pCompExt2: TConfigPage;
     pCompExt3: TConfigPage;
     procedure CompileLevel(level: integer);
-    procedure CompilerMessageBox(txt: string; mode: integer);
     procedure SynTree_ReqAnalysis;
     procedure SynTree_ReqOptimizat;
     procedure SynTree_ReqSynthesis;
@@ -60,8 +59,6 @@ type
     Compiling   : Boolean;  //Bandera. Indica que se ha pedido ejceutar una compilación.
     procedure Compiler_RequireFileString(FilePath: string;
       var strList: TStrings);
-    procedure CompilerMsg(msgKind: TMessageKind;
-                             const Msg: string; const srcPos: TSrcPos);
     procedure SynTree_LocateElemen(fileSrc: string; row, col: integer);
     procedure UpdateTools;
   public      //Acciones adicionales de "adapterForm"
@@ -130,24 +127,6 @@ begin
       A menos que tenga activada alguna opción de "Autosave".}
     end;
     strList := ed.sedit.Lines;
-  end;
-end;
-procedure TAdapter6502.CompilerMsg(msgKind: TMessageKind;
-                         const msg: string; const srcPos: TSrcPos);
-{Procesa los mensajaes que genera el compilador}
-var
-  fName: String;
-begin
-  fName := compiler.lex.ctxFile(srcPos);
-  case msgKind of
-    mkInfo:
-      if OnInfo<>nil then OnInfo(msg, fname, srcPos.row, srcPos.col);
-    mkWarning:
-      if OnWarning<>nil then OnWarning(msg, fname, srcPos.row, srcPos.col);
-    mkError:begin
-      if OnError<>nil then OnError(msg, fname, srcPos.row, srcPos.col);
-    end;
-  else ;
   end;
 end;
 //Acciones adicionales de "adapterForm"
@@ -420,13 +399,6 @@ begin
   mainEditorCfg.ConfigEditor(edAsm);
   LoadAsmSyntaxEd;
 end;
-procedure TAdapter6502.CompilerMessageBox(txt: string; mode: integer);
-{Se pide mostrar un cuadro de diálogo con mensaje.}
-begin
-  if mode = 0 then MsgBox(txt);
-  if mode = 1 then MsgExc(txt);
-  if mode = 2 then MsgErr(txt);
-end;
 procedure TAdapter6502.SynTree_LocateElemen(fileSrc: string; row, col: integer);
 {Se pide localizar la posición en archivo de un elemento}
 begin
@@ -610,8 +582,6 @@ begin
   //Crea compilador y configura eventos
   Compiler:= TCompiler_PIC16.Create(msgManager);
   Compiler.lex.OnRequireFileString:=@Compiler_RequireFileString;
-  msgManager.OnMessage         := @CompilerMsg;
-  msgManager.OnMessageBox      := @CompilerMessageBox;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);
   CodeTool.Init(compiler);  //Asigna compilador
