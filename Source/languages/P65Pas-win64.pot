@@ -773,6 +773,40 @@ msgstr ""
 msgid "<No Tab>"
 msgstr ""
 
+#: tframessageswin.lblerrors.caption
+msgid "&Errors"
+msgstr ""
+
+#: tframessageswin.lblinform.caption
+msgid "&Information"
+msgstr ""
+
+#: tframessageswin.lblram.caption
+msgctxt "tframessageswin.lblram.caption"
+msgid "RAM"
+msgstr ""
+
+#: tframessageswin.lblrom.caption
+msgctxt "tframessageswin.lblrom.caption"
+msgid "ROM"
+msgstr ""
+
+#: tframessageswin.lblwarns.caption
+msgid "&Warnings"
+msgstr ""
+
+#: tframessageswin.mnclearall.caption
+msgid "Clear &All"
+msgstr ""
+
+#: tframessageswin.mncopyrow.caption
+msgid "&Copy Row"
+msgstr ""
+
+#: tframessageswin.pangrilla.caption
+msgid "<< No messages >>"
+msgstr ""
+
 #: tframir6502.acgendoanalys.caption
 msgctxt "tframir6502.acgendoanalys.caption"
 msgid "Do Analysis"
@@ -872,10 +906,12 @@ msgid "X"
 msgstr ""
 
 #: tfrastatist6502.lblram.caption
+msgctxt "tfrastatist6502.lblram.caption"
 msgid "RAM"
 msgstr ""
 
 #: tfrastatist6502.lblrom.caption
+msgctxt "tfrastatist6502.lblrom.caption"
 msgid "ROM"
 msgstr ""
 

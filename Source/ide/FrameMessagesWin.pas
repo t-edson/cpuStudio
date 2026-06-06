@@ -83,8 +83,7 @@ type
     procedure AddInformation(infTxt, fname: string; row, col: integer);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
   public //Inicialización
-    procedure CompilerMsg(msgKind: TMessageKind; const msg: string;
-      const msgInfo: TMsgInfo);
+    procedure CompilerMsg(msgKind: TMessageKind; const msgInfo: TMsgInfo);
     procedure CompilerMessageBox(txt: string; mode: integer);
     procedure Inic(msgManager: TMessageManager);
     constructor Create(AOwner: TComponent) ; override;
@@ -436,17 +435,17 @@ begin
   end;
 end;
 //Inicialización
-procedure TfraMessagesWin.CompilerMsg(msgKind: TMessageKind; const msg: string;
+procedure TfraMessagesWin.CompilerMsg(msgKind: TMessageKind;
   const msgInfo: TMsgInfo);
 {Procesa los mensajaes que genera el compilador}
 begin
   case msgKind of
     mkInfo:
-      AddInformation(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+      AddInformation(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
     mkWarning:
-      AddWarning(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+      AddWarning(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
     mkError:begin
-      AddError(msg, msgInfo.fname, msgInfo.row, msgInfo.col);
+      AddError(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
     end;
   else ;
   end;
