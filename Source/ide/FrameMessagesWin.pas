@@ -47,7 +47,6 @@ type
     procedure PanGrillaResize(Sender: TObject);
     procedure panStatisDblClick(Sender: TObject);
   private
-    cxp       : TAdapterBase;
     FBackColor: TColor;
     FBackSelColor: Tcolor;
     FPanelColor: TColor;
@@ -78,7 +77,7 @@ type
       row, col: integer);
     function IsErroridx(f: integer): boolean;
     procedure InitCompilation(cxp0: TAdapterBase; InitMsg: boolean);
-    procedure EndCompilation(showSummary: boolean = true);
+    procedure EndCompilation(cxp0: TAdapterBase; showSummary: boolean);
     procedure AddError(errTxt, fname: string; row, col: integer);
     procedure AddInformation(infTxt, fname: string; row, col: integer);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
@@ -388,15 +387,14 @@ procedure TfraMessagesWin.InitCompilation(cxp0: TAdapterBase; InitMsg: boolean
   );
 {Limpia grilla e inicia banderas para empezar a recibir mensajes.}
 begin
-  cxp := cxp0;   //Guarda referencia
   grilla.RowCount := 1;   //Limpia Grilla
 
   eTimer.Clear;
   eTimer.Start;   //Star counting time
-  if InitMsg then AddInformation(cxp.CompilerName + ': ' + MSG_INICOMP, '', 0, 0);
+  if InitMsg then AddInformation(cxp0.CompilerName + ': ' + MSG_INICOMP, '', 0, 0);
   HaveErrors := false;  //limpia bandera
 end;
-procedure TfraMessagesWin.EndCompilation(showSummary: boolean = true);
+procedure TfraMessagesWin.EndCompilation(cxp0: TAdapterBase; showSummary: boolean);
 {Escribe un mensaje final del tiempo de compilación usado y la cantidad de advertencias
 y errores en el Panel de mensajes. También incluye información sobre los recursos usados
 (RAM) y filtra los mensajes de acuerdo a lo que indican los "CheckBox".}
@@ -426,7 +424,7 @@ begin
 
   //Actualiza estadísticas de uso
   if nErr=0 then begin     //No hay error
-    AddInformation(cxp.RAMusedStr, '', 0, 0);
+    AddInformation(cxp0.RAMusedStr, '', 0, 0);
   end;
   FilterGrid;
   //Posiciona al final

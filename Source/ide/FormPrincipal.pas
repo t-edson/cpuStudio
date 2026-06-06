@@ -959,6 +959,7 @@ begin
   end;
   MsgBox(MSG_NOFOUND_, [buscado]);
 end;
+
 procedure TfrmPrincipal.comp_BeforeCheckSyn;
 begin
   fraMessages.InitCompilation(currComp, false);  //Limpia mensajes pero no pone mesaje inicial.
@@ -966,7 +967,7 @@ end;
 procedure TfrmPrincipal.comp_AfterCheckSyn;
 begin
   if fraMessages.HaveErrors then MarkErrors;
-  fraMessages.EndCompilation(false);        //No muestra los resúmenes
+  fraMessages.EndCompilation(currComp, false);        //No muestra los resúmenes
 end;
 procedure TfrmPrincipal.comp_BeforeCompile;
 {Se ha iniciado el proceso de compilación del compilador actual.}
@@ -986,12 +987,12 @@ begin
   ticSynCheck := 1000;
   //Muestra y marca posibles errores
   if fraMessages.HaveErrors then begin
-    fraMessages.EndCompilation;
+    fraMessages.EndCompilation(currComp, true);
     ShowErrorInDialogBox;
     MarkErrors;
-    exit;
+  end else begin
+    fraMessages.EndCompilation(currComp, true);  //Muestra resúmenes.
   end;
-  fraMessages.EndCompilation(true);  //Muestra resúmenes.
 end;
 {$region "Acciones"}
 /////////////////// Acciones de Archivo /////////////////////
