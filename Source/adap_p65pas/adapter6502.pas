@@ -347,6 +347,10 @@ begin
 end;
 procedure TAdapter6502.Compile;
 {Ejecuta el compilador para generar un archivo binario de salida.}
+  procedure beforeCompiling;
+  begin
+
+  end;
 var
   ed: TSynEditor;
   pars: string = '';
@@ -635,4 +639,4 @@ begin
 end;
 
 end.
-
+//638

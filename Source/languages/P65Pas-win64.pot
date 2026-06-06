@@ -13,6 +13,26 @@ msgctxt "adaptereditor.msg_synfil_nof"
 msgid "Syntax file not found: %s"
 msgstr ""
 
+#: alexialex.msg_error
+msgctxt "alexialex.msg_error"
+msgid "Error"
+msgstr ""
+
+#: alexialex.msg_errors
+msgctxt "alexialex.msg_errors"
+msgid "Errors"
+msgstr ""
+
+#: alexialex.msg_warn
+msgctxt "alexialex.msg_warn"
+msgid "Warning"
+msgstr ""
+
+#: alexialex.msg_warns
+msgctxt "alexialex.msg_warns"
+msgid "Warnings"
+msgstr ""
+
 #: analyzer.er_arr_siz_big
 msgid "Array size to big."
 msgstr ""
@@ -442,10 +462,12 @@ msgid "Compiled in: "
 msgstr ""
 
 #: framemessageswin.msg_error
+msgctxt "framemessageswin.msg_error"
 msgid "Error"
 msgstr ""
 
 #: framemessageswin.msg_errors
+msgctxt "framemessageswin.msg_errors"
 msgid "Errors"
 msgstr ""
 
@@ -454,10 +476,12 @@ msgid "Starting Compilation..."
 msgstr ""
 
 #: framemessageswin.msg_warn
+msgctxt "framemessageswin.msg_warn"
 msgid "Warning"
 msgstr ""
 
 #: framemessageswin.msg_warns
+msgctxt "framemessageswin.msg_warns"
 msgid "Warnings"
 msgstr ""
 
