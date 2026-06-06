@@ -1,6 +1,16 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: adapter6502.msg_compil
+msgctxt "adapter6502.msg_compil"
+msgid "Compiled in: "
+msgstr ""
+
+#: adapter6502.msg_inicomp
+msgctxt "adapter6502.msg_inicomp"
+msgid "Starting Compilation..."
+msgstr ""
+
 #: adapter6502.msg_synfil_nof
 #, object-pascal-format
 msgctxt "adapter6502.msg_synfil_nof"
@@ -336,18 +346,8 @@ msgstr ""
 msgid "Theme file"
 msgstr ""
 
-#: formprincipal.msg_compil
-msgctxt "formprincipal.msg_compil"
-msgid "Compiled in: "
-msgstr ""
-
 #: formprincipal.msg_filsavcomp
 msgid "File must be saved before compiling."
-msgstr ""
-
-#: formprincipal.msg_inicomp
-msgctxt "formprincipal.msg_inicomp"
-msgid "Starting Compilation..."
 msgstr ""
 
 #: formprincipal.msg_modified

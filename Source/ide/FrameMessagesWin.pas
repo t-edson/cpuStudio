@@ -62,7 +62,7 @@ type
     procedure SetTextColor(AValue: TColor);
     procedure SetTextErrColor(AValue: TColor);
   public
-    HaveErrors: boolean;
+    HaveErrors: boolean;  //**** ¿Es necesario o es una reminiscencia?
     OnDblClickMessage: procedure(fileSrc: string; row, col: integer) of object;
     OnStatisDBlClick: procedure of object;
     property BackColor: TColor read FBackColor write SetBackColor ;
@@ -76,8 +76,8 @@ type
     procedure GetErrorIdx(f: integer; out msg: string; out filname: string; out
       row, col: integer);
     function IsErroridx(f: integer): boolean;
-    procedure ClearMessages(txt: string; InitMsg: boolean);
-    procedure EndMessages(cxp0: TAdapterBase; txt: String; showSummary: boolean);
+    procedure ClearMessages;
+    procedure EndMessages;
     procedure AddError(errTxt, fname: string; row, col: integer);
     procedure AddInformation(infTxt, fname: string; row, col: integer);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
@@ -378,27 +378,17 @@ begin
   end;
   grilla.EndUpdate;
 end;
-procedure TfraMessagesWin.ClearMessages(txt: string; InitMsg: boolean
-  );
+procedure TfraMessagesWin.ClearMessages();
 {Limpia grilla e inicia banderas para empezar a recibir mensajes.}
 begin
   grilla.RowCount := 1;   //Limpia Grilla
-
   HaveErrors := false;  //limpia bandera
 end;
-procedure TfraMessagesWin.EndMessages(cxp0: TAdapterBase; txt: String; showSummary: boolean);
+procedure TfraMessagesWin.EndMessages();
 {Escribe un mensaje final del tiempo de compilación usado y la cantidad de advertencias
 y errores en el Panel de mensajes. También incluye información sobre los recursos usados
 (RAM) y filtra los mensajes de acuerdo a lo que indican los "CheckBox".}
 begin
-  if showSummary then begin
-    AddInformation(txt , '', 0, 0);
-
-    //Actualiza estadísticas de uso
-    if nErr=0 then begin     //No hay error
-      AddInformation(cxp0.RAMusedStr, '', 0, 0);
-    end;
-  end;
   FilterGrid;
   //Posiciona al final
   if grilla.RowCount>1 then begin

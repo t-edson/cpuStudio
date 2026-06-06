@@ -73,7 +73,6 @@ type
     function hexFilePath: string; override;
     function mainFilePath: string; override;
     function CPUname: string; override;
-    function RAMusedStr: string; override;
     function SampleCode: string; override;
   public      //Manejo de Codetool
     procedure SetCompletion(ed: TSynEditor); override;
@@ -104,6 +103,8 @@ type
   end;
 resourcestring
   MSG_SYNFIL_NOF = 'Syntax file not found: %s';
+  MSG_INICOMP = 'Starting Compilation...';
+  MSG_COMPIL  = 'Compiled in: '          ;
 
 implementation
 { TAdapter6502 }
@@ -216,10 +217,6 @@ end;
 function TAdapter6502.CPUname: string;
 begin
   exit(compiler.PICName)
-end;
-function TAdapter6502.RAMusedStr: string;
-begin
-  exit(compiler.RAMusedStr);
 end;
 function TAdapter6502.SampleCode: string;
 begin
@@ -340,9 +337,14 @@ begin
     end;
   end;
   //Inicio de compilación
-  Compiler.msg.nErrors := 0;
+  Compiler.msg.nErrors := 0;  //**** ¿Es necesario?
+  //Tareas iniciales
+  eTimer.Clear; eTimer.Start;   //Star counting time
   if OnBeforeCheckSyn<>nil then OnBeforeCheckSyn();
+  //Realiza la compilación
   Compiler.Exec(ed.FileName, '', pars);
+  //Tareas finales
+  eTimer.Stop;  //Stop counter
   if OnAfterCheckSyn<>nil then OnAfterCheckSyn();
 end;
 procedure TAdapter6502.Compile;
@@ -365,11 +367,24 @@ begin
   //Lee configuración de compilación
   ReadCompilerSettings(pars);
   //Inicio de compilación
-  Compiler.msg.nErrors := 0;
+  Compiler.msg.nErrors := 0;  //**** ¿Es necesario?
+  //Tareas iniciales
+  eTimer.Clear;
+  eTimer.Start;   //Star counting time
   if OnBeforeCompile<>nil then OnBeforeCompile();
+  Compiler.GenInfo(CompilerName + ': ' + MSG_INICOMP);
+  //Realiza la compilación
   Compiling := true;   //Activa bandera para saber que queremos compilar.
   Compiler.Exec(ed.FileName, '', pars);
   Compiling := false;
+  //Tareas finales
+  eTimer.Stop;  //Stop counter
+  Compiler.GenInfo(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
+              Compiler.msg.txtNWarnings +  ', ' + Compiler.msg.txtNErrors+ '>>');
+  if Compiler.msg.nErrors = 0 then begin     //No hay errores
+    Compiler.GenInfo(compiler.RAMusedStr);    //Estadísticas de recursos usados
+  end;
+
   if OnAfterCompile<>nil then OnAfterCompile();
   UpdateTools;
 end;

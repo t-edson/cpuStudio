@@ -5,7 +5,7 @@ unit adapterBase;
 interface
 uses
   Classes, SysUtils, types, FrameEditView, FrameCfgSynEdit, EditView,
-  MiConfigXML, Menus, ExtCtrls, Controls, Graphics, ComCtrls, Forms ;
+  MiConfigXML, Menus, ExtCtrls, Controls, Graphics, ComCtrls, Forms, EpikTimer;
 
 type
   {Define la entidad "Página de configuración". Representa a una de las páginas o
@@ -25,6 +25,8 @@ type
   { TAdapterBase }
 
   TAdapterBase = class
+  protected
+    eTimer     : TEpikTimer;  //Counter for mesaure compiling time
   public     //Eventos
     OnBeforeCompile: procedure of object;  //Al iniciar la compilación (No verif. de sintaxis).
     OnAfterCompile: procedure of object;   //Al finalizar la compilación (No verif. de sintaxis).
@@ -35,7 +37,6 @@ type
     function hexFilePath: string; virtual; abstract;
     function mainFilePath: string; virtual; abstract;
     function CPUname: string; virtual; abstract;
-    function RAMusedStr: string; virtual; abstract;
     function SampleCode: string; virtual; abstract;
   public      //Manejo de Codetool
     procedure SetCompletion(ed: TSynEditor); virtual; abstract;
@@ -55,6 +56,8 @@ type
     procedure ConfigActivate; virtual; abstract;
     procedure setMenusAndToolbar(menu1, menu2, menu3: TMenuItem; toolbar: TToolBar;
       popupEdit: TPopupMenu; popupEditCount: integer); virtual; abstract;
+    constructor Create();
+    destructor Destroy; override;
   end;
 
   //Funciones para control de menú
@@ -176,6 +179,16 @@ begin
   for i:=0 to nIconsToCopy-1 do begin
     transImgIndexes[i] := CargaPNG(imgLst16src, imgLst32src, i, imgList16, imgList32);
   end;
+end;
+{ TAdapterBase }
+constructor TAdapterBase.Create();
+begin
+  eTimer := TEpikTimer.Create(nil);  //Used for precision time measure
+end;
+destructor TAdapterBase.Destroy;
+begin
+  eTimer.Destroy;
+  inherited Destroy;
 end;
 
 end.
