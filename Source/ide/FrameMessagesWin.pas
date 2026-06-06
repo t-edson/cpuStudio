@@ -4,7 +4,7 @@ unit FrameMessagesWin;
 interface
 uses
   Classes, SysUtils, FileUtil, LazFileUtils, Forms, Controls, Grids, Graphics,
-  ExtCtrls, StdCtrls, Menus, Clipbrd, EpikTimer, Globales, alexiaLex,
+  ExtCtrls, StdCtrls, Menus, Clipbrd, Globales, alexiaLex,
   adapterBase, UtilsGrilla, BasicGrilla, MisUtils;
 type
 
@@ -53,8 +53,8 @@ type
     FTextColor: TColor;
     FTextErrColor: TColor;
     UtilGrilla: TUtilGrillaFil2;
-    nVis, nWar, nErr: Integer;
-    eTimer    : TEpikTimer;  //Counter for mesaure compiling
+    nVis: Integer;
+    nWar, nErr: Integer;  //***Antes se usaban pero, ahora ¿Sirven para algo?
     procedure CountMessages;
     procedure SetBackColor(AValue: TColor);
     procedure SetBackSelColor(AValue: Tcolor);
@@ -76,8 +76,8 @@ type
     procedure GetErrorIdx(f: integer; out msg: string; out filname: string; out
       row, col: integer);
     function IsErroridx(f: integer): boolean;
-    procedure InitCompilation(cxp0: TAdapterBase; InitMsg: boolean);
-    procedure EndCompilation(cxp0: TAdapterBase; showSummary: boolean);
+    procedure ClearMessages(txt: string; InitMsg: boolean);
+    procedure EndMessages(cxp0: TAdapterBase; txt: String; showSummary: boolean);
     procedure AddError(errTxt, fname: string; row, col: integer);
     procedure AddInformation(infTxt, fname: string; row, col: integer);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
@@ -91,13 +91,6 @@ type
 
 implementation
 {$R *.lfm}
-resourcestring
-  MSG_INICOMP = 'Starting Compilation...';
-  MSG_WARN    = 'Warning'                ;
-  MSG_WARNS   = 'Warnings'               ;
-  MSG_ERROR   = 'Error'                  ;
-  MSG_ERRORS  = 'Errors'                 ;
-  MSG_COMPIL  = 'Compiled in: '          ;
 
 const
   ROW_HEIGH = 19;
@@ -352,6 +345,8 @@ begin
   result := grilla.Cells[GCOL_ICO, f] = ICO_ERR;
 end;
 procedure TfraMessagesWin.FilterGrid;
+{Oculta o muestra las filas, de acuerdo al estado de los controles de filtro: chkInform,
+chkWarns y chkErrors}
 var
   f: integer;
   icoId: String;
@@ -383,48 +378,26 @@ begin
   end;
   grilla.EndUpdate;
 end;
-procedure TfraMessagesWin.InitCompilation(cxp0: TAdapterBase; InitMsg: boolean
+procedure TfraMessagesWin.ClearMessages(txt: string; InitMsg: boolean
   );
 {Limpia grilla e inicia banderas para empezar a recibir mensajes.}
 begin
   grilla.RowCount := 1;   //Limpia Grilla
 
-  eTimer.Clear;
-  eTimer.Start;   //Star counting time
-  if InitMsg then AddInformation(cxp0.CompilerName + ': ' + MSG_INICOMP, '', 0, 0);
   HaveErrors := false;  //limpia bandera
 end;
-procedure TfraMessagesWin.EndCompilation(cxp0: TAdapterBase; showSummary: boolean);
+procedure TfraMessagesWin.EndMessages(cxp0: TAdapterBase; txt: String; showSummary: boolean);
 {Escribe un mensaje final del tiempo de compilación usado y la cantidad de advertencias
 y errores en el Panel de mensajes. También incluye información sobre los recursos usados
 (RAM) y filtra los mensajes de acuerdo a lo que indican los "CheckBox".}
-var
-  infWar, infErr: String;
 begin
-  if not showSummary then begin
-     //Solo filtra los posibles mensajes recibidos.
-    FilterGrid;
-    exit;
-  end;
-  //Construye información adicional
-  CountMessages;
-  if nWar = 1 then begin
-    infWar := '1 ' + MSG_WARN;
-  end else begin
-    infWar := IntToStr(nWar) + ' ' + MSG_WARNS;
-  end;
-  if nErr = 1 then begin
-    infErr := '1 ' + MSG_ERROR;
-  end else begin
-    infErr := IntToStr(nErr) + ' ' + MSG_ERRORS;
-  end;
-  eTimer.Stop;  //Stop counter
-  AddInformation(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
-                 infWar + ', ' + infErr + '>>', '', 0, 0);
+  if showSummary then begin
+    AddInformation(txt , '', 0, 0);
 
-  //Actualiza estadísticas de uso
-  if nErr=0 then begin     //No hay error
-    AddInformation(cxp0.RAMusedStr, '', 0, 0);
+    //Actualiza estadísticas de uso
+    if nErr=0 then begin     //No hay error
+      AddInformation(cxp0.RAMusedStr, '', 0, 0);
+    end;
   end;
   FilterGrid;
   //Posiciona al final
@@ -495,11 +468,9 @@ begin
   UtilGrilla.ImageList := ImgMessages;  //Íconos a usar
   grilla.RowHeights[0] := 0;  //oculta envabezado
   grilla.Visible := false;
-  eTimer := TEpikTimer.Create(nil);  //Used for precision time measure
 end;
 destructor TfraMessagesWin.Destroy;
 begin
-  eTimer.Destroy;
   UtilGrilla.Destroy;
   inherited Destroy;
 end;

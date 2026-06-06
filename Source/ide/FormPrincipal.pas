@@ -10,7 +10,7 @@ uses
   Menus, ComCtrls, ActnList, StdActns, ExtCtrls, LCLIntf, LCLType, LCLProc,
   StdCtrls, Graphics, alexiaLex, MisUtils, FrameLateralPanel, FormConfig,
   EditView, FrameEditView, FrameMessagesWin, FrameCfgExtTool, Globales,
-  adapterBase, FrameFileExplor, adapter6502, adapterEditor
+  adapterBase, FrameFileExplor, adapter6502, adapterEditor, EpikTimer
   ;
 type
   { TfrmPrincipal }
@@ -189,6 +189,7 @@ type
     procedure FormDestroy(Sender: TObject);
     procedure Timer1Timer(Sender: TObject);
   private
+    eTimer     : TEpikTimer;  //Counter for mesaure compiling
     tic         : integer;       //Contador para temporización
     curDistrib  : Integer;
     ticSynCheck : integer;       //Contador para temporizar la verifiación de sintaxis
@@ -242,6 +243,10 @@ resourcestring
   MSG_SYNFIL_NOF = 'Syntax file not found: %s';
   MSG_FILSAVCOMP = 'File must be saved before compiling.';
   MSG_PROJECT    = 'Project: ';
+
+resourcestring
+  MSG_INICOMP = 'Starting Compilation...';
+  MSG_COMPIL  = 'Compiled in: '          ;
 
 implementation
 {$R *.lfm}
@@ -414,6 +419,8 @@ procedure TfrmPrincipal.FormCreate(Sender: TObject);
     end;
   end;
 begin
+  eTimer := TEpikTimer.Create(nil);  //Used for precision time measure
+
   curDistrib := -1;  //Para forzar la actualización.
 
   //Crea paneles laterales
@@ -484,6 +491,7 @@ begin
   adapter6502.Destroy;
   adapEditor.Destroy;
   msgManager.Destroy;
+  eTimer.Destroy;
 end;
 procedure TfrmPrincipal.FormShow(Sender: TObject);
 begin
@@ -962,17 +970,26 @@ end;
 
 procedure TfrmPrincipal.comp_BeforeCheckSyn;
 begin
-  fraMessages.InitCompilation(currComp, false);  //Limpia mensajes pero no pone mesaje inicial.
+  eTimer.Clear;
+  eTimer.Start;   //Star counting time
+  fraMessages.ClearMessages('', false);  //Limpia mensajes pero no pone mesaje inicial.
+
 end;
 procedure TfrmPrincipal.comp_AfterCheckSyn;
 begin
   if fraMessages.HaveErrors then MarkErrors;
-  fraMessages.EndCompilation(currComp, false);        //No muestra los resúmenes
+  eTimer.Stop;  //Stop counter
+  fraMessages.EndMessages(currComp, MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
+                   msgManager.txtNWarnings +  ', ' + msgManager.txtNErrors+ '>>', false);        //No muestra los resúmenes
 end;
 procedure TfrmPrincipal.comp_BeforeCompile;
 {Se ha iniciado el proceso de compilación del compilador actual.}
 begin
-  fraMessages.InitCompilation(currComp, true);  //Limpia mensajes
+  eTimer.Clear;
+  eTimer.Start;   //Star counting time
+  fraMessages.ClearMessages('', true);  //Limpia mensajes
+  fraMessages.AddInformation(currComp.CompilerName + ': ' + MSG_INICOMP, '', 0, 0);
+
   actSynCheck := false; //Desactiva alguna Verif. de sintaxis, en camino.
 end;
 procedure TfrmPrincipal.comp_AfterCompile;
@@ -987,11 +1004,15 @@ begin
   ticSynCheck := 1000;
   //Muestra y marca posibles errores
   if fraMessages.HaveErrors then begin
-    fraMessages.EndCompilation(currComp, true);
+    eTimer.Stop;  //Stop counter
+    fraMessages.EndMessages(currComp, MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
+          msgManager.txtNWarnings +  ', ' + msgManager.txtNErrors+ '>>', true);
     ShowErrorInDialogBox;
     MarkErrors;
   end else begin
-    fraMessages.EndCompilation(currComp, true);  //Muestra resúmenes.
+    eTimer.Stop;  //Stop counter
+    fraMessages.EndMessages(currComp, MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
+          msgManager.txtNWarnings +  ', ' + msgManager.txtNErrors+ '>>', true);  //Muestra resúmenes.
   end;
 end;
 {$region "Acciones"}

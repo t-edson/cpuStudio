@@ -336,8 +336,18 @@ msgstr ""
 msgid "Theme file"
 msgstr ""
 
+#: formprincipal.msg_compil
+msgctxt "formprincipal.msg_compil"
+msgid "Compiled in: "
+msgstr ""
+
 #: formprincipal.msg_filsavcomp
 msgid "File must be saved before compiling."
+msgstr ""
+
+#: formprincipal.msg_inicomp
+msgctxt "formprincipal.msg_inicomp"
+msgid "Starting Compilation..."
 msgstr ""
 
 #: formprincipal.msg_modified
@@ -458,6 +468,7 @@ msgid "E&xpand"
 msgstr ""
 
 #: framemessageswin.msg_compil
+msgctxt "framemessageswin.msg_compil"
 msgid "Compiled in: "
 msgstr ""
 
@@ -472,6 +483,7 @@ msgid "Errors"
 msgstr ""
 
 #: framemessageswin.msg_inicomp
+msgctxt "framemessageswin.msg_inicomp"
 msgid "Starting Compilation..."
 msgstr ""
 
