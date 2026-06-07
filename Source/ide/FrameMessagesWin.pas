@@ -385,9 +385,8 @@ begin
   HaveErrors := false;  //limpia bandera
 end;
 procedure TfraMessagesWin.EndMessages();
-{Escribe un mensaje final del tiempo de compilación usado y la cantidad de advertencias
-y errores en el Panel de mensajes. También incluye información sobre los recursos usados
-(RAM) y filtra los mensajes de acuerdo a lo que indican los "CheckBox".}
+{Filtra los mensajes de acuerdo a lo que indican los "CheckBox" y se mueve hasta la
+última fila.}
 begin
   FilterGrid;
   //Posiciona al final

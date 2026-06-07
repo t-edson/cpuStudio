@@ -1,4 +1,4 @@
-program P65Pas;
+program CPUStudio;
 
 {$mode objfpc}{$H+}
 

@@ -964,19 +964,16 @@ end;
 procedure TfrmPrincipal.comp_BeforeCheckSyn;
 begin
   fraMessages.ClearMessages();  //Limpia mensajes pero no pone mesaje inicial.
-
 end;
 procedure TfrmPrincipal.comp_AfterCheckSyn;
 begin
   if fraMessages.HaveErrors then MarkErrors;
-
   fraMessages.EndMessages();        //No muestra los resúmenes
 end;
 procedure TfrmPrincipal.comp_BeforeCompile;
 {Se ha iniciado el proceso de compilación del compilador actual.}
 begin
   fraMessages.ClearMessages();  //Limpia mensajes
-
   actSynCheck := false; //Desactiva alguna Verif. de sintaxis, en camino.
 end;
 procedure TfrmPrincipal.comp_AfterCompile;
@@ -991,12 +988,10 @@ begin
   ticSynCheck := 1000;
   //Muestra y marca posibles errores
   if fraMessages.HaveErrors then begin
-    fraMessages.EndMessages();
-    ShowErrorInDialogBox;
     MarkErrors;
-  end else begin
-    fraMessages.EndMessages();  //Muestra resúmenes.
+    ShowErrorInDialogBox;
   end;
+  fraMessages.EndMessages();
 end;
 {$region "Acciones"}
 /////////////////// Acciones de Archivo /////////////////////
@@ -1203,7 +1198,7 @@ end;
 //Adicionales
 procedure TfrmPrincipal.MarkErrors;
 {Marca los errores del panel de mensajes, en la ventana activa del editor.
-Los erroes solo se marcarán si es que se udican en la ventana activa del editor.}
+Los errores solo se marcarán si es que se ubican en la ventana activa del editor.}
 var
   msg, filname: string;
   row, col, f: integer;
@@ -1213,7 +1208,7 @@ begin
   if fraMessages.HaveErrors then begin
     //Obtiene las coordenadas de los errores
      for f:=1 to fraMessages.grilla.RowCount -1 do begin
-       if fraMessages.IsErroridx(f) then begin
+       if fraMessages.IsErroridx(f) then begin  //¿Es fila con error?
          fraMessages.GetErrorIdx(f, msg, filname, row, col);  //obtiene información del error
          if (msg<>'') and (filname = ed.FileName) then begin
            //Hay error en el archivo actual
@@ -1221,12 +1216,6 @@ begin
          end;
        end;
      end;
-
-//     fraMessages.GetFirstError(msg, filname, row, col);
-//     if (msg<>'') and (filname = ed.FileName) then begin
-//       //Hay error en el archivo actual
-//       ed.MarkError(Point(col, row));
-//     end;
   end;
 end;
 procedure TfrmPrincipal.ShowErrorInDialogBox;

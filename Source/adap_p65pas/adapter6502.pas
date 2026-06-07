@@ -40,7 +40,7 @@ type
     CodeTool    : TCodeTool;
     //Compilador.
     Compiler    : TCompiler_PIC16;
-    //Referencia al frame de edición
+    //Referencia al frame que contiene al editor de archivos
     fraEditView1: TfraEditView;
     fraFileExplor1: TfraFileExplor;
     //Referencia al editor lateral (Ensamblador)
@@ -81,7 +81,6 @@ type
   public      //Ejecución
     procedure Compile; override;
     procedure CheckSyntax; override;
-//    procedure UpdateCompletionForEditors; override;
     procedure NotifyConfigChanged(MessPanBack, MessPanText, MessPanErr,
       MessPanSel: TColor; mainEditorCfg: TfraCfgSynEdit); override;
   public      //Frames de configuración

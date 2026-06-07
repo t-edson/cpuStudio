@@ -8,7 +8,7 @@
         <CompatibilityMode Value="True"/>
       </Flags>
       <SessionStorage Value="InProjectDir"/>
-      <Title Value="P65Pas"/>
+      <Title Value="CPUStudio"/>
       <ResourceType Value="res"/>
       <UseXPManifest Value="True"/>
       <Icon Value="0"/>
@@ -24,7 +24,7 @@
           <Version Value="11"/>
           <PathDelim Value="\"/>
           <Target>
-            <Filename Value="..\P65Pas-$(TargetOS)"/>
+            <Filename Value="..\CPUStudio"/>
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir);comp_p65pas"/>
@@ -78,7 +78,7 @@
     </RequiredPackages>
     <Units Count="45">
       <Unit0>
-        <Filename Value="P65Pas.lpr"/>
+        <Filename Value="CPUStudio.lpr"/>
         <IsPartOfProject Value="True"/>
       </Unit0>
       <Unit1>
@@ -320,7 +320,7 @@
     <Version Value="11"/>
     <PathDelim Value="\"/>
     <Target>
-      <Filename Value="..\P65Pas-$(TargetOS)"/>
+      <Filename Value="..\CPUStudio"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir);comp_p65pas"/>
