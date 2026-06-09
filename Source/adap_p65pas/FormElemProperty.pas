@@ -37,7 +37,7 @@ type
   public
     OnExplore: procedure(elem0: TAstElement) of object;
     procedure Clear;
-    procedure Exec(cIn: TAleLexer; elem0: TAstElement);
+    procedure Exec(lex: TAleLexer; elem0: TAstElement);
   end;
 
 var
@@ -99,7 +99,7 @@ begin
     butDetails.Enabled := true;
   end;
 end;
-procedure TfrmElemProperty.Exec(cIn: TAleLexer; elem0: TAstElement);
+procedure TfrmElemProperty.Exec(lex: TAleLexer; elem0: TAstElement);
 var
   adicInformation, dirSolic, tmp, hasImplem: String;
   xcon: TAstConsDec;
@@ -120,8 +120,8 @@ begin
   Image1.Proportional := true;  // to keep width/height ratio
   adicInformation := '';
   txtEleName.Caption := elem.name;
-  txtEleLocaPath.Caption := cIn.ctxFileDir(elem.srcDec);
-  txtEleLocFile.Caption := cIn.ctxFileName(elem.srcDec) + elem.srcDec.RowColString;
+  txtEleLocaPath.Caption := lex.ctxFileDir(elem.srcDec);
+  txtEleLocFile.Caption := lex.ctxFileName(elem.srcDec) + elem.srcDec.RowColString;
   BitBtn2.Enabled := true;
   //Configura etiqueta y botón de número de llamadas al elemento
   SetCalledInfo(elem);

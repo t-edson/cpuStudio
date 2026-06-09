@@ -27,11 +27,6 @@ type
   TAdapterBase = class
   protected
     eTimer     : TEpikTimer;  //Counter for mesaure compiling time
-  public     //Eventos
-    OnBeforeCompile: procedure of object;  //Al iniciar la compilación (No verif. de sintaxis).
-    OnAfterCompile: procedure of object;   //Al finalizar la compilación (No verif. de sintaxis).
-    OnBeforeCheckSyn: procedure of object; //Al iniciar la verif. de sintaxis.
-    OnAfterCheckSyn: procedure of object;  //Al finalizar la verif. de sintaxis.
   public      //Información
     function CompilerName: string; virtual; abstract;
     function hexFilePath: string; virtual; abstract;

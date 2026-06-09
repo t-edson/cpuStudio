@@ -201,12 +201,9 @@ type
     fraRightPanel:TfraLateralPanel; //Panel lateral de la izquierda.
     fraMessages : TfraMessagesWin;
     procedure fraPanel_NewOrDelPage(latPanel: TfraLateralPanel);
+    procedure msgManagerMessageSys(const msgInfo: TMsgInfo);
     procedure OpenFolder(folderPath: string);
     procedure CloseFolder;
-    procedure comp_AfterCheckSyn;
-    procedure comp_BeforeCheckSyn;
-    procedure comp_BeforeCompile;
-    procedure comp_AfterCompile;
     procedure ConfigExtTool_RequirePar(var comLine: string);
     procedure fraEdit_LocateInFileExpl(ed: TSynEditor);
     procedure fraEdit_RequireSetCompletion(ed: TSynEditor);
@@ -396,6 +393,33 @@ begin
     fraFileExplor1.LocateFileOnTree(ed.FileName);
   end;
 end;
+procedure TfrmPrincipal.msgManagerMessageSys(const msgInfo: TMsgInfo);
+{Procesa los mensajes del sistema que genera el compilador (o que se generan a través
+del gestor de mensajes)}
+begin
+  case msginfo.txt of
+    CMD_CLEAR_MSGS:     //Limpia mensajes
+      fraMessages.ClearMessages();
+    CMD_END_MSGS:       //Termina el envío de mensajes
+      fraMessages.EndMessages();
+    CMD_MRK_ERRORS:    //Marca los errores en el código fuente
+      MarkErrors;
+    CMD_SHOW_ERRDLG:    //Muestra el primer error en un caudro de diálogo
+      ShowErrorInDialogBox;
+    CMD_DISAB_SYN_CHK:  //Desactiva la verificación automática de sintaxis
+      actSynCheck := false; //Desactiva alguna Verif. de sintaxis, en camino.
+    CMD_ENAB_SYN_CHK: begin  //Activa la verificación automática de sintaxis
+      actSynCheck := true; //Restaura las verificaciones de sintaxis
+      {Desactiva alguna Verif. de sintaxis, en camino, porque si se ha terminado
+      de compilar, ya no tiene sentido hacer una verificación de sintaxis.
+      Si bien con "actSynCheck" desactivado no se ejecutará la verificación de sintaxis,
+      puede que haya quedado una cuenta en camino de "ticSynCheck" y generaría una
+      verificación de sintaxis. Por eso fijamos "ticSynCheck" a un valor alto. }
+      ticSynCheck := 1000;
+    end;
+  else ;
+  end;
+end;
 procedure TfrmPrincipal.FormCreate(Sender: TObject);
   procedure FillPopupCompilers;
   {Llena el menú que permite seleccionar al compilador o herramienta actual.
@@ -469,16 +493,12 @@ begin
   FillPopupCompilers;
   //Crea gestor de mensajes
   msgManager := TMessageManager.Create;
+  msgManager.OnMessageSys := @msgManagerMessageSys;  //Estos mensajes los procesamos aquí
   fraMessages.Inic(msgmanager);   //Conecta el gestor de mensajes
   //Crea Adaptador para editor
   adapEditor := TAdapterEditor.Create(fraEditView1);
   //Crea Adaptador para P65pas
   adapter6502:= TAdapter6502.Create(fraEditView1, fraFileExplor1, msgManager);
-  adapter6502.OnBeforeCompile  := @comp_BeforeCompile;
-  adapter6502.OnAfterCompile   := @comp_AfterCompile;
-  adapter6502.OnBeforeCheckSyn := @comp_BeforeCheckSyn;
-  adapter6502.OnAfterCheckSyn  := @comp_AfterCheckSyn;
-
 end;
 procedure TfrmPrincipal.FormDestroy(Sender: TObject);
 begin
@@ -959,39 +979,6 @@ begin
       encon := curEdit.SearchReplace(buscado,'',opciones);  //búsca siguiente
   end;
   MsgBox(MSG_NOFOUND_, [buscado]);
-end;
-
-procedure TfrmPrincipal.comp_BeforeCheckSyn;
-begin
-  fraMessages.ClearMessages();  //Limpia mensajes pero no pone mesaje inicial.
-end;
-procedure TfrmPrincipal.comp_AfterCheckSyn;
-begin
-  if fraMessages.HaveErrors then MarkErrors;
-  fraMessages.EndMessages();        //No muestra los resúmenes
-end;
-procedure TfrmPrincipal.comp_BeforeCompile;
-{Se ha iniciado el proceso de compilación del compilador actual.}
-begin
-  fraMessages.ClearMessages();  //Limpia mensajes
-  actSynCheck := false; //Desactiva alguna Verif. de sintaxis, en camino.
-end;
-procedure TfrmPrincipal.comp_AfterCompile;
-{Ha terminado el proceso de compilación del compilador actual.}
-begin
-  actSynCheck := true; //Restaura las verifiaciones de sintaxis
-  {Desactiva alguna Verif. de sintaxis, en camino, porque si se ha terminado
-  de compilar, ya no tiene sentido hacer una verificación de sintaxis.
-  Si bien con "actSynCheck" desactivado no se ejecutará la verificación de sintaxis,
-  puede que haya quedado una cuenta en camino de "ticSynCheck" y generaría una
-  verificación de sintaxis. Por eso fijamos "ticSynCheck" a un valor alto. }
-  ticSynCheck := 1000;
-  //Muestra y marca posibles errores
-  if fraMessages.HaveErrors then begin
-    MarkErrors;
-    ShowErrorInDialogBox;
-  end;
-  fraMessages.EndMessages();
 end;
 {$region "Acciones"}
 /////////////////// Acciones de Archivo /////////////////////

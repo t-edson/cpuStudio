@@ -3,7 +3,7 @@ unit FrameMessagesWin;
 {$mode objfpc}{$H+}
 interface
 uses
-  Classes, SysUtils, FileUtil, LazFileUtils, Forms, Controls, Grids, Graphics,
+  Classes, SysUtils, LazFileUtils, Forms, Controls, Grids, Graphics,
   ExtCtrls, StdCtrls, Menus, Clipbrd, Globales, alexiaLex,
   adapterBase, UtilsGrilla, BasicGrilla, MisUtils;
 type
@@ -83,7 +83,6 @@ type
     procedure AddWarning(warTxt, fname: string; row, col: integer);
   public //Inicialización
     procedure CompilerMsg(msgKind: TMessageKind; const msgInfo: TMsgInfo);
-    procedure CompilerMessageBox(txt: string; mode: integer);
     procedure Inic(msgManager: TMessageManager);
     constructor Create(AOwner: TComponent) ; override;
     destructor Destroy; override;
@@ -404,24 +403,22 @@ begin
       AddInformation(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
     mkWarning:
       AddWarning(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
-    mkError:begin
+    mkError:
       AddError(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
-    end;
+    //Mensajes que generan cuadro de diálogo
+    mkDlgBox:
+      MsgBox(msgInfo.txt);
+    mkDlgWar:
+      MsgExc(msgInfo.txt);
+    mkDlgErr:
+      MsgErr(msgInfo.txt);
   else ;
   end;
-end;
-procedure TfraMessagesWin.CompilerMessageBox(txt: string; mode: integer);
-{Se pide mostrar un cuadro de diálogo con mensaje.}
-begin
-  if mode = 0 then MsgBox(txt);
-  if mode = 1 then MsgExc(txt);
-  if mode = 2 then MsgErr(txt);
 end;
 procedure TfraMessagesWin.Inic(msgManager: TMessageManager);
 {COnfigura a la ventana de mensajes para que se conecte al gestor de mensajes}
 begin
   msgManager.OnMessage     := @CompilerMsg;
-  msgManager.OnMessageBox  := @CompilerMessageBox;
 end;
 constructor TfraMessagesWin.Create(AOwner: TComponent);
 var

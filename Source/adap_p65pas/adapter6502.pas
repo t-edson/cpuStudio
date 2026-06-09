@@ -339,12 +339,15 @@ begin
   Compiler.msg.nErrors := 0;  //**** ¿Es necesario?
   //Tareas iniciales
   eTimer.Clear; eTimer.Start;   //Star counting time
-  if OnBeforeCheckSyn<>nil then OnBeforeCheckSyn();
+  Compiler.msg.msgSys(CMD_CLEAR_MSGS, 0,0,'');  //Limpia ventana de mensajes
   //Realiza la compilación
   Compiler.Exec(ed.FileName, '', pars);
   //Tareas finales
   eTimer.Stop;  //Stop counter
-  if OnAfterCheckSyn<>nil then OnAfterCheckSyn();
+  if Compiler.msg.nErrors>0 then begin
+    Compiler.msg.msgSys(CMD_MRK_ERRORS, 0,0,'');
+  end;
+  Compiler.msg.msgSys(CMD_END_MSGS, 0,0,'');
 end;
 procedure TAdapter6502.Compile;
 {Ejecuta el compilador para generar un archivo binario de salida.}
@@ -370,7 +373,8 @@ begin
   //Tareas iniciales
   eTimer.Clear;
   eTimer.Start;   //Star counting time
-  if OnBeforeCompile<>nil then OnBeforeCompile();
+  Compiler.msg.msgSys(CMD_CLEAR_MSGS, 0,0,'');  //Limpia ventana de mensajes
+  Compiler.msg.msgSys(CMD_DISAB_SYN_CHK, 0,0, '');  //Desactiva Verif. de sintaxis.
   Compiler.GenInfo(CompilerName + ': ' + MSG_INICOMP);
   //Realiza la compilación
   Compiling := true;   //Activa bandera para saber que queremos compilar.
@@ -383,8 +387,14 @@ begin
   if Compiler.msg.nErrors = 0 then begin     //No hay errores
     Compiler.GenInfo(compiler.RAMusedStr);    //Estadísticas de recursos usados
   end;
+  Compiler.msg.msgSys(CMD_ENAB_SYN_CHK, 0, 0, ''); //Activa Verificac. de sintaxis.
+  //Muestra y marca posibles errores
+  if Compiler.msg.nErrors>0 then begin
+    Compiler.msg.msgSys(CMD_MRK_ERRORS, 0, 0, '');
+    Compiler.msg.msgSys(CMD_SHOW_ERRDLG, 0, 0, '');
+  end;
+  Compiler.msg.msgSys(CMD_END_MSGS, 0,0,'');
 
-  if OnAfterCompile<>nil then OnAfterCompile();
   UpdateTools;
 end;
 procedure TAdapter6502.CheckSyntax;
