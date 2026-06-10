@@ -40,6 +40,7 @@ type
     CodeTool    : TCodeTool;
     //Compilador.
     Compiler    : TCompiler_PIC16;
+    msg         : TMessageManager;         //Gestor de mensajes
     //Referencia al frame que contiene al editor de archivos
     fraEditView1: TfraEditView;
     fraFileExplor1: TfraFileExplor;
@@ -97,7 +98,7 @@ type
     procedure setMenusAndToolbar(menu1, menu2, menu3: TMenuItem; toolbar: TToolBar;
       popupEdit: TPopupMenu; popupEditCount: integer); override;
     constructor Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor;
-      msgManager: TMessageManager);
+      msg0: TMessageManager);
     destructor Destroy; override;
   end;
 resourcestring
@@ -135,12 +136,13 @@ procedure TAdapter6502.CompileAndExec(Sender: TObject);
 begin
   Compile;
   if Compiler.IsUnit then exit;  //No es programa
-  if Compiler.msg.nErrors=0 then begin
+  if msg.nErrors=0 then begin
      frmDebug.Exec(Compiler);
      frmDebug.acGenRunExecute(self);
   end;
 end;
 procedure TAdapter6502.ASMDebug(Sender: TObject);
+{Inicia de depuración.}
 begin
     frmDebug.Exec(Compiler);
 end;
@@ -251,13 +253,13 @@ end;
 procedure TAdapter6502.UpdateTools;
 {Actualiza las herramientas adicionales que se incluyen con el compilador.}
 var
-  usedRAM, usedROM, usedSTK, zoom: single;
+  usedRAM, usedROM, usedSTK: single;
 begin
   //Actualiza el árbol de sintaxis
   fraASTview.Refresh;
   fraMIRview.Refresh;
   //Actualiza frame de estadísticas de uso
-  if Compiler.msg.nErrors=0 then begin
+  if msg.nErrors=0 then begin
     //No hay error
     compiler.GetResourcesUsed(usedRAM, usedROM, usedSTK);
     fraStatis.Update(usedRAM, usedROM, usedSTK);
@@ -274,7 +276,7 @@ begin
   end;
   edAsm.EndUpdate;
   //Actualiza explorador de RAM
-  zoom := frmRAMExplorer.zoom; //Zoom actual
+  //zoom := frmRAMExplorer.zoom; //Zoom actual
   if frmRAMExplorer.Visible then frmRAMExplorer.UpdateScreen(compiler);
 end;
 procedure TAdapter6502.ReadCompilerSettings(var pars: string);
@@ -336,18 +338,18 @@ begin
     end;
   end;
   //Inicio de compilación
-  Compiler.msg.nErrors := 0;  //**** ¿Es necesario?
+  msg.nErrors := 0;  //**** ¿Es necesario?
   //Tareas iniciales
-  eTimer.Clear; eTimer.Start;   //Star counting time
-  Compiler.msg.msgSys(CMD_CLEAR_MSGS, 0,0,'');  //Limpia ventana de mensajes
+  //eTimer.Clear; eTimer.Start;   //Star counting time
+  msg.sys(CMD_CLEAR_MSGS);  //Limpia ventana de mensajes
   //Realiza la compilación
   Compiler.Exec(ed.FileName, '', pars);
   //Tareas finales
-  eTimer.Stop;  //Stop counter
-  if Compiler.msg.nErrors>0 then begin
-    Compiler.msg.msgSys(CMD_MRK_ERRORS, 0,0,'');
+  //eTimer.Stop;  //Stop counter
+  if msg.nErrors>0 then begin
+    msg.sys(CMD_MRK_ERRORS);
   end;
-  Compiler.msg.msgSys(CMD_END_MSGS, 0,0,'');
+  msg.sys(CMD_END_MSGS);
 end;
 procedure TAdapter6502.Compile;
 {Ejecuta el compilador para generar un archivo binario de salida.}
@@ -369,31 +371,30 @@ begin
   //Lee configuración de compilación
   ReadCompilerSettings(pars);
   //Inicio de compilación
-  Compiler.msg.nErrors := 0;  //**** ¿Es necesario?
+  msg.nErrors := 0;  //**** ¿Es necesario?
   //Tareas iniciales
-  eTimer.Clear;
-  eTimer.Start;   //Star counting time
-  Compiler.msg.msgSys(CMD_CLEAR_MSGS, 0,0,'');  //Limpia ventana de mensajes
-  Compiler.msg.msgSys(CMD_DISAB_SYN_CHK, 0,0, '');  //Desactiva Verif. de sintaxis.
-  Compiler.GenInfo(CompilerName + ': ' + MSG_INICOMP);
+  eTimer.Clear; eTimer.Start;   //Star counting time
+  msg.sys(CMD_CLEAR_MSGS);  //Limpia ventana de mensajes
+  msg.sys(CMD_DISAB_SYN_CHK);  //Desactiva Verif. de sintaxis.
+  msg.info(CompilerName + ': ' + MSG_INICOMP);
   //Realiza la compilación
   Compiling := true;   //Activa bandera para saber que queremos compilar.
   Compiler.Exec(ed.FileName, '', pars);
   Compiling := false;
   //Tareas finales
   eTimer.Stop;  //Stop counter
-  Compiler.GenInfo(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
-              Compiler.msg.txtNWarnings +  ', ' + Compiler.msg.txtNErrors+ '>>');
-  if Compiler.msg.nErrors = 0 then begin     //No hay errores
-    Compiler.GenInfo(compiler.RAMusedStr);    //Estadísticas de recursos usados
+  msg.info(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
+           msg.txtNWarnings + ', ' + msg.txtNErrors+ '>>');
+  if msg.nErrors = 0 then begin     //No hay errores
+    msg.info(compiler.RAMusedStr);    //Estadísticas de recursos usados
   end;
-  Compiler.msg.msgSys(CMD_ENAB_SYN_CHK, 0, 0, ''); //Activa Verificac. de sintaxis.
+  msg.sys(CMD_ENAB_SYN_CHK); //Activa Verificac. de sintaxis.
   //Muestra y marca posibles errores
-  if Compiler.msg.nErrors>0 then begin
-    Compiler.msg.msgSys(CMD_MRK_ERRORS, 0, 0, '');
-    Compiler.msg.msgSys(CMD_SHOW_ERRDLG, 0, 0, '');
+  if msg.nErrors>0 then begin
+    msg.sys(CMD_MRK_ERRORS);
+    msg.sys(CMD_SHOW_ERRDLG);
   end;
-  Compiler.msg.msgSys(CMD_END_MSGS, 0,0,'');
+  msg.sys(CMD_END_MSGS);
 
   UpdateTools;
 end;
@@ -597,14 +598,15 @@ end;
 //end;
 
 constructor TAdapter6502.Create(fraEditView: TfraEditView; fraFilExplor: TfraFileExplor;
-                                msgManager: TMessageManager);
+                                msg0: TMessageManager);
 begin
   inherited Create;
   //Guarda referencias a las herramientas que ofrece la IDE
   fraEditView1 := fraEditView;
   fraFileExplor1 := fraFilExplor;
   //Crea compilador y configura eventos
-  Compiler:= TCompiler_PIC16.Create(msgManager);
+  Compiler := TCompiler_PIC16.Create(msg0);
+  msg := msg0;  //Se maneja separadamente de "Compiler.msg" porque no se asumirá que todos los compiladores tengan esa referencia.
   Compiler.lex.OnRequireFileString:=@Compiler_RequireFileString;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);

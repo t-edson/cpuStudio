@@ -11,12 +11,12 @@ const
   NOM_PROG = 'P65Pas';   //nombre de programa
   {$I ../version.txt}   //versión del programa
 const  //Comandos que soporta el formulario principal y que se envían como mensajes del sistema
-  CMD_CLEAR_MSGS = 'ClearMsgs';   //Limpiar la ventana de mensajes
-  CMD_END_MSGS = 'EndMsgs';       //Filtrar y seleccionar el último mensaje
-  CMD_MRK_ERRORS = 'MarkErrors';  //Marcar los errores deetetados en el editor actual
-  CMD_SHOW_ERRDLG = 'ShowErrDlg'; //Mostrar un cuadro de diálogo con el primer mensaje de error
-  CMD_DISAB_SYN_CHK = 'DISAB_SYN_CHK';  //Desactiva la verificación automática de sintaxis
-  CMD_ENAB_SYN_CHK = 'ENAB_SYN_CHK';    //Activa la verificación automática de sintaxis
+  CMD_CLEAR_MSGS    = 0;  //Limpiar la ventana de mensajes
+  CMD_END_MSGS      = 1;  //Filtrar y seleccionar el último mensaje
+  CMD_MRK_ERRORS    = 2;  //Marcar los errores deetetados en el editor actual
+  CMD_SHOW_ERRDLG   = 3;  //Mostrar un cuadro de diálogo con el primer mensaje de error
+  CMD_DISAB_SYN_CHK = 4;  //Desactiva la verificación automática de sintaxis
+  CMD_ENAB_SYN_CHK  = 5;  //Activa la verificación automática de sintaxis
 var
    //Variables globales
 //   MsjError    : String;    //Bandera - Mensaje de error
