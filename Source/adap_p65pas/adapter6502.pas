@@ -337,8 +337,6 @@ begin
       ReadCompilerSettings(pars);
     end;
   end;
-  //Inicio de compilación
-  msg.nErrors := 0;  //**** ¿Es necesario?
   //Tareas iniciales
   //eTimer.Clear; eTimer.Start;   //Star counting time
   msg.sys(CMD_CLEAR_MSGS);  //Limpia ventana de mensajes
@@ -370,8 +368,6 @@ begin
   end;
   //Lee configuración de compilación
   ReadCompilerSettings(pars);
-  //Inicio de compilación
-  msg.nErrors := 0;  //**** ¿Es necesario?
   //Tareas iniciales
   eTimer.Clear; eTimer.Start;   //Star counting time
   msg.sys(CMD_CLEAR_MSGS);  //Limpia ventana de mensajes
@@ -385,15 +381,14 @@ begin
   eTimer.Stop;  //Stop counter
   msg.info(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
            msg.txtNWarnings + ', ' + msg.txtNErrors+ '>>');
-  if msg.nErrors = 0 then begin     //No hay errores
+  if msg.nErrors <= 0 then begin     //No hay errores
     msg.info(compiler.RAMusedStr);    //Estadísticas de recursos usados
-  end;
-  msg.sys(CMD_ENAB_SYN_CHK); //Activa Verificac. de sintaxis.
-  //Muestra y marca posibles errores
-  if msg.nErrors>0 then begin
+  end else begin
+    //Muestra y marca posibles errores
     msg.sys(CMD_MRK_ERRORS);
     msg.sys(CMD_SHOW_ERRDLG);
   end;
+  msg.sys(CMD_ENAB_SYN_CHK); //Activa Verificac. de sintaxis.
   msg.sys(CMD_END_MSGS);
 
   UpdateTools;

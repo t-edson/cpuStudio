@@ -79,7 +79,7 @@ type
     procedure ClearMessages;
     procedure EndMessages;
     procedure AddError(errTxt, fname: string; row, col: integer);
-    procedure AddInformation(infTxt, fname: string; row, col: integer);
+    procedure AddInformation(infTxt: string);
     procedure AddWarning(warTxt, fname: string; row, col: integer);
   public //Inicialización
     procedure CompilerMsg(msgKind: TMessageKind; const msgInfo: TMsgInfo);
@@ -162,7 +162,7 @@ begin
   BackSelColor := clBtnFace;
 end;
 { TfraMessagesWin }
-procedure TfraMessagesWin.AddInformation(infTxt, fname: string; row, col: integer);
+procedure TfraMessagesWin.AddInformation(infTxt: string);
 var
   f: Integer;
 begin
@@ -400,7 +400,7 @@ procedure TfraMessagesWin.CompilerMsg(msgKind: TMessageKind;
 begin
   case msgKind of
     mkInfo:
-      AddInformation(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
+      AddInformation(msgInfo.txt);
     mkWarning:
       AddWarning(msgInfo.txt, msgInfo.fname, msgInfo.row, msgInfo.col);
     mkError:

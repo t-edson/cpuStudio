@@ -416,7 +416,7 @@ begin
   fraEditview1.OnRequireSetCompletion := @fraEdit_RequireSetCompletion;
   fraEditView1.OnLocateInFileExpl     := @fraEdit_LocateInFileExpl;
   fraEditView1.tmpPath := patTemp;   //Fija ruta de trabajo temporal
-  //Guarda cantidad de ítems en menú contextul del editor para dar esa información a los
+  //Guarda cantidad de ítems en menú contextual del editor para dar esa información a los
   //adaptadores.
   PopupEdit_N := PopupEdit.Items.Count;
   actSynCheck := true;
@@ -914,6 +914,7 @@ begin
   {Activamos el contador de verificación de sintaxis, por si se necesita hacer, ya que
    ha habido un cambio en el archivo actual en edición.}
   if actSynCheck then ticSynCheck := 0;  //Reinicia cuenta.
+  //Actualiza menús
   acFilSave.Enabled := ed.Modified;
   acEdUndo.Enabled  := ed.CanUndo;
   acEdRedo.Enabled  := ed.CanRedo;
