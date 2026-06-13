@@ -332,7 +332,7 @@ var
   end;
 
 begin
-  for v in cxp.TreeElems.AllVars do begin   //Se supone que "AllVars" ya se actualizó.
+  for v in cxp.ast.AllVars do begin   //Se supone que "AllVars" ya se actualizó.
       if v.nCalled = 0 then continue;
       if v.storage in [stRegistA .. stRegistY] then begin
         AddRow;

@@ -111,10 +111,10 @@ begin
     callPos.col := curX;
     callPos.row := ed.sedit.CaretY;
     callPos.idCtx := cxp.lex.ctxId(ed.FileName);
-    ele := cxp.TreeElems.GetElementCalledAt(callPos);
+    ele := cxp.ast.GetElementCalledAt(callPos);
     if ele = nil then begin
       //No lo ubica, puede ser que esté en la sección de declaración
-      ele := cxp.TreeElems.GetELementDeclaredAt(callPos);
+      ele := cxp.ast.GetELementDeclaredAt(callPos);
       if ele <> nil then begin
         //Es el punto donde se declara
         if ele.idClass = eleUnit then begin
@@ -126,7 +126,7 @@ begin
       end else begin
         MsgExc('Unknown identifier: %s', [tok]);
       end;
-  //    curBody := cxp.TreeElems.GetElementBodyAt(ed.SynEdit.CaretXY);
+  //    curBody := cxp.ast.GetElementBodyAt(ed.SynEdit.CaretXY);
   //    if curBody=nil then begin
   //
   //    end;
@@ -247,7 +247,7 @@ begin
 //    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
 //    exit;
   end;
-  ele := cxp.TreeElems.GetElementCalledAt(tokPos);
+  ele := cxp.ast.GetElementCalledAt(tokPos);
   if ele = nil then begin
     //No identifica a este elemento
     exit;
@@ -353,7 +353,7 @@ begin
   bloque actual terminará antes}
   curPos.x := ed.sedit.CaretX - 1;
   curPos.y := ed.sedit.CaretY;
-//  eleBod := cxp.TreeElems.GetElementBodyAt(curPos);
+//  eleBod := cxp.ast.GetElementBodyAt(curPos);
 //  if eleBod = nil then begin
 //    //No identifica a un Body
 ////    exit;
@@ -367,20 +367,20 @@ begin
   Fill_SpecialIdentif(opEve, ed.hl, 'Keyword', 2);
   Fill_SpecialIdentif(opEve, ed.hl, 'Boolean', 4);
   //Carga identificadores accesibles desde la posición actual
-  ele := cxp.TreeElems.GetElementAt(curPos);
+  ele := cxp.ast.GetElementAt(curPos);
   if ele = nil then begin
     //No identifica la posición actual
     Cancel := false;  //Deja que siga el filtrado, porque hay items agregados
     exit;  //Sale porque no se reconcoe al elemento sintáctico actual
   end;
-  cxp.TreeElems.curNode := ele;  //Se posiciona en ese nodo
+  cxp.ast.curNode := ele;  //Se posiciona en ese nodo
   //Realiza la búsqueda con FindFirst, usando evento OnFindElement
   opEve0 := opEve;      //Para que el evento identifique al opEve
   //Configura evento oara que agregue elemento encontrado a opEve0.
-  cxp.TreeElems.OnFindElement := @cxpTreeElemsFindElement;
+  cxp.ast.OnFindElement := @cxpTreeElemsFindElement;
   //Hace la búsqueda a todos los elementos accesibles desde la posición actual.
-  cxp.TreeElems.FindFirst('#');  //Nunca lo va a encontrar pero va a explorar todo el árbol
-  cxp.TreeElems.OnFindElement := nil;
+  cxp.ast.FindFirst('#');  //Nunca lo va a encontrar pero va a explorar todo el árbol
+  cxp.ast.OnFindElement := nil;
 
   //Llenó los ítems y deja que se aplique el filtro para llenar Avails[]
   Cancel := false;
