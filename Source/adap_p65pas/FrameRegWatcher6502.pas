@@ -332,58 +332,58 @@ var
   end;
 
 begin
-  for v in cxp.ast.AllVars do begin   //Se supone que "AllVars" ya se actualizó.
-      if v.nCalled = 0 then continue;
-      if v.storage in [stRegistA .. stRegistY] then begin
-        AddRow;
-        grilla.Cells[COL_NAM,i] := v.name;
-        grilla.Cells[COL_ADD,i] := cRegName[v.storage];
-        grilla.Cells[col_adr,i] := '';
-        grilla.Cells[col_bit,i] := '';
-        continue;
-      end;
-      if v.typ.IsByteSize then begin
-        AddWatch(v.name);
-      end else if v.typ.IsWordSize then begin
-//        AddWatch(v.name+'@1');
-//        AddWatch(v.name+'@0');
-//        AddWatch(v.addr);
-//        AddWatch(v.addr+1);
-        AddRow;
-        grilla.Objects[0, i] := v;
-        grilla.Cells[COL_NAM,i] := v.name;
-        grilla.Cells[COL_ADD,i] := '$'+IntToHex(v.addr,3);
-        grilla.Cells[col_adr,i] := '$'+IntToHex(v.addr,3);
-        grilla.Cells[col_bit,i] := '';
-      end else if v.typ.IsDWordSize then begin
-        //AddWatch(v.addr);
-        //AddWatch(v.addr+1);
-        //AddWatch(v.addr+2);
-        //AddWatch(v.addr+3);
-        AddRow;
-        grilla.Objects[0, i] := v;
-        grilla.Cells[COL_NAM,i] := v.name;
-        grilla.Cells[COL_ADD,i] := '$'+IntToHex(v.addr,3);
-        grilla.Cells[col_adr,i] := '$'+IntToHex(v.addr,3);
-        grilla.Cells[col_bit,i] := '';
-      end else if v.typ.catType = tctArray then begin
-        //Arreglo
-        //Agrega primer byte
-        AddWatch(v.name);
-        //agrega bytes siguientes
-        maxBytes := v.typ.nItems * v.typ.itmType.size-1;
-        //if maxBytes > 10 then
-        for i:=1 to maxBytes do begin
-           AddWatch(v.addr + i);
-        end;
-      end else if v.typ.catType = tctPointer then begin
-        //Puntero corto
-         AddWatch(v.addr);
-      end else begin
-
-      end;
-  end;
-  Refrescar;
+//  for v in cxp.ast.AllVars do begin   //Se supone que "AllVars" ya se actualizó.
+//      if v.nCalled = 0 then continue;
+//      if v.storage in [stRegistA .. stRegistY] then begin
+//        AddRow;
+//        grilla.Cells[COL_NAM,i] := v.name;
+//        grilla.Cells[COL_ADD,i] := cRegName[v.storage];
+//        grilla.Cells[col_adr,i] := '';
+//        grilla.Cells[col_bit,i] := '';
+//        continue;
+//      end;
+//      if v.typ.IsByteSize then begin
+//        AddWatch(v.name);
+//      end else if v.typ.IsWordSize then begin
+////        AddWatch(v.name+'@1');
+////        AddWatch(v.name+'@0');
+////        AddWatch(v.addr);
+////        AddWatch(v.addr+1);
+//        AddRow;
+//        grilla.Objects[0, i] := v;
+//        grilla.Cells[COL_NAM,i] := v.name;
+//        grilla.Cells[COL_ADD,i] := '$'+IntToHex(v.addr,3);
+//        grilla.Cells[col_adr,i] := '$'+IntToHex(v.addr,3);
+//        grilla.Cells[col_bit,i] := '';
+//      end else if v.typ.IsDWordSize then begin
+//        //AddWatch(v.addr);
+//        //AddWatch(v.addr+1);
+//        //AddWatch(v.addr+2);
+//        //AddWatch(v.addr+3);
+//        AddRow;
+//        grilla.Objects[0, i] := v;
+//        grilla.Cells[COL_NAM,i] := v.name;
+//        grilla.Cells[COL_ADD,i] := '$'+IntToHex(v.addr,3);
+//        grilla.Cells[col_adr,i] := '$'+IntToHex(v.addr,3);
+//        grilla.Cells[col_bit,i] := '';
+//      end else if v.typ.catType = tctArray then begin
+//        //Arreglo
+//        //Agrega primer byte
+//        AddWatch(v.name);
+//        //agrega bytes siguientes
+//        maxBytes := v.typ.nItems * v.typ.itmType.size-1;
+//        //if maxBytes > 10 then
+//        for i:=1 to maxBytes do begin
+//           AddWatch(v.addr + i);
+//        end;
+//      end else if v.typ.catType = tctPointer then begin
+//        //Puntero corto
+//         AddWatch(v.addr);
+//      end else begin
+//
+//      end;
+//  end;
+//  Refrescar;
 end;
 procedure TfraRegWatcher.acAddRTExecute(Sender: TObject);
 {Agrega los registros de trabajo}

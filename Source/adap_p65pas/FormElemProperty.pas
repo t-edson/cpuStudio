@@ -67,18 +67,18 @@ var
   call: TAstEleCaller;
   tmp, callerStr: String;
 begin
-  //Detalla las llamadas hechas al elemento
-  tmp := '';
-  for call in elem.lstCallers do begin
-    if call.caller.Parent<>nil then begin
-      callerStr := call.caller.Parent.name + '-' + call.caller.name;
-    end else begin
-      callerStr := call.caller.name;
-    end;
-    tmp := tmp + 'Called by: ' + callerStr + ' ' +
-           ' Pos:' + call.curPos.RowColString + LineEnding;
-  end;
-  MsgBox(tmp);
+//  //Detalla las llamadas hechas al elemento
+//  tmp := '';
+//  for call in elem.lstCallers do begin
+//    if call.caller.Parent<>nil then begin
+//      callerStr := call.caller.Parent.name + '-' + call.caller.name;
+//    end else begin
+//      callerStr := call.caller.name;
+//    end;
+//    tmp := tmp + 'Called by: ' + callerStr + ' ' +
+//           ' Pos:' + call.curPos.RowColString + LineEnding;
+//  end;
+//  MsgBox(tmp);
 end;
 
 procedure TfrmElemProperty.SetCalledInfo(elem0: TAstElement);
@@ -86,18 +86,18 @@ procedure TfrmElemProperty.SetCalledInfo(elem0: TAstElement);
 var
   nCalled: Integer;
 begin
-  nCalled := elem0.nCalled;
-  if nCalled = 0 then begin
-    lblElemName3.Caption := 'Status';
-    lblUsed.Font.Color := clGray;
-    lblUsed.Caption := 'Unused';
-    butDetails.Enabled := false;
-  end else begin
-    lblElemName3.Caption := 'Status';
-    lblUsed.Font.Color := clGreen;
-    lblUsed.Caption := 'Used ' + IntToStr(nCalled) + ' times.';
-    butDetails.Enabled := true;
-  end;
+//  nCalled := elem0.nCalled;
+//  if nCalled = 0 then begin
+//    lblElemName3.Caption := 'Status';
+//    lblUsed.Font.Color := clGray;
+//    lblUsed.Caption := 'Unused';
+//    butDetails.Enabled := false;
+//  end else begin
+//    lblElemName3.Caption := 'Status';
+//    lblUsed.Font.Color := clGreen;
+//    lblUsed.Caption := 'Used ' + IntToStr(nCalled) + ' times.';
+//    butDetails.Enabled := true;
+//  end;
 end;
 procedure TfrmElemProperty.Exec(lex: TAleLexer; elem0: TAstElement);
 var

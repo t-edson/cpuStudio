@@ -95,66 +95,66 @@ var
   filPath: string;
   dlin: SizeInt;
 begin
-  ed := fraEdit.ActiveEditor;
-  //Primero ubica el token
-  ReadCurIdentif(tok, tokType, lex, curX);
-  if tok='' then exit;  //No encontró token
-  if tokType = lex.tnIdentif then begin
-    //Asegurarse que "synTree" está actualizado.
-    cxp.Exec(fraEdit.ActiveEditor.FileName, '', '-Ca' + LineEnding + '-Dn' + lineending +
-             '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
-    if cxp.HayError then begin
-      //Basta que haya compilado hasta donde se encuentra el identifiacdor, para que funciones.
-  //    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
-  //    exit;
-    end;
-    callPos.col := curX;
-    callPos.row := ed.sedit.CaretY;
-    callPos.idCtx := cxp.lex.ctxId(ed.FileName);
-    ele := cxp.ast.GetElementCalledAt(callPos);
-    if ele = nil then begin
-      //No lo ubica, puede ser que esté en la sección de declaración
-      ele := cxp.ast.GetELementDeclaredAt(callPos);
-      if ele <> nil then begin
-        //Es el punto donde se declara
-        if ele.idClass = eleUnit then begin
-          fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
-  //        MsgBox(ele.name);
-        end else begin
-          //Es otra declaración
-        end;
-      end else begin
-        MsgExc('Unknown identifier: %s', [tok]);
-      end;
-  //    curBody := cxp.ast.GetElementBodyAt(ed.SynEdit.CaretXY);
-  //    if curBody=nil then begin
-  //
-  //    end;
-    end else begin
-      //Ubica la declaración del elemento
-      fileSrc := cxp.lex.ctxFile(ele.srcDec);
-      if not fraEdit.SelectOrLoad(fileSrc, ele.srcDec.row, ele.srcDec.col, false) then begin
-        MsgExc('Cannot load file: %s', [fileSrc]);
-      end;
-    end;
-  end else if tokType = lex.tnDirective then begin
-    //Es directiva. Tal vez sea {$INCLUDE ...}
-    if Upcase(copy(tok,1, 9)) = '{$INCLUDE' then begin
-       //Es {$INCLUDE ...}
-      delete(tok, 1, 9);
-      dlin := length(tok);
-      if tok[dlin] = '}' then delete(tok, dlin, 1);  //quita "}".
-      filPath := trim(tok);
-      //Se calcula la ruta completa tal cual se hace en ParserDirec
-      filPath := cxp.ExpandRelPathToMain(filPath);
-      //msgbox(filPath);
-      if not fraEdit.SelectOrLoad(filPath, 1, 1, false) then begin
-        MsgExc('Cannot load file: %s', [filPath]);
-      end;
-    end;
-  end else begin
-    exit;  //No es identificador
-  end;
+//  ed := fraEdit.ActiveEditor;
+//  //Primero ubica el token
+//  ReadCurIdentif(tok, tokType, lex, curX);
+//  if tok='' then exit;  //No encontró token
+//  if tokType = lex.tnIdentif then begin
+//    //Asegurarse que "synTree" está actualizado.
+//    cxp.Exec(fraEdit.ActiveEditor.FileName, '', '-Ca' + LineEnding + '-Dn' + lineending +
+//             '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
+//    if cxp.HayError then begin
+//      //Basta que haya compilado hasta donde se encuentra el identifiacdor, para que funciones.
+//  //    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
+//  //    exit;
+//    end;
+//    callPos.col := curX;
+//    callPos.row := ed.sedit.CaretY;
+//    callPos.idCtx := cxp.lex.ctxId(ed.FileName);
+//    ele := cxp.ast.GetElementCalledAt(callPos);
+//    if ele = nil then begin
+//      //No lo ubica, puede ser que esté en la sección de declaración
+//      ele := cxp.ast.GetELementDeclaredAt(callPos);
+//      if ele <> nil then begin
+//        //Es el punto donde se declara
+//        if ele.idClass = eleUnit then begin
+//          fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
+//  //        MsgBox(ele.name);
+//        end else begin
+//          //Es otra declaración
+//        end;
+//      end else begin
+//        MsgExc('Unknown identifier: %s', [tok]);
+//      end;
+//  //    curBody := cxp.ast.GetElementBodyAt(ed.SynEdit.CaretXY);
+//  //    if curBody=nil then begin
+//  //
+//  //    end;
+//    end else begin
+//      //Ubica la declaración del elemento
+//      fileSrc := cxp.lex.ctxFile(ele.srcDec);
+//      if not fraEdit.SelectOrLoad(fileSrc, ele.srcDec.row, ele.srcDec.col, false) then begin
+//        MsgExc('Cannot load file: %s', [fileSrc]);
+//      end;
+//    end;
+//  end else if tokType = lex.tnDirective then begin
+//    //Es directiva. Tal vez sea {$INCLUDE ...}
+//    if Upcase(copy(tok,1, 9)) = '{$INCLUDE' then begin
+//       //Es {$INCLUDE ...}
+//      delete(tok, 1, 9);
+//      dlin := length(tok);
+//      if tok[dlin] = '}' then delete(tok, dlin, 1);  //quita "}".
+//      filPath := trim(tok);
+//      //Se calcula la ruta completa tal cual se hace en ParserDirec
+//      filPath := cxp.ExpandRelPathToMain(filPath);
+//      //msgbox(filPath);
+//      if not fraEdit.SelectOrLoad(filPath, 1, 1, false) then begin
+//        MsgExc('Cannot load file: %s', [filPath]);
+//      end;
+//    end;
+//  end else begin
+//    exit;  //No es identificador
+//  end;
 end;
 procedure TCodeTool.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 {Procesa el evento de teclado, para cuando se tiene el editor seleccionado.}
@@ -238,41 +238,41 @@ var
   ele: TAstElement;
   xVar: TAstVarDec;
 begin
-  opEve.ClearItems;  //limpia primero
-  //Asegurarse que "synTree" está actualizado.
-  cxp.Exec(fraEdit.ActiveEditor.FileName, '', '-Ca' + LineEnding + '-Dn' + lineending +
-           '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
-  if cxp.HayError then begin
-    //Basta que haya compilado hasta donde se encuentra el identificador, para que funciones.
-//    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
+//  opEve.ClearItems;  //limpia primero
+//  //Asegurarse que "synTree" está actualizado.
+//  cxp.Exec(fraEdit.ActiveEditor.FileName, '', '-Ca' + LineEnding + '-Dn' + lineending +
+//           '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
+//  if cxp.HayError then begin
+//    //Basta que haya compilado hasta donde se encuentra el identificador, para que funciones.
+////    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
+////    exit;
+//  end;
+//  ele := cxp.ast.GetElementCalledAt(tokPos);
+//  if ele = nil then begin
+//    //No identifica a este elemento
 //    exit;
-  end;
-  ele := cxp.ast.GetElementCalledAt(tokPos);
-  if ele = nil then begin
-    //No identifica a este elemento
-    exit;
-  end;
-  if ele.idClass = eleVarDec then begin
-    //Es una variable, vemos el tipo
-    xVar := TAstVarDec(ele);
-    if xVar.typ = cxp.typByte then begin
-      opEve.AddItem('bit0', 11);
-      opEve.AddItem('bit1', 11);
-      opEve.AddItem('bit2', 11);
-      opEve.AddItem('bit3', 11);
-      opEve.AddItem('bit4', 11);
-      opEve.AddItem('bit5', 11);
-      opEve.AddItem('bit6', 11);
-      opEve.AddItem('bit7', 11);
-    end;
-    if xVar.typ = cxp.typWord then begin
-      opEve.AddItem('high', 11);
-      opEve.AddItem('low' , 11);
-    end;
-  end else begin
-    //No implementado en otro elemento
-    exit;
-  end;
+//  end;
+//  if ele.idClass = eleVarDec then begin
+//    //Es una variable, vemos el tipo
+//    xVar := TAstVarDec(ele);
+//    if xVar.typ = cxp.typByte then begin
+//      opEve.AddItem('bit0', 11);
+//      opEve.AddItem('bit1', 11);
+//      opEve.AddItem('bit2', 11);
+//      opEve.AddItem('bit3', 11);
+//      opEve.AddItem('bit4', 11);
+//      opEve.AddItem('bit5', 11);
+//      opEve.AddItem('bit6', 11);
+//      opEve.AddItem('bit7', 11);
+//    end;
+//    if xVar.typ = cxp.typWord then begin
+//      opEve.AddItem('high', 11);
+//      opEve.AddItem('low' , 11);
+//    end;
+//  end else begin
+//    //No implementado en otro elemento
+//    exit;
+//  end;
 end;
 procedure TCodeTool.Fill_IFtemplate(opEve: TFaOpenEvent);
 begin
