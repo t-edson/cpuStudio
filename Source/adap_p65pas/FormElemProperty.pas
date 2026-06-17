@@ -4,7 +4,7 @@ unit FormElemProperty;
 interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons,
-  StdCtrls, ExtCtrls, MisUtils, AstElemP65, alexiaLex, StrUtils;
+  StdCtrls, ExtCtrls, MisUtils, {AstElemP65, }ASTunit, alexiaLex, StrUtils;
 type
 
   { TfrmElemProperty }
@@ -32,12 +32,12 @@ type
     procedure BitBtn2Click(Sender: TObject);
     procedure butDetailsClick(Sender: TObject);
   private
-    elem: TAstElement;
-    procedure SetCalledInfo(elem0: TAstElement);
+    elem: TASTNode;
+    procedure SetCalledInfo(elem0: TASTNode);
   public
-    OnExplore: procedure(elem0: TAstElement) of object;
+    OnExplore: procedure(elem0: TASTNode) of object;
     procedure Clear;
-    procedure Exec(lex: TAleLexer; elem0: TAstElement);
+    procedure Exec(lex: TAleLexer; elem0: TASTNode);
   end;
 
 var
@@ -63,9 +63,9 @@ begin
   BitBtn2.Enabled := false;
 end;
 procedure TfrmElemProperty.butDetailsClick(Sender: TObject);
-var
-  call: TAstEleCaller;
-  tmp, callerStr: String;
+//var
+//  call: TAstEleCaller;
+//  tmp, callerStr: String;
 begin
 //  //Detalla las llamadas hechas al elemento
 //  tmp := '';
@@ -81,7 +81,7 @@ begin
 //  MsgBox(tmp);
 end;
 
-procedure TfrmElemProperty.SetCalledInfo(elem0: TAstElement);
+procedure TfrmElemProperty.SetCalledInfo(elem0: TASTNode);
 {Agrega información, sobre las llamadas que se hacen a un elemento }
 var
   nCalled: Integer;
@@ -99,26 +99,27 @@ begin
 //    butDetails.Enabled := true;
 //  end;
 end;
-procedure TfrmElemProperty.Exec(lex: TAleLexer; elem0: TAstElement);
-var
-  adicInformation, dirSolic, tmp, hasImplem: String;
-  xcon: TAstConsDec;
-  funimp: TAstFunImp;
-  fundec: TAstFunDec;
-  xbod: TAstBody;
-  xvar: TAstVarDec;
-  //ecall : TxpExitCall;
-  xexp: TAstExpress;
-  sen: TAstSentence;
-  xtyp: TAstTypeDec;
-  asmInst: TAstAsmInstr;
-  asmBlock: TAstAsmBlock;
+procedure TfrmElemProperty.Exec(lex: TAleLexer; elem0: TASTNode);
+//var
+//  adicInformation, dirSolic, tmp, hasImplem: String;
+//  xcon: TAstConsDec;
+//  funimp: TAstFunImp;
+//  fundec: TAstFunDec;
+//  xbod: TAstBody;
+//  xvar: TAstVarDec;
+//  //ecall : TxpExitCall;
+//  xexp: TAstExpress;
+//  sen: TAstSentence;
+//  xtyp: TAstTypeDec;
+//  asmInst: TAstAsmInstr;
+//  asmBlock: TAstAsmBlock;
 begin
   if elem0 = nil then exit;
   elem := elem0;
   Image1.Stretch := true;
   Image1.Proportional := true;  // to keep width/height ratio
-  adicInformation := '';
+{  adicInformation := '';
+
   txtEleName.Caption := elem.name;
   txtEleLocaPath.Caption := lex.ctxFileDir(elem.srcDec);
   txtEleLocFile.Caption := lex.ctxFileName(elem.srcDec) + elem.srcDec.RowColString;
@@ -270,6 +271,7 @@ begin
     adicInformation := '';
   end;
   Memo1.Text := adicInformation;
+}
 end;
 
 end.

@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, FileUtil, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
   Globales, FormElemProperty, CompBase,
-  AstElemP65, AstTree, alexiaLex, MisUtils;
+  {AstElemP65, AstTree, }ASTunit, alexiaLex, MisUtils;
 type
   { TfraSynxTree6502 }
   TfraSynxTree6502 = class(TFrame)
@@ -51,11 +51,12 @@ type
     FBackColor: TColor;
     FTextColor: TColor;
     cpx       : TCompilerBase;   //Reference to lexer
-    syntaxTree: TAstTree; //Reference to SyntaxTree
+    syntaxTree: TProgram; //Reference to SyntaxTree
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
-    function AddNodeTo(nodParent: TTreeNode; elem: TAstElement): TTreeNode;
-    procedure frmElemPropertyExplore(elem: TAstElement);
-    procedure RefreshByDeclar(nodMain: TTreeNode; curEle: TAstElement);
+    function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
+      ): TTreeNode;
+    procedure frmElemPropertyExplore(elem: TASTNode);
+    procedure AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
     function SelectedIsMain: boolean;
     function SelectedIsElement: boolean;
     procedure TreeView1AdvancedCustomDrawItem(Sender: TCustomTreeView;
@@ -89,97 +90,129 @@ var
   TIT_OTHER: String;
 
 { TfraSynxTree6502 }
-function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TAstElement): TTreeNode;
-{Agrega un elemento a un noco.}
+function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TASTNode;
+  nodName: string = ''): TTreeNode;
+{Agrega un nodo nuevo, al elemento "nodParent", que representa al elemento de sintaxis
+"elem", configurando el ícono apropiado.}
 var
   nod: TTreeNode;
-  eleExp: TAstExpress;
-  sen: TAstSentence;
-  asmInst: TAstAsmInstr;
+  eleExp: TExpression;
+  procDecl: TProcDecl;
+  functDecl: TFunctionDecl;
+  varRef: TVariableRef;
+  numberLit: TNumberLiteral;
+//  sen: TAstSentence;
+//  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
-    nod := TreeView1.Items.AddChild(nodParent, '???');
+    nod := TreeView1.Items.AddChild(nodParent, nodName);
+    nod.ImageIndex := 0;
+    nod.SelectedIndex := 0;
     nod.Data := elem;
     Result := nod;
     exit;
   end;
-  nod := TreeView1.Items.AddChild(nodParent, elem.name);
-  if elem.idClass = eleConsDec then begin
+  {if elem.idClass = eleConsDec then begin
     nod.ImageIndex := 23;
     nod.SelectedIndex := 23;
-  end else if elem.idClass = eleVarDec then begin
+  end else }if elem.NodeType = ntVarDecl then begin
+    nod := TreeView1.Items.AddChild(nodParent, TVarDecl(elem).Name);
     nod.ImageIndex := 24;
     nod.SelectedIndex := 24;
-  end else if elem.idClass = eleTypeDec then begin
+  end {else if elem.idClass = eleTypeDec then begin
+    nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
-  end else if elem.idClass = eleFuncDec then begin
+  end} else if elem.nodeType = ntProcedure then begin
+    procDecl := TProcDecl(elem);
+    nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
+    nod.ImageIndex := 26;
+    nod.SelectedIndex := 26;
+  end else if elem.NodeType = ntFunction then begin
+    functDecl := TFunctionDecl(elem);
+    nod := TreeView1.Items.AddChild(nodParent, functDecl.Name);
     nod.ImageIndex := 16;
     nod.SelectedIndex := 16;
-  end else if elem.idClass = eleFuncImp then begin
-    nod.ImageIndex := 3;
-    nod.SelectedIndex := 3;
-  end else if elem.idClass = eleUnit then begin
-    nod.ImageIndex := 6;
-    nod.SelectedIndex := 6;
-  end else if elem.idClass = eleBody then begin
+//  end else if elem.idClass = eleUnit then begin
+//nod := TreeView1.Items.AddChild(nodParent, '?');
+//    nod.ImageIndex := 6;
+//    nod.SelectedIndex := 6;
+  end else if elem.NodeType = ntBlock then begin
+    nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 5;
     nod.SelectedIndex := 5;
-  end else if elem.idClass = eleSenten then begin
-    sen := TAstSentence(elem);
-    nod.Text :=   '<sentnc: ' + sen.sntTypeAsStr + '>';
-    //nod.Text := '<sentence>';
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.idClass = eleAsmInstr then begin
-    asmInst := TAstAsmInstr(elem);
-    if asmInst.iType = itLabel then begin  //Etiquetas
-      nod.ImageIndex := 22;
-      nod.SelectedIndex := 22;
-    end else begin
-      nod.ImageIndex := 19;
-      nod.SelectedIndex := 19;
-    end;
-  end else if elem.idClass = eleExpress then begin
-    eleExp := TAstExpress(elem);
-    if eleExp.opType = otFunct then begin
-      nod.ImageIndex := 3;
-      nod.SelectedIndex := 3;
-    end else if eleExp.opType = otVariab then begin
-      nod.ImageIndex := 2;
-      nod.SelectedIndex := 2;
-    end else if eleExp.opType = otConst then begin
-      nod.ImageIndex := 4;
-      nod.SelectedIndex := 4;
-    end else begin
-      nod.ImageIndex := 17;
-      nod.SelectedIndex := 17;
-    end;
+//  end else if elem.idClass = eleSenten then begin
+//    sen := TAstSentence(elem);
+//    nod.Text :=   '<sentnc: ' + sen.sntTypeAsStr + '>';
+//    //nod.Text := '<sentence>';
+//    nod.ImageIndex := 12;
+//    nod.SelectedIndex := 12;
+//  end else if elem.idClass = eleAsmInstr then begin
+//    asmInst := TAstAsmInstr(elem);
+//    if asmInst.iType = itLabel then begin  //Etiquetas
+//      nod.ImageIndex := 22;
+//      nod.SelectedIndex := 22;
+//    end else begin
+//      nod.ImageIndex := 19;
+//      nod.SelectedIndex := 19;
+//    end;
+  end else if elem.NodeType = ntAssignment then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'assign');
+    nod.ImageIndex := 3;
+    nod.SelectedIndex := 3;
+  end else if elem.nodeType = ntFunctionCall then begin
+    nod := TreeView1.Items.AddChild(nodParent, '?');
+    nod.ImageIndex := 3;
+    nod.SelectedIndex := 3;
+  end else if elem.nodeType = ntVariableRef then begin
+    varRef := TVariableRef(elem);
+    nod := TreeView1.Items.AddChild(nodParent, varRef.Name);
+    nod.ImageIndex := 2;
+    nod.SelectedIndex := 2;
+  end else if elem.nodeType = ntNumberLiteral then begin
+    numberLit := TNumberLiteral(elem);
+    nod := TreeView1.Items.AddChild(nodParent, IntToStr(numberLit.Value));
+    nod.ImageIndex := 4;
+    nod.SelectedIndex := 4;
   end else begin
+    nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 0;
     nod.SelectedIndex := 0;
   end;
   nod.Data := elem;
   Result := nod;
 end;
-procedure TfraSynxTree6502.frmElemPropertyExplore(elem: TAstElement);
+procedure TfraSynxTree6502.frmElemPropertyExplore(elem: TASTNode);
 begin
   acGenGoToExecute(self);
 end;
-procedure TfraSynxTree6502.RefreshByDeclar(nodMain: TTreeNode; curEle: TAstElement);
+procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
+{Crea los subnodos del nodo "nodMain", de forma recursiva.}
 var
-  elem: TAstElement;
-  nodElem: TTreeNode;
+  elem: TASTNode;
+  varDecl: TVarDecl;
+  procDecl: TProcDecl;
+  nodElem, nodList: TTreeNode;
+  prog: TProgram;
+  assig: TAssignment;
 begin
-  //Agrega elementos
-  for elem in curEle.elements do begin
-      nodElem := AddNodeTo(nodMain, elem);
-      RefreshByDeclar(nodElem, elem);  //Llamada recursiva
-      //Expande los Body
-      if elem.idClass = eleBody then nodElem.Expanded := true;
-      if elem.idClass = eleSenten then nodElem.Expanded := true;
-      //if elem.Parent.idClass = eleSenten then nodElem.Expanded := true; //Expande instrucciones
+  if curEle.NodeType = ntAssignment then begin
+    //Las asignaciones tienen dos partes
+    assig := TAssignment(curEle);
+    nodList := AddNodeTo(curNode, assig.Target);
+
+    nodList := AddNodeTo(curNode, assig.Value);
+    //      AddChildNodes(nodElem, elem);  //Llamada recursiva
   end;
+//  //Agrega elementos
+//  for elem in curEle.elements do begin
+//      nodElem := AddNodeTo(curNode, elem);
+//      AddChildNodes(nodElem, elem);  //Llamada recursiva
+//      //Expande los Body
+//      if elem.nodeType = ntBlock then nodElem.Expanded := true;
+//      if elem.nodeType = ntAssignment then nodElem.Expanded := true;
+//      //if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
+//  end;
 end;
 function TfraSynxTree6502.SelectedIsMain: boolean;
 //Indica si el nodo seleccionado es el nodo raiz
@@ -251,7 +284,7 @@ begin
 end;
 procedure TfraSynxTree6502.TreeView1SelectionChanged(Sender: TObject);
 var
-  elem: TAstElement;
+  elem: TASTNode;
 begin
   if not frmElemProp.Visible then exit;
   if TreeView1.Selected = nil then exit;
@@ -259,7 +292,7 @@ begin
     frmElemProp.Clear;
     exit;
   end;
-  elem := TAstElement(TreeView1.Selected.Data);
+  elem := TASTNode(TreeView1.Selected.Data);
   frmElemProp.Exec(cpx.lex, elem);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
@@ -273,13 +306,14 @@ begin
 end;
 procedure TfraSynxTree6502.acGenGoToExecute(Sender: TObject);
 var
-  elem: TAstElement;
+  elem: TASTNode;
   fileName: String;
 begin
   if SelectedIsElement then begin
-    elem := TAstElement(TreeView1.Selected.Data);
-    fileName := cpx.lex.ctxFile(elem.srcDec);
-    if OnLocateElemen <> nil  then OnLocateElemen(fileName, elem.srcDec.row, elem.srcDec.col);
+    elem := TASTNode(TreeView1.Selected.Data);
+    if elem = nil then exit;
+    fileName := cpx.lex.ctxFile(elem.SrcPos);
+    if OnLocateElemen <> nil then OnLocateElemen(fileName, elem.SrcPos.row, elem.SrcPos.col);
   end;
 end;
 procedure TfraSynxTree6502.acGenExpAllExecute(Sender: TObject);
@@ -292,11 +326,11 @@ begin
 end;
 procedure TfraSynxTree6502.acGenPropExecute(Sender: TObject);
 var
-  elem: TAstElement;
+  elem: TASTNode;
 begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
-  elem := TAstElement(TreeView1.Selected.Data);
+  elem := TASTNode(TreeView1.Selected.Data);
   frmElemProp.Exec(cpx.lex, elem);
   frmElemProp.Show;
 end;
@@ -319,7 +353,9 @@ end;
 procedure TfraSynxTree6502.Refresh;
 {Actualiza el árbol de sintaxis con el AST del compilador}
 var
-  nodMain: TTreeNode;
+  nodMain, nodDecl, nodElem, nodBody: TTreeNode;
+  prog: TProgram;
+  elem: TASTNode;
 begin
   TreeView1.Visible := true;
 
@@ -328,15 +364,33 @@ begin
   nodMain := TreeView1.Items.AddChild(nil, TIT_MAIN);
   nodMain.ImageIndex := 1;
   nodMain.SelectedIndex := 1;
-  nodMain.Data := syntaxTree.main;  //Elemento raiz
-  RefreshByDeclar(nodMain, syntaxTree.main);
+  nodMain.Data := syntaxTree;  //Elemento raiz
+  //AddChildNodes(nodMain, syntaxTree);
+
+  prog := TProgram(syntaxTree);
+
+  //Agrega nodo para las declaraciones globales
+  nodDecl := AddNodeTo(nodMain, nil, 'Declarations');
+  for elem in prog.Declarations.Items do begin
+    nodElem := AddNodeTo(nodDecl, elem);  //Agrega el nodo
+    AddChildNodes(nodElem, elem);  //Llamada recursiva
+  end;
+  //Agrega nodo para el programa principal
+  nodBody := AddNodeTo(nodMain, nil, 'Body');
+  for elem in prog.MainBody.Statements do begin
+    nodElem := AddNodeTo(nodBody, elem);  //Agrega el nodo
+    AddChildNodes(nodElem, elem);  //Llamada recursiva
+  end;
+  //Termina configuración
   nodMain.Expanded := true;    //Expande nodo raiz
+  nodDecl.Expanded := true;
+  nodBody.Expanded := true;
   TreeView1.Items.EndUpdate;
 end;
 procedure TfraSynxTree6502.Init(Compiler    : TCompilerBase);
 begin
   cpx        := Compiler;
-  syntaxTree := Compiler.ast;
+  syntaxTree := Compiler.prog;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
