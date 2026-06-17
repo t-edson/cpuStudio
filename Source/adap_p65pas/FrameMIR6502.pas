@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
-  Globales, CompBase, MirList;
+  Globales, CompBase, MirList, Analyzer;
 
 type
   { TfraMIR6502 }
@@ -37,7 +37,7 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    cpx       : TCompilerBase;   //Reference to lexer
+    cpx       : TAnalyzer;   //Reference to lexer
     mirCont: TMirList;
     function AddNodeTo(nodParent: TTreeNode; elem: TMirElement; nodLabel: String =
       ''): TTreeNode;
@@ -53,7 +53,7 @@ type
     property TextColor: TColor read FTextColor write SetTextColor;
   public    //Initialization
     procedure Refresh;
-    procedure Init(Compiler: TCompilerBase);
+    procedure Init(Compiler: TAnalyzer);
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -191,7 +191,7 @@ begin
   //nodMain.Expanded := true;    //Expande nodo raiz
   TreeView1.Items.EndUpdate;
 end;
-procedure TfraMIR6502.Init(Compiler: TCompilerBase);
+procedure TfraMIR6502.Init(Compiler: TAnalyzer);
 begin
   cpx      := Compiler;
   mirCont  := Compiler.mirRep;
