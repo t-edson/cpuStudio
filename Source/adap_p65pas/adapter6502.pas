@@ -157,7 +157,7 @@ begin
   fraEditView1.NewLstFile;
   edit := fraEditView1.ActiveEditor;
   edit.sedit.BeginUpdate;
-  Compiler.GenerateListReport(edit.sedit.Lines);
+//  Compiler.GenerateListReport(edit.sedit.Lines);
   edit.sedit.EndUpdate;
 end;
 procedure TAdapter6502.FindDeclarat;
@@ -258,7 +258,7 @@ begin
   //Actualiza el árbol de sintaxis
   fraASTview.Refresh;
   fraMIRview.Refresh;
-  //Actualiza frame de estadísticas de uso
+{  //Actualiza frame de estadísticas de uso
   if msg.nErrors=0 then begin
     //No hay error
     compiler.GetResourcesUsed(usedRAM, usedROM, usedSTK);
@@ -278,7 +278,7 @@ begin
   //Actualiza explorador de RAM
   //zoom := frmRAMExplorer.zoom; //Zoom actual
   if frmRAMExplorer.Visible then frmRAMExplorer.UpdateScreen(compiler);
-end;
+}end;
 procedure TAdapter6502.ReadCompilerSettings(var pars: string);
 {Read the compiler setting from the Setting frame and add them to "pars".}
 var
@@ -382,7 +382,8 @@ begin
   msg.info(MSG_COMPIL + IntToStr(round(eTimer.Elapsed*1000)) + ' msec. <<' +
            msg.txtNWarnings + ', ' + msg.txtNErrors+ '>>');
   if msg.nErrors <= 0 then begin     //No hay errores
-    msg.info(compiler.RAMusedStr);    //Estadísticas de recursos usados
+//    msg.info(compiler.RAMusedStr);    //Estadísticas de recursos usados
+    msg.info('No hay información de recursos');    //Estadísticas de recursos usados
   end else begin
     //Muestra y marca posibles errores
     msg.sys(CMD_MRK_ERRORS);

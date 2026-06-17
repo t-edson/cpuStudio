@@ -334,7 +334,7 @@ var
   ed: TSynEditor;
   ele: TAstElement;
 begin
-  ed := fraEdit.ActiveEditor;
+{  ed := fraEdit.ActiveEditor;
   if ed = nil then exit;
   //LLena
   opEve.ClearAvails;
@@ -384,7 +384,7 @@ begin
 
   //Llenó los ítems y deja que se aplique el filtro para llenar Avails[]
   Cancel := false;
-end;
+}end;
 procedure TCodeTool.OpenAfterDot1(opEve: TFaOpenEvent;
   curEnv: TFaCursorEnviron; out Cancel: boolean);
 var
