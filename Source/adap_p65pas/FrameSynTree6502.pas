@@ -101,6 +101,7 @@ var
   functDecl: TFunctionDecl;
   varRef: TVariableRef;
   numberLit: TNumberLiteral;
+  binaryOp: TBinaryOp;
 //  sen: TAstSentence;
 //  asmInst: TAstAsmInstr;
 begin
@@ -141,6 +142,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 5;
     nod.SelectedIndex := 5;
+  end else if elem.NodeType = ntBinaryOp then begin
+    binaryOp := TBinaryOp(elem);
+    nod := TreeView1.Items.AddChild(nodParent, binaryOp.Op);
+    nod.ImageIndex := 3;
+    nod.SelectedIndex := 3;
 //  end else if elem.idClass = eleSenten then begin
 //    sen := TAstSentence(elem);
 //    nod.Text :=   '<sentnc: ' + sen.sntTypeAsStr + '>';
@@ -195,14 +201,24 @@ var
   nodElem, nodList: TTreeNode;
   prog: TProgram;
   assig: TAssignment;
+  binaryOp: TBinaryOp;
 begin
   if curEle.NodeType = ntAssignment then begin
-    //Las asignaciones tienen dos partes
     assig := TAssignment(curEle);
-    nodList := AddNodeTo(curNode, assig.Target);
+    //Parte izquierda de la asignación
+    nodElem := AddNodeTo(curNode, assig.Target);
+    //Parte derecha de la asignación
+    nodElem := AddNodeTo(curNode, assig.Value);
+    AddChildNodes(nodElem, assig.Value);  //Llamada recursiva
+  end else if curEle.NodeType = ntBinaryOp then begin
+    binaryOp := TBinaryOp(curEle);
+    //Parte izquierda de la operación binaria
+    nodElem := AddNodeTo(curNode, binaryOp.Left);
+    AddChildNodes(nodElem, binaryOp.Left);  //Llamada recursiva
+    //Parte derecha de la operación binaria
+    nodElem := AddNodeTo(curNode, binaryOp.Right);
+    AddChildNodes(nodElem, binaryOp.Right);  //Llamada recursiva
 
-    nodList := AddNodeTo(curNode, assig.Value);
-    //      AddChildNodes(nodElem, elem);  //Llamada recursiva
   end;
 //  //Agrega elementos
 //  for elem in curEle.elements do begin
@@ -390,7 +406,7 @@ end;
 procedure TfraSynxTree6502.Init(Compiler    : TCompilerBase);
 begin
   cpx        := Compiler;
-  syntaxTree := Compiler.prog;
+  syntaxTree := Compiler.FAst;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
