@@ -102,6 +102,8 @@ var
   varRef: TVariableRef;
   numberLit: TNumberLiteral;
   binaryOp: TBinaryOp;
+  procedCall: TProcedureCall;
+  typeDecl: TTypeDecl;
 //  sen: TAstSentence;
 //  asmInst: TAstAsmInstr;
 begin
@@ -120,11 +122,12 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, TVarDecl(elem).Name);
     nod.ImageIndex := 24;
     nod.SelectedIndex := 24;
-  end {else if elem.idClass = eleTypeDec then begin
-    nod := TreeView1.Items.AddChild(nodParent, '?');
+  end else if elem.nodeType = ntTypeDecl then begin
+    typeDecl := TTypeDecl(elem);
+    nod := TreeView1.Items.AddChild(nodParent, typeDecl.Name);
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
-  end} else if elem.nodeType = ntProcedure then begin
+  end else if elem.nodeType = ntProcedure then begin
     procDecl := TProcDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
     nod.ImageIndex := 26;
@@ -170,6 +173,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 3;
     nod.SelectedIndex := 3;
+  end else if elem.nodeType = ntProcedureCall then begin
+    procedCall := TProcedureCall(elem);
+    nod := TreeView1.Items.AddChild(nodParent, procedCall.Name);
+    nod.ImageIndex := 3;
+    nod.SelectedIndex := 3;
   end else if elem.nodeType = ntVariableRef then begin
     varRef := TVariableRef(elem);
     nod := TreeView1.Items.AddChild(nodParent, varRef.Name);
@@ -202,6 +210,7 @@ var
   prog: TProgram;
   assig: TAssignment;
   binaryOp: TBinaryOp;
+  procedCall: TProcedureCall;
 begin
   if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
@@ -210,6 +219,8 @@ begin
     //Parte derecha de la asignación
     nodElem := AddNodeTo(curNode, assig.Value);
     AddChildNodes(nodElem, assig.Value);  //Llamada recursiva
+    //Expande la asignación
+    curNode.Expanded := true;
   end else if curEle.NodeType = ntBinaryOp then begin
     binaryOp := TBinaryOp(curEle);
     //Parte izquierda de la operación binaria
@@ -218,6 +229,17 @@ begin
     //Parte derecha de la operación binaria
     nodElem := AddNodeTo(curNode, binaryOp.Right);
     AddChildNodes(nodElem, binaryOp.Right);  //Llamada recursiva
+  end else if curEle.NodeType = ntProcedureCall then begin
+    procedCall := TProcedureCall(curEle);
+    //Agrega elementos
+    for elem in procedCall.Arguments do begin
+      nodElem := AddNodeTo(curNode, elem);
+      AddChildNodes(nodElem, elem);  //Llamada recursiva
+      ////Expande los Body
+      //if elem.nodeType = ntBlock then nodElem.Expanded := true;
+      //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
+      ////if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
+    end;
 
   end;
 //  //Agrega elementos
@@ -406,7 +428,7 @@ end;
 procedure TfraSynxTree6502.Init(Compiler    : TCompilerBase);
 begin
   cpx        := Compiler;
-  syntaxTree := Compiler.FAst;
+  syntaxTree := Compiler.ast;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
