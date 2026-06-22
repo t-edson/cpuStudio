@@ -104,6 +104,7 @@ var
   binaryOp: TBinaryOp;
   procedCall: TProcedureCall;
   typeDecl: TTypeDecl;
+  arrIndex: TArrayIndex;
 //  sen: TAstSentence;
 //  asmInst: TAstAsmInstr;
 begin
@@ -127,7 +128,7 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, typeDecl.Name);
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
-  end else if elem.nodeType = ntProcedure then begin
+  end else if elem.nodeType = ntProcDecl then begin
     procDecl := TProcDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
     nod.ImageIndex := 26;
@@ -183,6 +184,12 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, varRef.Name);
     nod.ImageIndex := 2;
     nod.SelectedIndex := 2;
+  end else if elem.nodeType = ntArrayIndex then begin
+    arrIndex := TArrayIndex(elem);
+    nod := TreeView1.Items.AddChild(nodParent, arrIndex.ArrayVar.Name);
+    nod.ImageIndex := 27;
+    nod.SelectedIndex := 27;
+//    Index := arrIndex.Indices;
   end else if elem.nodeType = ntNumberLiteral then begin
     numberLit := TNumberLiteral(elem);
     nod := TreeView1.Items.AddChild(nodParent, IntToStr(numberLit.Value));
@@ -211,6 +218,7 @@ var
   assig: TAssignment;
   binaryOp: TBinaryOp;
   procedCall: TProcedureCall;
+  arrIndex: TArrayIndex;
 begin
   if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
@@ -240,8 +248,16 @@ begin
       //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
       ////if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
     end;
-
+  end else if curEle.NodeType = ntArrayIndex then begin
+    arrIndex := TArrayIndex(curEle);
+    //Agrega índices
+    for elem in arrIndex.Indices do begin
+      nodElem := AddNodeTo(curNode, elem);
+      AddChildNodes(nodElem, elem);  //Llamada recursiva
+    end;
   end;
+
+
 //  //Agrega elementos
 //  for elem in curEle.elements do begin
 //      nodElem := AddNodeTo(curNode, elem);
