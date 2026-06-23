@@ -3,7 +3,7 @@ unit FrameRamExplorer6502;
 interface
 uses
   Classes, SysUtils, Math, FileUtil, Forms, Controls, Graphics, StdCtrls,
-  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, CompBase, Analyzer,
+  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, Parser, Analyzer,
   SIF_P65pas;
 type
   //Define a un bloque de RAM, que servirá para dibujo

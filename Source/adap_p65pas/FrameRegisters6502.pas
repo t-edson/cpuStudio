@@ -3,7 +3,7 @@ unit FrameRegisters6502;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, StdCtrls, LCLProc,
-  LCLIntf, LCLType, Grids, ExtCtrls, CompBase, Analyzer, SIF_P65pas,
+  LCLIntf, LCLType, Grids, ExtCtrls, Parser, Analyzer, SIF_P65pas,
   CPUCore, P65c02utils;
 type
 

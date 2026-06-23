@@ -17,8 +17,8 @@ uses
   FrameCfgCompiler6502, FrameMIR6502, FrameRamExplorer6502, FrameRegisters6502,
   FrameRegWatcher6502, FrameStatist6502, FrameSynTree6502,
   MirList, ParserASM_6502, ParserDirec, Analyzer,
-  AstElemP65, AstTree, CompBase, CompGlobals, Compiler_PIC16,
-  SIF_P65pas, alexiaLex, ASTunit;
+  Parser, CompGlobals, Compiler_PIC16,
+  SIF_P65pas, alexiaLex, ASTunit, AstElemP65;
 
 {$R *.res}
 

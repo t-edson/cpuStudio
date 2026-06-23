@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
-  Globales, FormElemProperty, CompBase,
+  Globales, FormElemProperty, Parser,
   {AstElemP65, AstTree, }ASTunit, alexiaLex, MisUtils;
 type
   { TfraSynxTree6502 }
