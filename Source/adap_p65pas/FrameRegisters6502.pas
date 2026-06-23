@@ -20,7 +20,7 @@ type
     StringGrid3: TStringGrid;
     StringGrid4: TStringGrid;
   private
-    cxp: TCompilerBase;
+    cxp: TParser;
     //Acceso a los registros importantes
     WREGptr: ^byte;
     XREGptr: ^byte;

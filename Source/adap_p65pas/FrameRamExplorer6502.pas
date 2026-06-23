@@ -25,7 +25,7 @@ type
     SpeedButton1: TSpeedButton;
     procedure SpeedButton1Click(Sender: TObject);
   private
-    cxp: TCompilerBase;
+    cxp: TParser;
     pic: TCPUCore;
     blockSta: array of TRamBlock;
     blockUse: array of TRamBlock;

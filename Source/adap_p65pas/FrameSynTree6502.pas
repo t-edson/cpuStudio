@@ -50,7 +50,7 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    cpx       : TCompilerBase;   //Reference to lexer
+    cpx       : TParser;   //Reference to lexer
     syntaxTree: TProgram; //Reference to SyntaxTree
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
@@ -74,7 +74,7 @@ type
     property TextColor: TColor read FTextColor write SetTextColor;
   public    //Initialization
     procedure Refresh;
-    procedure Init(Compiler: TCompilerBase);
+    procedure Init(Compiler: TParser);
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -441,7 +441,7 @@ begin
   nodBody.Expanded := true;
   TreeView1.Items.EndUpdate;
 end;
-procedure TfraSynxTree6502.Init(Compiler    : TCompilerBase);
+procedure TfraSynxTree6502.Init(Compiler    : TParser);
 begin
   cpx        := Compiler;
   syntaxTree := Compiler.ast;
