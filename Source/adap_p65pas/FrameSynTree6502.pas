@@ -98,13 +98,15 @@ var
   nod: TTreeNode;
   eleExp: TExpression;
   procDecl: TProcDecl;
-  functDecl: TFunctionDecl;
+  functDecl: TFunctDecl;
   varRef: TVariableRef;
   numberLit: TNumberLiteral;
   binaryOp: TBinaryOp;
-  procedCall: TProcedureCall;
+  functCall: TFunctionCall;
   typeDecl: TTypeDecl;
   arrIndex: TArrayIndex;
+  varDecl: TVarDecl;
+  constDecl: TConstDecl;
 //  sen: TAstSentence;
 //  asmInst: TAstAsmInstr;
 begin
@@ -116,11 +118,14 @@ begin
     Result := nod;
     exit;
   end;
-  {if elem.idClass = eleConsDec then begin
+  if elem.NodeType = ntConstDecl then begin
+    constDecl := TConstDecl(elem);
+    nod := TreeView1.Items.AddChild(nodParent, constDecl.Name);
     nod.ImageIndex := 23;
     nod.SelectedIndex := 23;
-  end else }if elem.NodeType = ntVarDecl then begin
-    nod := TreeView1.Items.AddChild(nodParent, TVarDecl(elem).Name);
+  end else if elem.NodeType = ntVarDecl then begin
+    varDecl:= TVarDecl(elem);
+    nod := TreeView1.Items.AddChild(nodParent, varDecl.Name);
     nod.ImageIndex := 24;
     nod.SelectedIndex := 24;
   end else if elem.nodeType = ntTypeDecl then begin
@@ -134,7 +139,7 @@ begin
     nod.ImageIndex := 26;
     nod.SelectedIndex := 26;
   end else if elem.NodeType = ntFunction then begin
-    functDecl := TFunctionDecl(elem);
+    functDecl := TFunctDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, functDecl.Name);
     nod.ImageIndex := 16;
     nod.SelectedIndex := 16;
@@ -171,12 +176,8 @@ begin
     nod.ImageIndex := 3;
     nod.SelectedIndex := 3;
   end else if elem.nodeType = ntFunctionCall then begin
-    nod := TreeView1.Items.AddChild(nodParent, '?');
-    nod.ImageIndex := 3;
-    nod.SelectedIndex := 3;
-  end else if elem.nodeType = ntProcedureCall then begin
-    procedCall := TProcedureCall(elem);
-    nod := TreeView1.Items.AddChild(nodParent, procedCall.Name);
+    functCall := TFunctionCall(elem);
+    nod := TreeView1.Items.AddChild(nodParent, functCall.Name);
     nod.ImageIndex := 3;
     nod.SelectedIndex := 3;
   end else if elem.nodeType = ntVariableRef then begin
@@ -217,13 +218,20 @@ var
   prog: TProgram;
   assig: TAssignment;
   binaryOp: TBinaryOp;
-  procedCall: TProcedureCall;
   arrIndex: TArrayIndex;
+  functCall: TFunctionCall;
+  constDecl: TConstDecl;
 begin
-  if curEle.NodeType = ntAssignment then begin
+  if curEle.NodeType = ntConstDecl then begin
+    constDecl := TConstDecl(curEle);
+    //Añade valor de la constante
+    nodElem := AddNodeTo(curNode, constDecl.Value);
+    AddChildNodes(nodElem, constDecl.Value);  //Llamada recursiva
+  end else if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
     //Parte izquierda de la asignación
     nodElem := AddNodeTo(curNode, assig.Target);
+    AddChildNodes(nodElem, assig.Target);  //Llamada recursiva
     //Parte derecha de la asignación
     nodElem := AddNodeTo(curNode, assig.Value);
     AddChildNodes(nodElem, assig.Value);  //Llamada recursiva
@@ -237,10 +245,10 @@ begin
     //Parte derecha de la operación binaria
     nodElem := AddNodeTo(curNode, binaryOp.Right);
     AddChildNodes(nodElem, binaryOp.Right);  //Llamada recursiva
-  end else if curEle.NodeType = ntProcedureCall then begin
-    procedCall := TProcedureCall(curEle);
+  end else if curEle.NodeType = ntFunctionCall then begin
+    functCall := TFunctionCall(curEle);
     //Agrega elementos
-    for elem in procedCall.Arguments do begin
+    for elem in functCall.Arguments do begin
       nodElem := AddNodeTo(curNode, elem);
       AddChildNodes(nodElem, elem);  //Llamada recursiva
       ////Expande los Body
