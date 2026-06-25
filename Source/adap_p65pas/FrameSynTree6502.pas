@@ -96,7 +96,6 @@ function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TASTNode;
 "elem", configurando el ícono apropiado.}
 var
   nod: TTreeNode;
-  eleExp: TExpression;
   procDecl: TProcDecl;
   functDecl: TFunctDecl;
   varRef: TVariableRef;
@@ -107,7 +106,8 @@ var
   arrIndex: TArrayIndex;
   varDecl: TVarDecl;
   constDecl: TConstDecl;
-//  sen: TAstSentence;
+  txtNumber: String;
+  unaryOp: TUnaryOp;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -156,12 +156,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, binaryOp.Op);
     nod.ImageIndex := 3;
     nod.SelectedIndex := 3;
-//  end else if elem.idClass = eleSenten then begin
-//    sen := TAstSentence(elem);
-//    nod.Text :=   '<sentnc: ' + sen.sntTypeAsStr + '>';
-//    //nod.Text := '<sentence>';
-//    nod.ImageIndex := 12;
-//    nod.SelectedIndex := 12;
+  end else if elem.NodeType = ntUnaryOp then begin
+    unaryOp := TUnaryOp(elem);
+    nod := TreeView1.Items.AddChild(nodParent, unaryOp.Op);
+    nod.ImageIndex := 18;
+    nod.SelectedIndex := 18;
 //  end else if elem.idClass = eleAsmInstr then begin
 //    asmInst := TAstAsmInstr(elem);
 //    if asmInst.iType = itLabel then begin  //Etiquetas
@@ -193,7 +192,12 @@ begin
 //    Index := arrIndex.Indices;
   end else if elem.nodeType = ntNumberLiteral then begin
     numberLit := TNumberLiteral(elem);
-    nod := TreeView1.Items.AddChild(nodParent, IntToStr(numberLit.Value));
+    if numberLit.IsInteger then begin
+      txtNumber := IntToStr(numberLit.IntValue);
+    end else begin
+      txtNumber := FloatToStr(numberLit.FloatValue);
+    end;
+    nod := TreeView1.Items.AddChild(nodParent, txtNumber);
     nod.ImageIndex := 4;
     nod.SelectedIndex := 4;
   end else begin
@@ -212,15 +216,14 @@ procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 {Crea los subnodos del nodo "nodMain", de forma recursiva.}
 var
   elem: TASTNode;
-  varDecl: TVarDecl;
   procDecl: TProcDecl;
   nodElem, nodList: TTreeNode;
-  prog: TProgram;
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayIndex;
   functCall: TFunctionCall;
   constDecl: TConstDecl;
+  unaryOp: TUnaryOp;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -245,6 +248,11 @@ begin
     //Parte derecha de la operación binaria
     nodElem := AddNodeTo(curNode, binaryOp.Right);
     AddChildNodes(nodElem, binaryOp.Right);  //Llamada recursiva
+  end else if curEle.NodeType = ntUnaryOp then begin
+    unaryOp := TUnaryOp(curEle);
+    //Argumento
+    nodElem := AddNodeTo(curNode, unaryOp.Operand);
+    AddChildNodes(nodElem, unaryOp.Operand);  //Llamada recursiva
   end else if curEle.NodeType = ntFunctionCall then begin
     functCall := TFunctionCall(curEle);
     //Agrega elementos
