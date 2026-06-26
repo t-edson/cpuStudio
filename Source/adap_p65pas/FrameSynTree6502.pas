@@ -217,7 +217,7 @@ procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 var
   elem: TASTNode;
   procDecl: TProcDecl;
-  nodElem, nodList: TTreeNode;
+  nodElem, nodList, nodDecl, nodBody: TTreeNode;
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayIndex;
@@ -230,6 +230,21 @@ begin
     //Añade valor de la constante
     nodElem := AddNodeTo(curNode, constDecl.Value);
     AddChildNodes(nodElem, constDecl.Value);  //Llamada recursiva
+  end else if curEle.NodeType = ntProcDecl then begin
+    procDecl := TProcDecl(curEle);
+    //Agrega nodo para las declaraciones
+    nodDecl := AddNodeTo(curNode, nil, 'Declarations');
+    for elem in procDecl.Declarations.Items do begin
+      nodElem := AddNodeTo(nodDecl, elem);  //Agrega el nodo
+      AddChildNodes(nodElem, elem);  //Llamada recursiva
+    end;
+    //Agrega nodo para el cuerpo
+    nodBody := AddNodeTo(curNode, nil, 'Body');
+    for elem in procDecl.Body.Statements do begin
+      nodElem := AddNodeTo(nodBody, elem);  //Agrega el nodo
+      AddChildNodes(nodElem, elem);  //Llamada recursiva
+    end;
+
   end else if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
     //Parte izquierda de la asignación
@@ -447,7 +462,7 @@ begin
   end;
   //Agrega nodo para el programa principal
   nodBody := AddNodeTo(nodMain, nil, 'Body');
-  for elem in prog.MainBody.Statements do begin
+  for elem in prog.Body.Statements do begin
     nodElem := AddNodeTo(nodBody, elem);  //Agrega el nodo
     AddChildNodes(nodElem, elem);  //Llamada recursiva
   end;
