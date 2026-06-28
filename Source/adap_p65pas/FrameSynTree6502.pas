@@ -108,6 +108,7 @@ var
   constDecl: TConstDecl;
   txtNumber: String;
   unaryOp: TUnaryOp;
+  fieldAccess: TFieldAccess;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -190,6 +191,11 @@ begin
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
 //    Index := arrIndex.Indices;
+  end else if elem.nodeType = ntFieldAccess then begin
+    fieldAccess := TFieldAccess(elem);
+    nod := TreeView1.Items.AddChild(nodParent, fieldAccess.FieldName);
+    nod.ImageIndex := 28;
+    nod.SelectedIndex := 28;
   end else if elem.nodeType = ntNumberLiteral then begin
     numberLit := TNumberLiteral(elem);
     if numberLit.IsInteger then begin
@@ -217,13 +223,14 @@ procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 var
   elem: TASTNode;
   procDecl: TProcDecl;
-  nodElem, nodList, nodDecl, nodBody: TTreeNode;
+  nodElem, nodList, nodDecl, nodBody, nodBase: TTreeNode;
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayIndex;
   functCall: TFunctionCall;
   constDecl: TConstDecl;
   unaryOp: TUnaryOp;
+  fieldAccess: TFieldAccess;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -286,7 +293,15 @@ begin
       nodElem := AddNodeTo(curNode, elem);
       AddChildNodes(nodElem, elem);  //Llamada recursiva
     end;
+  end else if curEle.nodeType = ntFieldAccess then begin
+    fieldAccess := TFieldAccess(curEle);
+    //Añade la variable base de registro
+    nodBase := AddNodeTo(curNode, fieldAccess.RecordVar);
+    AddChildNodes(nodBase, fieldAccess.RecordVar);  //Llamada recursiva
+
   end;
+
+
 
 
 //  //Agrega elementos
