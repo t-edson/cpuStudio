@@ -187,7 +187,7 @@ begin
     nod.SelectedIndex := 2;
   end else if elem.nodeType = ntArrayIndex then begin
     arrIndex := TArrayIndex(elem);
-    nod := TreeView1.Items.AddChild(nodParent, arrIndex.ArrayVar.Name);
+    nod := TreeView1.Items.AddChild(nodParent, '_item');
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
 //    Index := arrIndex.Indices;
@@ -288,6 +288,10 @@ begin
     end;
   end else if curEle.NodeType = ntArrayIndex then begin
     arrIndex := TArrayIndex(curEle);
+    //Agrega variable base
+    nodElem := AddNodeTo(curNode, arrIndex.ArrayVar);
+    AddChildNodes(nodElem, arrIndex.ArrayVar);  //Llamada recursiva
+
     //Agrega índices
     for elem in arrIndex.Indices do begin
       nodElem := AddNodeTo(curNode, elem);
