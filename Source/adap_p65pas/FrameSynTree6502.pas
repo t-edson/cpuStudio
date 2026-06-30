@@ -109,6 +109,7 @@ var
   txtNumber: String;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
+  ptrDeref: TPointerDeref;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -185,6 +186,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, varRef.Name);
     nod.ImageIndex := 2;
     nod.SelectedIndex := 2;
+  end else if elem.nodeType = ntPointerDeref then begin
+    ptrDeref := TPointerDeref(elem);
+    nod := TreeView1.Items.AddChild(nodParent, '_ptr');
+    nod.ImageIndex := 29;
+    nod.SelectedIndex := 29;
   end else if elem.nodeType = ntArrayIndex then begin
     arrIndex := TArrayIndex(elem);
     nod := TreeView1.Items.AddChild(nodParent, '_item');
@@ -231,6 +237,7 @@ var
   constDecl: TConstDecl;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
+  ptrDeref: TPointerDeref;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -286,6 +293,12 @@ begin
       //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
       ////if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
     end;
+  end else if curEle.nodeType = ntPointerDeref then begin
+    ptrDeref := TPointerDeref(curEle);
+    //Agrega variable base
+    nodElem := AddNodeTo(curNode, ptrDeref.Pointer);
+    AddChildNodes(nodElem, ptrDeref.Pointer);  //Llamada recursiva
+
   end else if curEle.NodeType = ntArrayIndex then begin
     arrIndex := TArrayIndex(curEle);
     //Agrega variable base
