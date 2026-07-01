@@ -50,7 +50,7 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    cpx       : TParser;   //Reference to lexer
+    cpx       : TParser;  //Reference to lexer
     syntaxTree: TProgram; //Reference to SyntaxTree
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
@@ -103,13 +103,11 @@ var
   binaryOp: TBinaryOp;
   functCall: TFunctionCall;
   typeDecl: TTypeDecl;
-  arrIndex: TArrayIndex;
   varDecl: TVarDecl;
   constDecl: TConstDecl;
   txtNumber: String;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
-  ptrDeref: TPointerDeref;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -149,10 +147,14 @@ begin
 //nod := TreeView1.Items.AddChild(nodParent, '?');
 //    nod.ImageIndex := 6;
 //    nod.SelectedIndex := 6;
+  end else if elem.NodeType = ntDeclarations then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'Declarations');
+    nod.ImageIndex := 0;
+    nod.SelectedIndex := 0;
   end else if elem.NodeType = ntBlock then begin
-    nod := TreeView1.Items.AddChild(nodParent, '?');
-    nod.ImageIndex := 5;
-    nod.SelectedIndex := 5;
+    nod := TreeView1.Items.AddChild(nodParent, 'Block');
+    nod.ImageIndex := 0;
+    nod.SelectedIndex := 0;
   end else if elem.NodeType = ntBinaryOp then begin
     binaryOp := TBinaryOp(elem);
     nod := TreeView1.Items.AddChild(nodParent, binaryOp.Op);
@@ -187,12 +189,10 @@ begin
     nod.ImageIndex := 2;
     nod.SelectedIndex := 2;
   end else if elem.nodeType = ntPointerDeref then begin
-    ptrDeref := TPointerDeref(elem);
     nod := TreeView1.Items.AddChild(nodParent, '_ptr');
     nod.ImageIndex := 29;
     nod.SelectedIndex := 29;
   end else if elem.nodeType = ntArrayIndex then begin
-    arrIndex := TArrayIndex(elem);
     nod := TreeView1.Items.AddChild(nodParent, '_item');
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
@@ -212,12 +212,20 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, txtNumber);
     nod.ImageIndex := 4;
     nod.SelectedIndex := 4;
+  end else if elem.nodeType = ntIfStatement then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'IF');
+    nod.ImageIndex := 12;
+    nod.SelectedIndex := 12;
   end else begin
     nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 0;
     nod.SelectedIndex := 0;
   end;
+  //Guarda referencia al elemento
   nod.Data := elem;
+  //LLamada recursiva para agregar nodos hijos
+  AddChildNodes(nod, elem);  //Llamada recursiva
+  //Devuelve referencia al nodo
   Result := nod;
 end;
 procedure TfraSynxTree6502.frmElemPropertyExplore(elem: TASTNode);
@@ -229,7 +237,6 @@ procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 var
   elem: TASTNode;
   procDecl: TProcDecl;
-  nodElem, nodList, nodDecl, nodBody, nodBase: TTreeNode;
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayIndex;
@@ -238,56 +245,55 @@ var
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
   ptrDeref: TPointerDeref;
+  ifStatem: TIfStatement;
+  nodDeclars: TDeclarations;
+  block: TBlock;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
     //Añade valor de la constante
-    nodElem := AddNodeTo(curNode, constDecl.Value);
-    AddChildNodes(nodElem, constDecl.Value);  //Llamada recursiva
+    AddNodeTo(curNode, constDecl.Value);
   end else if curEle.NodeType = ntProcDecl then begin
     procDecl := TProcDecl(curEle);
+    //Agrega nodo para los parámetros
+    //AddNodeTo(curNode, procDecl.Parameters);
     //Agrega nodo para las declaraciones
-    nodDecl := AddNodeTo(curNode, nil, 'Declarations');
-    for elem in procDecl.Declarations.Items do begin
-      nodElem := AddNodeTo(nodDecl, elem);  //Agrega el nodo
-      AddChildNodes(nodElem, elem);  //Llamada recursiva
-    end;
+    AddNodeTo(curNode, procDecl.Declarations);
     //Agrega nodo para el cuerpo
-    nodBody := AddNodeTo(curNode, nil, 'Body');
-    for elem in procDecl.Body.Statements do begin
-      nodElem := AddNodeTo(nodBody, elem);  //Agrega el nodo
-      AddChildNodes(nodElem, elem);  //Llamada recursiva
+    AddNodeTo(curNode, procDecl.Body);
+  end else if curEle.NodeType = ntDeclarations then begin
+    nodDeclars := TDeclarations(curEle);
+    for elem in nodDeclars.Items do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
-
+  end else if curEle.NodeType = ntBlock then begin
+    block := TBlock(curEle);
+    for elem in block.Statements do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
+    end;
   end else if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
     //Parte izquierda de la asignación
-    nodElem := AddNodeTo(curNode, assig.Target);
-    AddChildNodes(nodElem, assig.Target);  //Llamada recursiva
+    AddNodeTo(curNode, assig.Target);
     //Parte derecha de la asignación
-    nodElem := AddNodeTo(curNode, assig.Value);
-    AddChildNodes(nodElem, assig.Value);  //Llamada recursiva
+    AddNodeTo(curNode, assig.Value);
     //Expande la asignación
     curNode.Expanded := true;
   end else if curEle.NodeType = ntBinaryOp then begin
     binaryOp := TBinaryOp(curEle);
     //Parte izquierda de la operación binaria
-    nodElem := AddNodeTo(curNode, binaryOp.Left);
-    AddChildNodes(nodElem, binaryOp.Left);  //Llamada recursiva
+    AddNodeTo(curNode, binaryOp.Left);
     //Parte derecha de la operación binaria
-    nodElem := AddNodeTo(curNode, binaryOp.Right);
-    AddChildNodes(nodElem, binaryOp.Right);  //Llamada recursiva
+    AddNodeTo(curNode, binaryOp.Right);
   end else if curEle.NodeType = ntUnaryOp then begin
     unaryOp := TUnaryOp(curEle);
     //Argumento
-    nodElem := AddNodeTo(curNode, unaryOp.Operand);
-    AddChildNodes(nodElem, unaryOp.Operand);  //Llamada recursiva
+    AddNodeTo(curNode, unaryOp.Operand);
   end else if curEle.NodeType = ntFunctionCall then begin
     functCall := TFunctionCall(curEle);
     //Agrega elementos
     for elem in functCall.Arguments do begin
-      nodElem := AddNodeTo(curNode, elem);
-      AddChildNodes(nodElem, elem);  //Llamada recursiva
+      AddNodeTo(curNode, elem);
       ////Expande los Body
       //if elem.nodeType = ntBlock then nodElem.Expanded := true;
       //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
@@ -296,40 +302,28 @@ begin
   end else if curEle.nodeType = ntPointerDeref then begin
     ptrDeref := TPointerDeref(curEle);
     //Agrega variable base
-    nodElem := AddNodeTo(curNode, ptrDeref.Pointer);
-    AddChildNodes(nodElem, ptrDeref.Pointer);  //Llamada recursiva
-
+    AddNodeTo(curNode, ptrDeref.Pointer);
   end else if curEle.NodeType = ntArrayIndex then begin
     arrIndex := TArrayIndex(curEle);
     //Agrega variable base
-    nodElem := AddNodeTo(curNode, arrIndex.ArrayVar);
-    AddChildNodes(nodElem, arrIndex.ArrayVar);  //Llamada recursiva
-
+    AddNodeTo(curNode, arrIndex.ArrayVar);
     //Agrega índices
     for elem in arrIndex.Indices do begin
-      nodElem := AddNodeTo(curNode, elem);
-      AddChildNodes(nodElem, elem);  //Llamada recursiva
+      AddNodeTo(curNode, elem);
     end;
   end else if curEle.nodeType = ntFieldAccess then begin
     fieldAccess := TFieldAccess(curEle);
     //Añade la variable base de registro
-    nodBase := AddNodeTo(curNode, fieldAccess.RecordVar);
-    AddChildNodes(nodBase, fieldAccess.RecordVar);  //Llamada recursiva
-
+    AddNodeTo(curNode, fieldAccess.RecordVar);
+  end else if curEle.nodeType = ntIfStatement then begin
+    ifStatem := TIfStatement(curEle);
+    //Añade expresión de condición
+    AddNodeTo(curNode, ifStatem.Condition);
+    //Añade sección THEN
+    AddNodeTo(curNode, ifStatem.ThenBranch);
+    //Añade sección ELSE
+    AddNodeTo(curNode, ifStatem.ElseBranch);
   end;
-
-
-
-
-//  //Agrega elementos
-//  for elem in curEle.elements do begin
-//      nodElem := AddNodeTo(curNode, elem);
-//      AddChildNodes(nodElem, elem);  //Llamada recursiva
-//      //Expande los Body
-//      if elem.nodeType = ntBlock then nodElem.Expanded := true;
-//      if elem.nodeType = ntAssignment then nodElem.Expanded := true;
-//      //if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
-//  end;
 end;
 function TfraSynxTree6502.SelectedIsMain: boolean;
 //Indica si el nodo seleccionado es el nodo raiz
@@ -470,9 +464,8 @@ end;
 procedure TfraSynxTree6502.Refresh;
 {Actualiza el árbol de sintaxis con el AST del compilador}
 var
-  nodMain, nodDecl, nodElem, nodBody: TTreeNode;
+  nodMain, nodDecl, nodBody: TTreeNode;
   prog: TProgram;
-  elem: TASTNode;
 begin
   TreeView1.Visible := true;
 
@@ -483,21 +476,11 @@ begin
   nodMain.SelectedIndex := 1;
   nodMain.Data := syntaxTree;  //Elemento raiz
   //AddChildNodes(nodMain, syntaxTree);
-
-  prog := TProgram(syntaxTree);
-
+  prog := syntaxTree;
   //Agrega nodo para las declaraciones globales
-  nodDecl := AddNodeTo(nodMain, nil, 'Declarations');
-  for elem in prog.Declarations.Items do begin
-    nodElem := AddNodeTo(nodDecl, elem);  //Agrega el nodo
-    AddChildNodes(nodElem, elem);  //Llamada recursiva
-  end;
+  nodDecl := AddNodeTo(nodMain, prog.Declarations, 'Declarations');
   //Agrega nodo para el programa principal
-  nodBody := AddNodeTo(nodMain, nil, 'Body');
-  for elem in prog.Body.Statements do begin
-    nodElem := AddNodeTo(nodBody, elem);  //Agrega el nodo
-    AddChildNodes(nodElem, elem);  //Llamada recursiva
-  end;
+  nodBody := AddNodeTo(nodMain, prog.Body, 'Body');
   //Termina configuración
   nodMain.Expanded := true;    //Expande nodo raiz
   nodDecl.Expanded := true;
