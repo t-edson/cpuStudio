@@ -102,12 +102,13 @@ var
   numberLit: TNumberLiteral;
   binaryOp: TBinaryOp;
   functCall: TFunctionCall;
-  typeDecl: TTypeDecl;
   varDecl: TVarDecl;
   constDecl: TConstDecl;
   txtNumber: String;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
+  typeDef: TTypeDef;
+  strLiteral: TStringLiteral;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -118,7 +119,11 @@ begin
     Result := nod;
     exit;
   end;
-  if elem.NodeType = ntConstDecl then begin
+  {if elem.idClass = eleUnit then begin
+     nod := TreeView1.Items.AddChild(nodParent, '?');
+     nod.ImageIndex := 6;
+     nod.SelectedIndex := 6;
+  end else }if elem.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, constDecl.Name);
     nod.ImageIndex := 23;
@@ -128,9 +133,10 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, varDecl.Name);
     nod.ImageIndex := 24;
     nod.SelectedIndex := 24;
-  end else if elem.nodeType = ntTypeDecl then begin
-    typeDecl := TTypeDecl(elem);
-    nod := TreeView1.Items.AddChild(nodParent, typeDecl.Name);
+  end else if elem.nodeType in [ntSubrangeType, ntEnumType, ntArrayType,
+                                ntRecordType, ntPointerType, ntAliasType] then begin
+    typeDef := TTypeDef(elem);
+    nod := TreeView1.Items.AddChild(nodParent, typeDef.TypeName);
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
   end else if elem.nodeType = ntProcDecl then begin
@@ -138,15 +144,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
     nod.ImageIndex := 26;
     nod.SelectedIndex := 26;
-  end else if elem.NodeType = ntFunction then begin
+  end else if elem.NodeType = ntFunctDecl then begin
     functDecl := TFunctDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, functDecl.Name);
     nod.ImageIndex := 16;
     nod.SelectedIndex := 16;
-//  end else if elem.idClass = eleUnit then begin
-//nod := TreeView1.Items.AddChild(nodParent, '?');
-//    nod.ImageIndex := 6;
-//    nod.SelectedIndex := 6;
   end else if elem.NodeType = ntDeclarations then begin
     nod := TreeView1.Items.AddChild(nodParent, 'Declarations');
     nod.ImageIndex := 0;
@@ -196,7 +198,6 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, '_item');
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
-//    Index := arrIndex.Indices;
   end else if elem.nodeType = ntFieldAccess then begin
     fieldAccess := TFieldAccess(elem);
     nod := TreeView1.Items.AddChild(nodParent, fieldAccess.FieldName);
@@ -212,8 +213,29 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, txtNumber);
     nod.ImageIndex := 4;
     nod.SelectedIndex := 4;
+  end else if elem.nodeType = ntStringLiteral then begin
+    strLiteral := TStringLiteral(elem);
+    nod := TreeView1.Items.AddChild(nodParent, strLiteral.Value);
+    nod.ImageIndex := 30;
+    nod.SelectedIndex := 30;
   end else if elem.nodeType = ntIfStatement then begin
     nod := TreeView1.Items.AddChild(nodParent, 'IF');
+    nod.ImageIndex := 12;
+    nod.SelectedIndex := 12;
+  end else if elem.nodeType = ntWhileLoop then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'WHILE');
+    nod.ImageIndex := 12;
+    nod.SelectedIndex := 12;
+  end else if elem.nodeType = ntRepeatUntil then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'REPEAT');
+    nod.ImageIndex := 12;
+    nod.SelectedIndex := 12;
+  end else if elem.nodeType = ntForLoop then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'FOR');
+    nod.ImageIndex := 12;
+    nod.SelectedIndex := 12;
+  end else if elem.nodeType = ntCaseStatement then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'CASE');
     nod.ImageIndex := 12;
     nod.SelectedIndex := 12;
   end else begin
@@ -248,6 +270,9 @@ var
   ifStatem: TIfStatement;
   nodDeclars: TDeclarations;
   block: TBlock;
+  whileLoop: TWhileLoop;
+  repUntil: TRepeatUntil;
+  forLoop: TForLoop;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -264,11 +289,6 @@ begin
   end else if curEle.NodeType = ntDeclarations then begin
     nodDeclars := TDeclarations(curEle);
     for elem in nodDeclars.Items do begin
-      AddNodeTo(curNode, elem);  //Agrega el nodo
-    end;
-  end else if curEle.NodeType = ntBlock then begin
-    block := TBlock(curEle);
-    for elem in block.Statements do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
   end else if curEle.NodeType = ntAssignment then begin
@@ -317,12 +337,32 @@ begin
     AddNodeTo(curNode, fieldAccess.RecordVar);
   end else if curEle.nodeType = ntIfStatement then begin
     ifStatem := TIfStatement(curEle);
-    //Añade expresión de condición
     AddNodeTo(curNode, ifStatem.Condition);
-    //Añade sección THEN
     AddNodeTo(curNode, ifStatem.ThenBranch);
-    //Añade sección ELSE
     AddNodeTo(curNode, ifStatem.ElseBranch);
+    curNode.Expanded := true;
+  end else if curEle.nodeType = ntWhileLoop then begin
+    whileLoop := TWhileLoop(curEle);
+    AddNodeTo(curNode, whileLoop.Condition);
+    AddNodeTo(curNode, whileLoop.Body);
+    curNode.Expanded := true;
+  end else if curEle.nodeType = ntRepeatUntil then begin
+    repUntil := TRepeatUntil(curEle);
+    AddNodeTo(curNode, repUntil.Body);
+    AddNodeTo(curNode, repUntil.Condition);
+    curNode.Expanded := true;
+  end else if curEle.nodeType = ntForLoop then begin
+    forLoop := TForLoop(curEle);
+    AddNodeTo(curNode, forLoop.ControlVar);
+    AddNodeTo(curNode, forLoop.StartExpr);
+    AddNodeTo(curNode, forLoop.EndExpr);
+    AddNodeTo(curNode, forLoop.Body);
+    curNode.Expanded := true;
+  end else if curEle.NodeType = ntBlock then begin
+    block := TBlock(curEle);
+    for elem in block.Statements do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
+    end;
   end;
 end;
 function TfraSynxTree6502.SelectedIsMain: boolean;
