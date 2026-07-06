@@ -530,7 +530,7 @@ end;
 procedure TfraSynxTree6502.Init(Compiler    : TParser);
 begin
   cpx        := Compiler;
-  syntaxTree := Compiler.ast;
+  syntaxTree := Compiler.astProg;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
