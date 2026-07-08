@@ -334,7 +334,7 @@ end;
 procedure TfraRamExplorer6502.SetCompiler(cxp0: TAnalyzer);
 begin
   pic := SIF_P65pas.picCore;
-  cxp := cxp0;
+  cxp := cxp0.par;
 end;
 constructor TfraRamExplorer6502.Create(AOwner: TComponent);
 begin

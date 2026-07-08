@@ -615,7 +615,7 @@ begin
 
   //Crea frame del árbol de sintaxis
   fraASTview := TfraSynxTree6502.Create(nil);
-  fraASTview.Init(Compiler);    //Conecta al compilador
+  fraASTview.Init(Compiler, Compiler.par.astProg);    //Conecta al compilador
   fraASTview.OnLocateElemen := @SynTree_LocateElemen;
   fraASTview.OnReqAnalysis  := @SynTree_ReqAnalysis;
   fraASTview.OnReqOptimizat := @SynTree_ReqOptimizat;

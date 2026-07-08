@@ -74,7 +74,7 @@ type
     property TextColor: TColor read FTextColor write SetTextColor;
   public    //Initialization
     procedure Refresh;
-    procedure Init(cpx: TAnalyzer);
+    procedure Init(cpx: TAnalyzer; astProg: TProgram);
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -527,10 +527,10 @@ begin
   nodBody.Expanded := true;
   TreeView1.Items.EndUpdate;
 end;
-procedure TfraSynxTree6502.Init(cpx: TAnalyzer);
+procedure TfraSynxTree6502.Init(cpx: TAnalyzer; astProg: TProgram);
 begin
   lex        := cpx.lex;
-  syntaxTree := cpx.astProg;
+  syntaxTree := astProg;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];

@@ -59,7 +59,7 @@ procedure TfraPicRegisters.SetCompiler(cxp0: TAnalyzer);
 var
   pic : TCPUCore;
 begin
-  cxp := cxp0;
+  cxp := cxp0.par;
   pic := SIF_P65pas.picCore;
   //Configura registros de acuerdo al tipo de arquitectura del compilador
   WREGptr := nil;
