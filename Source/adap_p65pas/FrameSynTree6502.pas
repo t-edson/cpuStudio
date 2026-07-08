@@ -5,7 +5,7 @@ uses
   Classes, SysUtils, FileUtil, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
   Globales, FormElemProperty, Parser,
-  {AstElemP65, AstTree, }ASTunit, alexiaLex, MisUtils;
+  ASTunit, Analyzer, alexiaLex, MisUtils;
 type
   { TfraSynxTree6502 }
   TfraSynxTree6502 = class(TFrame)
@@ -50,7 +50,7 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    cpx       : TParser;  //Reference to lexer
+    lex       : TAleLexer;  //Reference to lexer
     syntaxTree: TProgram; //Reference to SyntaxTree
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
@@ -74,7 +74,7 @@ type
     property TextColor: TColor read FTextColor write SetTextColor;
   public    //Initialization
     procedure Refresh;
-    procedure Init(Compiler: TParser);
+    procedure Init(cpx: TAnalyzer);
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -444,7 +444,7 @@ begin
     exit;
   end;
   elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(cpx.lex, elem);
+  frmElemProp.Exec(lex, elem);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
 begin
@@ -463,7 +463,7 @@ begin
   if SelectedIsElement then begin
     elem := TASTNode(TreeView1.Selected.Data);
     if elem = nil then exit;
-    fileName := cpx.lex.ctxFile(elem.SrcPos);
+    fileName := lex.ctxFile(elem.SrcPos);
     if OnLocateElemen <> nil then OnLocateElemen(fileName, elem.SrcPos.row, elem.SrcPos.col);
   end;
 end;
@@ -482,7 +482,7 @@ begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
   elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(cpx.lex, elem);
+  frmElemProp.Exec(lex, elem);
   frmElemProp.Show;
 end;
 procedure TfraSynxTree6502.acGenDoAnalysExecute(Sender: TObject);
@@ -527,10 +527,10 @@ begin
   nodBody.Expanded := true;
   TreeView1.Items.EndUpdate;
 end;
-procedure TfraSynxTree6502.Init(Compiler    : TParser);
+procedure TfraSynxTree6502.Init(cpx: TAnalyzer);
 begin
-  cpx        := Compiler;
-  syntaxTree := Compiler.astProg;
+  lex        := cpx.lex;
+  syntaxTree := cpx.astProg;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
