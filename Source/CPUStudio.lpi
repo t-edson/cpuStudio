@@ -76,7 +76,7 @@
         <PackageName Value="LCL"/>
       </Item4>
     </RequiredPackages>
-    <Units Count="45">
+    <Units Count="46">
       <Unit0>
         <Filename Value="CPUStudio.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -314,6 +314,10 @@
         <Filename Value="..\..\comp_p65pas\src\AstElemP65.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit44>
+      <Unit45>
+        <Filename Value="comp_p65pas\CompOptions.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit45>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

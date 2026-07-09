@@ -78,13 +78,13 @@ type
     milsecRefresh: integer;   //Periodo de refresco en milisegunod
     nCyclesPerClk: integer;   //Número de ciclos a ejecutar por pasada
     curVarName : string;
-    cxp: TAnalyzer;
+    cpx: TAnalyzer;
     pic: TCPUCore;
     procedure fraPicAsmCPUerror(txt: string);
     procedure picExecutionMsg(message: string);
     procedure RefreshScreen(SetGridRow: boolean = true);
   public
-    procedure Exec(cxp0: TAnalyzer);
+    procedure Exec(cpx0: TAnalyzer);
   end;
 
 var
@@ -150,17 +150,17 @@ procedure TfrmDebugger6502.fraPicAsmCPUerror(txt: string);
 begin
   lstMessages.AddItem(txt, nil);
 end;
-procedure TfrmDebugger6502.Exec(cxp0: TAnalyzer);
+procedure TfrmDebugger6502.Exec(cpx0: TAnalyzer);
 {Inicia el prcceso de depuración, mostrando la ventana.}
 begin
-  cxp := cxp0;
+  cpx := cpx0;
   pic := SIF_P65pas.picCore;
 
   //Muestra Frames
-  fraRamExp.SetCompiler(cxp);
-  fraPicReg.SetCompiler(cxp);
-  fraRegWat.SetCompiler(cxp);
-  fraPicAsm.SetCompiler(cxp);
+  fraRamExp.SetCompiler(cpx);
+  fraPicReg.SetCompiler(cpx);
+  fraRegWat.SetCompiler(cpx);
+  fraPicAsm.SetCompiler(cpx);
 
 //  pic.AddBreakpoint(0);
   pic.OnExecutionMsg := @picExecutionMsg;
@@ -284,7 +284,7 @@ begin
   lstMessages.Clear;
   lstMessages.AddItem('Restarting.', nil);
   //Start at the begin of code
-  pc := SIF_P65pas.GeneralORG;
+  pc := cpx.options.GeneralORG;
 //  while (pc < high(pic.ram)) and (pic.ram[pc].used <> ruCode) do begin
 //    pc := pc + 1;  //Incrementa
 //  end;

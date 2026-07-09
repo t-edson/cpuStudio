@@ -209,11 +209,11 @@ begin
 end;
 function TAdapter6502.hexFilePath: string;
 begin
-  exit(compiler.hexFilePath);
+  exit(compiler.options.hexFilePath);
 end;
 function TAdapter6502.mainFilePath: string;
 begin
-  exit(compiler.mainFilePath);
+  exit(compiler.options.mainFilePath);
 end;
 function TAdapter6502.CPUname: string;
 begin
