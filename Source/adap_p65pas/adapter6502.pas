@@ -217,7 +217,7 @@ begin
 end;
 function TAdapter6502.CPUname: string;
 begin
-  exit(compiler.PICName)
+  exit(compiler.options.Model)
 end;
 function TAdapter6502.SampleCode: string;
 begin
@@ -603,7 +603,7 @@ begin
   //Crea compilador y configura eventos
   Compiler := TCompiler_PIC16.Create(msg0);
   msg := msg0;  //Se maneja separadamente de "Compiler.msg" porque no se asumirá que todos los compiladores tengan esa referencia.
-  Compiler.lex.OnRequireFileString:=@Compiler_RequireFileString;
+  Compiler.lexer.OnRequireFileString:=@Compiler_RequireFileString;
   //Configura CodeTool
   CodeTool  := TCodeTool.Create(fraEditView);
   CodeTool.Init(compiler);  //Asigna compilador
@@ -615,7 +615,7 @@ begin
 
   //Crea frame del árbol de sintaxis
   fraASTview := TfraSynxTree6502.Create(nil);
-  fraASTview.Init(Compiler, Compiler.par.astProg);    //Conecta al compilador
+  fraASTview.Init(Compiler, Compiler.parser.astProg);    //Conecta al compilador
   fraASTview.OnLocateElemen := @SynTree_LocateElemen;
   fraASTview.OnReqAnalysis  := @SynTree_ReqAnalysis;
   fraASTview.OnReqOptimizat := @SynTree_ReqOptimizat;

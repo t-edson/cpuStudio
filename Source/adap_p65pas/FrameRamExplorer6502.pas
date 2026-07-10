@@ -3,7 +3,7 @@ unit FrameRamExplorer6502;
 interface
 uses
   Classes, SysUtils, Math, FileUtil, Forms, Controls, Graphics, StdCtrls,
-  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, Parser, Analyzer,
+  LCLProc, LCLIntf, LCLType, ExtCtrls, Buttons, CPUCore, ParserPas, Analyzer,
   SIF_P65pas;
 type
   //Define a un bloque de RAM, que servirá para dibujo
@@ -25,7 +25,7 @@ type
     SpeedButton1: TSpeedButton;
     procedure SpeedButton1Click(Sender: TObject);
   private
-    cxp: TParser;
+    cxp: TParserPas;
     pic: TCPUCore;
     blockSta: array of TRamBlock;
     blockUse: array of TRamBlock;
@@ -334,7 +334,7 @@ end;
 procedure TfraRamExplorer6502.SetCompiler(cxp0: TAnalyzer);
 begin
   pic := SIF_P65pas.picCore;
-  cxp := cxp0.par;
+  cxp := cxp0.parser;
 end;
 constructor TfraRamExplorer6502.Create(AOwner: TComponent);
 begin

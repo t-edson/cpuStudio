@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Grids, ExtCtrls, StdCtrls,
   Buttons, Graphics, LCLType, Menus, LCLProc, ActnList, P65c02utils, MisUtils,
-  UtilsGrilla, CibGrillas, Parser, CPUCore, Globales, AstElemP65, Analyzer,
+  UtilsGrilla, CibGrillas, ParserPas, CPUCore, Globales, AstElemP65, Analyzer,
   SIF_P65pas, CompGlobals;
 type
 
@@ -109,7 +109,7 @@ begin
          exit;
       end;
     end;
-    if (addr<0) or (addr>cxp.RAMmax) then begin
+    if (addr<0) or (addr>cxp.options.RAMmax) then begin
        grilla.Cells[col_adr,f] := '';
        grilla.Cells[col_bit,f] := '';
        grilla.Cells[COL_NAM,f] := '#Error';
@@ -139,7 +139,7 @@ begin
     addr := -1;
     nbit := -1;
     //Busca nombre de bytes
-    for i:=0 to cxp.RAMmax do begin
+    for i:=0 to cxp.options.RAMmax do begin
       if UpCase(pic.ram[i].name) = nameStr then begin
         addr := i;
         break;

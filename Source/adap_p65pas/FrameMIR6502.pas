@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
-  Globales, Parser, MirList, Analyzer;
+  Globales, ParserPas, MirList, Analyzer;
 
 type
   { TfraMIR6502 }

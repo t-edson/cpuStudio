@@ -3,7 +3,7 @@ unit FrameRegisters6502;
 interface
 uses
   Classes, SysUtils, FileUtil, Forms, Controls, Graphics, StdCtrls, LCLProc,
-  LCLIntf, LCLType, Grids, ExtCtrls, Parser, Analyzer, SIF_P65pas,
+  LCLIntf, LCLType, Grids, ExtCtrls, ParserPas, Analyzer, SIF_P65pas,
   CPUCore, P65c02utils;
 type
 
@@ -20,7 +20,7 @@ type
     StringGrid3: TStringGrid;
     StringGrid4: TStringGrid;
   private
-    cxp: TParser;
+    cxp: TParserPas;
     //Acceso a los registros importantes
     WREGptr: ^byte;
     XREGptr: ^byte;
@@ -59,7 +59,7 @@ procedure TfraPicRegisters.SetCompiler(cxp0: TAnalyzer);
 var
   pic : TCPUCore;
 begin
-  cxp := cxp0.par;
+  cxp := cxp0.parser;
   pic := SIF_P65pas.picCore;
   //Configura registros de acuerdo al tipo de arquitectura del compilador
   WREGptr := nil;

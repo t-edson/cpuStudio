@@ -120,7 +120,7 @@ procedure TfrmRAMExplorer6502.Exec(cxp0: TAnalyzer; zoom0: Single);
 begin
   zoom := zoom0;
   fra.SetCompiler(cxp0);
-  Caption := 'RAM Explorer. CPUModel=' + cxp0.PICName;
+  Caption := 'RAM Explorer. CPUModel=' + cxp0.options.Model;
   //Dimensiona ventana para mostrar
   self.Width := 360;
   self.Height := 480;

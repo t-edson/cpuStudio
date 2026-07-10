@@ -275,7 +275,7 @@
         <IsPartOfProject Value="True"/>
       </Unit34>
       <Unit35>
-        <Filename Value="comp_p65pas\Parser.pas"/>
+        <Filename Value="comp_p65pas\ParserPas.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit35>
       <Unit36>

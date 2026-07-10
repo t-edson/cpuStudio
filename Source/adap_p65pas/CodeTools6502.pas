@@ -396,7 +396,7 @@ begin
   //Calcula la posición del elemento
   tokPos.row := fraEdit.ActiveEditor.sedit.CaretY;
   tokPos.col := curEnv.tok_2^.posIni+1;
-  tokPos.idCtx := cxp.lex.ctxId(fraEdit.ActiveEditor.FileName);
+  tokPos.idCtx := cxp.lexer.ctxId(fraEdit.ActiveEditor.FileName);
   //Dispara evento
   FieldsComplet(ident, opEve, tokPos);
   Cancel := false;
@@ -412,7 +412,7 @@ begin
   //Calcula la posición del elemento
   tokPos.row := fraEdit.ActiveEditor.sedit.CaretY;
   tokPos.col := curEnv.tok_3^.posIni+1;
-  tokPos.idCtx := cxp.lex.ctxId(fraEdit.ActiveEditor.FileName);
+  tokPos.idCtx := cxp.lexer.ctxId(fraEdit.ActiveEditor.FileName);
   //Dispara evento
   FieldsComplet(ident, opEve, tokPos);
   Cancel := false;

@@ -4,7 +4,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
-  Globales, FormElemProperty, Parser,
+  Globales, FormElemProperty, ParserPas,
   ASTunit, Analyzer, alexiaLex, MisUtils;
 type
   { TfraSynxTree6502 }
@@ -529,7 +529,7 @@ begin
 end;
 procedure TfraSynxTree6502.Init(cpx: TAnalyzer; astProg: TProgram);
 begin
-  lex        := cpx.lex;
+  lex        := cpx.lexer;
   syntaxTree := astProg;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
