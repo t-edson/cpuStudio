@@ -109,6 +109,7 @@ var
   fieldAccess: TFieldAccess;
   typeDef: TTypeDef;
   strLiteral: TStringLiteral;
+  fieldDecl: TFieldDef;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -139,6 +140,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, typeDef.TypeName);
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
+  end else if elem.nodeType = ntFieldDecl then begin
+    fieldDecl := TFieldDef(elem);
+    nod := TreeView1.Items.AddChild(nodParent, fieldDecl.Name);
+    nod.ImageIndex := 24;
+    nod.SelectedIndex := 24;
   end else if elem.nodeType = ntProcDecl then begin
     procDecl := TProcDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
@@ -273,6 +279,7 @@ var
   whileLoop: TWhileLoop;
   repUntil: TRepeatUntil;
   forLoop: TForLoop;
+  recordType: TRecordTypeDef;
 begin
   if curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -289,6 +296,11 @@ begin
   end else if curEle.NodeType = ntDeclarations then begin
     nodDeclars := TDeclarations(curEle);
     for elem in nodDeclars.Items do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
+    end;
+  end else if curEle.NodeType = ntRecordType then begin
+    recordType := TRecordTypeDef(curEle);
+    for elem in recordType.Fields do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
   end else if curEle.NodeType = ntAssignment then begin
