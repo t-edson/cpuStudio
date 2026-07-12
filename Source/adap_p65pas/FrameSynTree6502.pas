@@ -104,18 +104,19 @@ var
   functCall: TFunctionCall;
   varDecl: TVarDecl;
   constDecl: TConstDecl;
-  txtNumber: String;
+  txtNumber, rango: String;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
   typeDef: TTypeDef;
   strLiteral: TStringLiteral;
-  fieldDecl: TFieldDef;
+  arrayRange: TArrayRange;
+  boolLiteral: TBooleanLiteral;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
     nod := TreeView1.Items.AddChild(nodParent, nodName);
-    nod.ImageIndex := 0;
-    nod.SelectedIndex := 0;
+    nod.ImageIndex := 17;
+    nod.SelectedIndex := 17;
     nod.Data := elem;
     Result := nod;
     exit;
@@ -140,11 +141,6 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, typeDef.TypeName);
     nod.ImageIndex := 15;
     nod.SelectedIndex := 15;
-  end else if elem.nodeType = ntFieldDecl then begin
-    fieldDecl := TFieldDef(elem);
-    nod := TreeView1.Items.AddChild(nodParent, fieldDecl.Name);
-    nod.ImageIndex := 24;
-    nod.SelectedIndex := 24;
   end else if elem.nodeType = ntProcDecl then begin
     procDecl := TProcDecl(elem);
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
@@ -200,8 +196,14 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, '_ptr');
     nod.ImageIndex := 29;
     nod.SelectedIndex := 29;
-  end else if elem.nodeType = ntArrayIndex then begin
+  end else if elem.nodeType = ntArrayRefer then begin
     nod := TreeView1.Items.AddChild(nodParent, '_item');
+    nod.ImageIndex := 27;
+    nod.SelectedIndex := 27;
+  end else if elem.NodeType = ntArrayRange then begin
+    arrayRange := TArrayRange(elem);
+    rango := arrayRange.LowExpr.ValueStr + '..' + arrayRange.HighExpr.ValueStr;
+    nod := TreeView1.Items.AddChild(nodParent, rango);
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
   end else if elem.nodeType = ntFieldAccess then begin
@@ -224,6 +226,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, strLiteral.Value);
     nod.ImageIndex := 30;
     nod.SelectedIndex := 30;
+  end else if elem.nodeType = ntBooleanLiteral then begin
+    boolLiteral := TBooleanLiteral(elem);
+    nod := TreeView1.Items.AddChild(nodParent, boolLiteral.ValueStr);
+    nod.ImageIndex := 19;
+    nod.SelectedIndex := 19;
   end else if elem.nodeType = ntIfStatement then begin
     nod := TreeView1.Items.AddChild(nodParent, 'IF');
     nod.ImageIndex := 12;
@@ -280,11 +287,18 @@ var
   repUntil: TRepeatUntil;
   forLoop: TForLoop;
   recordType: TRecordTypeDef;
+  varDecl: TVarDecl;
+  arrayType: TArrayTypeDef;
 begin
-  if curEle.NodeType = ntConstDecl then begin
+  if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
     //Añade valor de la constante
     AddNodeTo(curNode, constDecl.Value);
+  end else if curEle.NodeType = ntVarDecl then begin
+    varDecl := TVarDecl(curEle);
+    //Añade tipo de la variable
+    AddNodeTo(curNode, varDecl.TypeDef, varDecl.TypeName);
+
   end else if curEle.NodeType = ntProcDecl then begin
     procDecl := TProcDecl(curEle);
     //Agrega nodo para los parámetros
@@ -301,6 +315,12 @@ begin
   end else if curEle.NodeType = ntRecordType then begin
     recordType := TRecordTypeDef(curEle);
     for elem in recordType.Fields do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
+    end;
+  end else if curEle.NodeType = ntArrayType then begin
+    arrayType := TArrayTypeDef(curEle);
+    //Agrega los índices del arreglo
+    for elem in arrayType.IndexRanges do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
   end else if curEle.NodeType = ntAssignment then begin
@@ -335,7 +355,7 @@ begin
     ptrDeref := TPointerDeref(curEle);
     //Agrega variable base
     AddNodeTo(curNode, ptrDeref.Pointer);
-  end else if curEle.NodeType = ntArrayIndex then begin
+  end else if curEle.NodeType = ntArrayRefer then begin
     arrIndex := TArrayIndex(curEle);
     //Agrega variable base
     AddNodeTo(curNode, arrIndex.ArrayVar);
