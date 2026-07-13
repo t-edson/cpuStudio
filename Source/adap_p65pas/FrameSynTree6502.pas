@@ -111,6 +111,7 @@ var
   strLiteral: TStringLiteral;
   arrayRange: TArrayRange;
   boolLiteral: TBooleanLiteral;
+  arrayLiteral: TArrayLiteral;
 //  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
@@ -231,6 +232,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, boolLiteral.ValueStr);
     nod.ImageIndex := 19;
     nod.SelectedIndex := 19;
+  end else if elem.nodeType = ntArrayLiteral then begin
+    arrayLiteral := TArrayLiteral(elem);
+    nod := TreeView1.Items.AddChild(nodParent, arrayLiteral.ValueStr);
+    nod.ImageIndex := 27;
+    nod.SelectedIndex := 27;
   end else if elem.nodeType = ntIfStatement then begin
     nod := TreeView1.Items.AddChild(nodParent, 'IF');
     nod.ImageIndex := 12;
