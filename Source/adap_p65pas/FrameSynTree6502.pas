@@ -237,6 +237,11 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, arrayLiteral.ValueStr);
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
+  end else if elem.nodeType = ntRecordLiteral then begin
+    arrayLiteral := TArrayLiteral(elem);
+    nod := TreeView1.Items.AddChild(nodParent, arrayLiteral.ValueStr);
+    nod.ImageIndex := 28;
+    nod.SelectedIndex := 28;
   end else if elem.nodeType = ntIfStatement then begin
     nod := TreeView1.Items.AddChild(nodParent, 'IF');
     nod.ImageIndex := 12;
