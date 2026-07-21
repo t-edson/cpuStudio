@@ -97,7 +97,6 @@ function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TASTNode;
 var
   nod: TTreeNode;
   procDecl: TProcDecl;
-  functDecl: TFunctDecl;
   varRef: TVariableRef;
   numberLit: TNumberLiteral;
   binaryOp: TBinaryOp;
@@ -147,11 +146,6 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
     nod.ImageIndex := 26;
     nod.SelectedIndex := 26;
-  end else if elem.NodeType = ntFunctDecl then begin
-    functDecl := TFunctDecl(elem);
-    nod := TreeView1.Items.AddChild(nodParent, functDecl.Name);
-    nod.ImageIndex := 16;
-    nod.SelectedIndex := 16;
   end else if elem.NodeType = ntDeclarations then begin
     nod := TreeView1.Items.AddChild(nodParent, 'Declarations');
     nod.ImageIndex := 0;
