@@ -254,8 +254,16 @@ begin
     nod.SelectedIndex := 12;
   end else if elem.nodeType = ntCaseStatement then begin
     nod := TreeView1.Items.AddChild(nodParent, 'CASE');
+    nod.ImageIndex := 10;
+    nod.SelectedIndex := 10;
+  end else if elem.nodeType = ntAsmBlock then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'Asm');
     nod.ImageIndex := 12;
     nod.SelectedIndex := 12;
+  end else if elem.nodeType = ntAsmInstruction then begin
+    nod := TreeView1.Items.AddChild(nodParent, 'Instruction');
+    nod.ImageIndex := 19;
+    nod.SelectedIndex := 19;
   end else begin
     nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 0;
@@ -294,6 +302,7 @@ var
   recordType: TRecordTypeDef;
   varDecl: TVarDecl;
   arrayType: TArrayTypeDef;
+  asmBlock: TAsmBlock;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -395,6 +404,11 @@ begin
     AddNodeTo(curNode, forLoop.EndExpr);
     AddNodeTo(curNode, forLoop.Body);
     curNode.Expanded := true;
+  end else if curEle.nodeType = ntAsmBlock then begin
+    asmBlock := TAsmBlock(curEle);
+    for elem in asmBlock.Instructions do begin
+      AddNodeTo(curNode, elem);  //Agrega el nodo
+    end;
   end else if curEle.NodeType = ntBlock then begin
     block := TBlock(curEle);
     for elem in block.Statements do begin
