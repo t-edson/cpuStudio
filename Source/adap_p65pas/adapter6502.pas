@@ -341,7 +341,7 @@ begin
   //eTimer.Clear; eTimer.Start;   //Star counting time
   msg.sys(CMD_CLEAR_MSGS);  //Limpia ventana de mensajes
   //Realiza la compilación
-  Compiler.Exec(ed.FileName, '', pars);
+  Compiler.Exec(ed.FileName, pars);
   //Tareas finales
   //eTimer.Stop;  //Stop counter
   if msg.nErrors>0 then begin
@@ -375,7 +375,7 @@ begin
   msg.info(CompilerName + ': ' + MSG_INICOMP);
   //Realiza la compilación
   Compiling := true;   //Activa bandera para saber que queremos compilar.
-  Compiler.Exec(ed.FileName, '', pars);
+  Compiler.Exec(ed.FileName, pars);
   Compiling := false;
   //Tareas finales
   eTimer.Stop;  //Stop counter

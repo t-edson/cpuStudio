@@ -51,7 +51,7 @@ type
     FBackColor: TColor;
     FTextColor: TColor;
     lex       : TAleLexer;  //Reference to lexer
-    syntaxTree: TProgram; //Reference to SyntaxTree
+    progTree  : TProgram;   //Reference to program AST
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
       ): TTreeNode;
@@ -556,22 +556,20 @@ procedure TfraSynxTree6502.Refresh;
 {Actualiza el árbol de sintaxis con el AST del compilador}
 var
   nodMain, nodDecl, nodBody: TTreeNode;
-  prog: TProgram;
 begin
   TreeView1.Visible := true;
 
   TreeView1.Items.BeginUpdate;
   TreeView1.Items.Clear;
-  nodMain := TreeView1.Items.AddChild(nil, TIT_MAIN);
+  //Agrega nodo principal
+  nodMain := TreeView1.Items.AddChild(nil, progTree.Name);
   nodMain.ImageIndex := 1;
   nodMain.SelectedIndex := 1;
-  nodMain.Data := syntaxTree;  //Elemento raiz
-  //AddChildNodes(nodMain, syntaxTree);
-  prog := syntaxTree;
+  nodMain.Data := progTree;  //Elemento raiz
   //Agrega nodo para las declaraciones globales
-  nodDecl := AddNodeTo(nodMain, prog.Declarations, 'Declarations');
+  nodDecl := AddNodeTo(nodMain, progTree.Declarations, 'Declarations');
   //Agrega nodo para el programa principal
-  nodBody := AddNodeTo(nodMain, prog.Body, 'Body');
+  nodBody := AddNodeTo(nodMain, progTree.Body, 'Body');
   //Termina configuración
   nodMain.Expanded := true;    //Expande nodo raiz
   nodDecl.Expanded := true;
@@ -581,7 +579,7 @@ end;
 procedure TfraSynxTree6502.Init(cpx: TAnalyzer; astProg: TProgram);
 begin
   lex        := cpx.lexer;
-  syntaxTree := astProg;
+  progTree := astProg;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
