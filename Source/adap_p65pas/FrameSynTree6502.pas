@@ -197,7 +197,11 @@ begin
     nod.SelectedIndex := 27;
   end else if elem.NodeType = ntArrayRange then begin
     arrayRange := TArrayRange(elem);
-    rango := arrayRange.LowExpr.ValueStr + '..' + arrayRange.HighExpr.ValueStr;
+    if arrayRange.HighExpr = Nil then begin
+      rango := arrayRange.LowExpr.ValueStr + '..';
+    end else begin
+      rango := arrayRange.LowExpr.ValueStr + '..' + arrayRange.HighExpr.ValueStr;
+    end;
     nod := TreeView1.Items.AddChild(nodParent, rango);
     nod.ImageIndex := 27;
     nod.SelectedIndex := 27;
