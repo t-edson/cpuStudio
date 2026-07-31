@@ -53,6 +53,8 @@ type
     lexer     : TAleLexer;  //Reference to lexer
     parser    : TParserPas;  //Reference to Parser
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
+    function AddNode(nodParent: TTreeNode; imgIndex: integer; nodName: string
+      ): TTreeNode;
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
       ): TTreeNode;
     procedure frmElemPropertyExplore(elem: TASTNode);
@@ -90,196 +92,107 @@ var
   TIT_OTHER: String;
 
 { TfraSynxTree6502 }
+function TfraSynxTree6502.AddNode(nodParent: TTreeNode; imgIndex: integer; nodName: string): TTreeNode;
+{Agrega un nodo con un ícono y un nombre específico}
+var
+  nod: TTreeNode;
+begin
+  nod := TreeView1.Items.AddChild(nodParent, nodName);
+  nod.ImageIndex := imgIndex;
+  nod.SelectedIndex := imgIndex;
+  //Devuelve referencia al nodo
+  Result := nod;
+end;
 function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TASTNode;
   nodName: string = ''): TTreeNode;
 {Agrega un nodo nuevo, al elemento "nodParent", que representa al elemento de sintaxis
 "elem", configurando el ícono apropiado.}
 var
   nod: TTreeNode;
-  procDecl: TProcDecl;
-  varRef: TVariableRef;
   numberLit: TNumberLiteral;
-  binaryOp: TBinaryOp;
-  functCall: TFunctionCall;
-  varDecl: TVarDecl;
-  constDecl: TConstDecl;
   txtNumber, rango: String;
-  unaryOp: TUnaryOp;
-  fieldAccess: TFieldAccess;
-  typeDef: TTypeDef;
-  strLiteral: TStringLiteral;
   arrayRange: TArrayRange;
-  boolLiteral: TBooleanLiteral;
-  arrayLiteral: TArrayLiteral;
-//  asmInst: TAstAsmInstr;
 begin
   if elem = nil then begin
-    nod := TreeView1.Items.AddChild(nodParent, nodName);
-    nod.ImageIndex := 17;
-    nod.SelectedIndex := 17;
+    nod := AddNode(nodParent, 17, nodName);
     nod.Data := elem;
-    Result := nod;
-    exit;
+    Exit(nod);
   end;
-  {if elem.idClass = eleUnit then begin
-     nod := TreeView1.Items.AddChild(nodParent, '?');
-     nod.ImageIndex := 6;
-     nod.SelectedIndex := 6;
-  end else }if elem.NodeType = ntConstDecl then begin
-    constDecl := TConstDecl(elem);
-    nod := TreeView1.Items.AddChild(nodParent, constDecl.Name);
-    nod.ImageIndex := 23;
-    nod.SelectedIndex := 23;
-  end else if elem.NodeType = ntVarDecl then begin
-    varDecl:= TVarDecl(elem);
-    nod := TreeView1.Items.AddChild(nodParent, varDecl.Name);
-    nod.ImageIndex := 24;
-    nod.SelectedIndex := 24;
-  end else if elem.nodeType in [ntSubrangeType, ntEnumType, ntArrayType,
-                                ntRecordType, ntPointerType, ntAliasType] then begin
-    typeDef := TTypeDef(elem);
-    nod := TreeView1.Items.AddChild(nodParent, typeDef.TypeName);
-    nod.ImageIndex := 15;
-    nod.SelectedIndex := 15;
-  end else if elem.nodeType = ntProcDecl then begin
-    procDecl := TProcDecl(elem);
-    nod := TreeView1.Items.AddChild(nodParent, procDecl.Name);
-    nod.ImageIndex := 26;
-    nod.SelectedIndex := 26;
-  end else if elem.NodeType = ntDeclarations then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'Declarations');
-    nod.ImageIndex := 0;
-    nod.SelectedIndex := 0;
-  end else if elem.NodeType = ntBlock then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'Block');
-    nod.ImageIndex := 0;
-    nod.SelectedIndex := 0;
-  end else if elem.NodeType = ntBinaryOp then begin
-    binaryOp := TBinaryOp(elem);
-    nod := TreeView1.Items.AddChild(nodParent, binaryOp.Op);
-    nod.ImageIndex := 3;
-    nod.SelectedIndex := 3;
-  end else if elem.NodeType = ntUnaryOp then begin
-    unaryOp := TUnaryOp(elem);
-    nod := TreeView1.Items.AddChild(nodParent, unaryOp.Op);
-    nod.ImageIndex := 18;
-    nod.SelectedIndex := 18;
-//  end else if elem.idClass = eleAsmInstr then begin
-//    asmInst := TAstAsmInstr(elem);
-//    if asmInst.iType = itLabel then begin  //Etiquetas
-//      nod.ImageIndex := 22;
-//      nod.SelectedIndex := 22;
-//    end else begin
-//      nod.ImageIndex := 19;
-//      nod.SelectedIndex := 19;
-//    end;
-  end else if elem.NodeType = ntAssignment then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'assign');
-    nod.ImageIndex := 3;
-    nod.SelectedIndex := 3;
-  end else if elem.nodeType = ntFunctionCall then begin
-    functCall := TFunctionCall(elem);
-    nod := TreeView1.Items.AddChild(nodParent, functCall.Name);
-    nod.ImageIndex := 3;
-    nod.SelectedIndex := 3;
-  end else if elem.nodeType = ntVariableRef then begin
-    varRef := TVariableRef(elem);
-    nod := TreeView1.Items.AddChild(nodParent, varRef.Name);
-    nod.ImageIndex := 2;
-    nod.SelectedIndex := 2;
-  end else if elem.nodeType = ntPointerDeref then begin
-    nod := TreeView1.Items.AddChild(nodParent, '_ptr');
-    nod.ImageIndex := 29;
-    nod.SelectedIndex := 29;
-  end else if elem.nodeType = ntArrayRefer then begin
-    nod := TreeView1.Items.AddChild(nodParent, '_item');
-    nod.ImageIndex := 27;
-    nod.SelectedIndex := 27;
-  end else if elem.NodeType = ntArrayRange then begin
+  case elem.NodeType of
+  ntConstDecl:
+    nod := AddNode(nodParent, 23, TConstDecl(elem).Name);
+  ntVarDecl:
+    nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
+  ntSubrangeType, ntEnumType, ntArrayType, ntRecordType, ntPointerType, ntAliasType:
+    nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
+  ntProcDecl:
+    nod := AddNode(nodParent, 26, TProcDecl(elem).Name);
+  ntDeclarations:
+    nod := AddNode(nodParent, 0, 'Declarations');
+  ntBlock:
+    nod := AddNode(nodParent, 0, 'Block');
+  ntBinaryOp:
+    nod := AddNode(nodParent, 3, TBinaryOp(elem).Op);
+  ntUnaryOp:
+    nod := AddNode(nodParent, 18, TUnaryOp(elem).Op);
+  ntAssignment:
+    nod := AddNode(nodParent, 3, 'assign');
+  ntFunctionCall:
+    nod := AddNode(nodParent, 3, TFunctionCall(elem).Name);
+  ntVariableRef:
+    nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
+  ntPointerDeref:
+    nod := AddNode(nodParent, 29, '_ptr');
+  ntArrayRefer:
+    nod := AddNode(nodParent, 27, '_item');
+  ntArrayRange: begin
     arrayRange := TArrayRange(elem);
     if arrayRange.HighExpr = Nil then begin
       rango := arrayRange.LowExpr.ValueStr + '..';
     end else begin
       rango := arrayRange.LowExpr.ValueStr + '..' + arrayRange.HighExpr.ValueStr;
     end;
-    nod := TreeView1.Items.AddChild(nodParent, rango);
-    nod.ImageIndex := 27;
-    nod.SelectedIndex := 27;
-  end else if elem.nodeType = ntFieldAccess then begin
-    fieldAccess := TFieldAccess(elem);
-    nod := TreeView1.Items.AddChild(nodParent, fieldAccess.FieldName);
-    nod.ImageIndex := 28;
-    nod.SelectedIndex := 28;
-  end else if elem.nodeType = ntNumberLiteral then begin
+    nod := AddNode(nodParent, 27, rango);
+  end;
+  ntFieldAccess:
+    nod := AddNode(nodParent, 28, TFieldAccess(elem).FieldName);
+  ntNumberLiteral: begin
     numberLit := TNumberLiteral(elem);
     if numberLit.IsInteger then begin
       txtNumber := IntToStr(numberLit.IntValue);
     end else begin
       txtNumber := FloatToStr(numberLit.FloatValue);
     end;
-    nod := TreeView1.Items.AddChild(nodParent, txtNumber);
-    nod.ImageIndex := 4;
-    nod.SelectedIndex := 4;
-  end else if elem.nodeType = ntStringLiteral then begin
-    strLiteral := TStringLiteral(elem);
-    nod := TreeView1.Items.AddChild(nodParent, strLiteral.Value);
-    nod.ImageIndex := 30;
-    nod.SelectedIndex := 30;
-  end else if elem.nodeType = ntBooleanLiteral then begin
-    boolLiteral := TBooleanLiteral(elem);
-    nod := TreeView1.Items.AddChild(nodParent, boolLiteral.ValueStr);
-    nod.ImageIndex := 19;
-    nod.SelectedIndex := 19;
-  end else if elem.nodeType = ntArrayLiteral then begin
-    arrayLiteral := TArrayLiteral(elem);
-    nod := TreeView1.Items.AddChild(nodParent, arrayLiteral.ValueStr);
-    nod.ImageIndex := 27;
-    nod.SelectedIndex := 27;
-  end else if elem.nodeType = ntRecordLiteral then begin
-    arrayLiteral := TArrayLiteral(elem);
-    nod := TreeView1.Items.AddChild(nodParent, arrayLiteral.ValueStr);
-    nod.ImageIndex := 28;
-    nod.SelectedIndex := 28;
-  end else if elem.nodeType = ntIfStatement then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'IF');
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.nodeType = ntWhileLoop then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'WHILE');
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.nodeType = ntRepeatUntil then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'REPEAT');
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.nodeType = ntForLoop then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'FOR');
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.nodeType = ntCaseStatement then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'CASE');
-    nod.ImageIndex := 10;
-    nod.SelectedIndex := 10;
-  end else if elem.nodeType = ntAsmBlock then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'Asm');
-    nod.ImageIndex := 12;
-    nod.SelectedIndex := 12;
-  end else if elem.nodeType = ntAsmInstruction then begin
-    nod := TreeView1.Items.AddChild(nodParent, 'Instruction');
-    nod.ImageIndex := 19;
-    nod.SelectedIndex := 19;
-  end else if elem.nodeType = ntProgram then begin
-    nod := TreeView1.Items.AddChild(nodParent, TProgram(elem).Name);
-    nod.ImageIndex := 1;
-    nod.SelectedIndex := 1;
-  end else if elem.nodeType = ntUnit then begin
-    nod := TreeView1.Items.AddChild(nodParent, TUnit(elem).Name);
-    nod.ImageIndex := 1;
-    nod.SelectedIndex := 1;
-  end else begin
-    nod := TreeView1.Items.AddChild(nodParent, '?');
-    nod.ImageIndex := 0;
-    nod.SelectedIndex := 0;
+    nod := AddNode(nodParent, 4, txtNumber);
+  end;
+  ntStringLiteral:
+    nod := AddNode(nodParent, 30, TStringLiteral(elem).Value);
+  ntBooleanLiteral:
+    nod := AddNode(nodParent, 19, TBooleanLiteral(elem).ValueStr);
+  ntArrayLiteral:
+    nod := AddNode(nodParent, 27, TArrayLiteral(elem).ValueStr);
+  ntRecordLiteral:
+    nod := AddNode(nodParent, 28, TRecordLiteral(elem).ValueStr);
+  ntIfStatement:
+    nod := AddNode(nodParent, 12, 'IF');
+  ntWhileLoop:
+    nod := AddNode(nodParent, 12, 'WHILE');
+  ntRepeatUntil:
+    nod := AddNode(nodParent, 12, 'REPEAT');
+  ntForLoop:
+    nod := AddNode(nodParent, 12, 'FOR');
+  ntCaseStatement:
+    nod := AddNode(nodParent, 10, 'CASE');
+  ntAsmBlock:
+    nod := AddNode(nodParent, 12, 'Asm');
+  ntAsmInstruction:
+    nod := AddNode(nodParent, 19, 'Instruction');
+  ntProgram:
+    nod := AddNode(nodParent, 1, TProgram(elem).Name);
+  ntUnit:
+    nod := AddNode(nodParent, 1, TUnit(elem).Name);
+  else
+    nod := AddNode(nodParent, 0, '?');
   end;
   //Guarda referencia al elemento
   nod.Data := elem;
@@ -317,6 +230,7 @@ var
   asmBlock: TAsmBlock;
   Prog: TProgram;
   unt: TUnit;
+  nodInterf, nodImplem: TTreeNode;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -329,12 +243,14 @@ begin
 
   end else if curEle.NodeType = ntProcDecl then begin
     procDecl := TProcDecl(curEle);
-    //Agrega nodo para los parámetros
-    //AddNodeTo(curNode, procDecl.Parameters);
-    //Agrega nodo para las declaraciones
-    AddNodeTo(curNode, procDecl.Declarations);
-    //Agrega nodo para el cuerpo
-    AddNodeTo(curNode, procDecl.Body);
+    if not procDecl.IsForward then begin
+      //Agrega nodo para los parámetros
+      //AddNodeTo(curNode, procDecl.Parameters);
+      //Agrega nodo para las declaraciones
+      AddNodeTo(curNode, procDecl.Declarations);
+      //Agrega nodo para el cuerpo
+      AddNodeTo(curNode, procDecl.Body);
+    end;
   end else if curEle.NodeType = ntDeclarations then begin
     nodDeclars := TDeclarations(curEle);
     for elem in nodDeclars.Items do begin
@@ -438,12 +354,18 @@ begin
     .Expanded := true;
   end else if curEle.NodeType = ntUnit then begin
     unt := TUnit(curEle);
-    //Agrega nodo para las declaraciones globales
-    AddNodeTo(curNode, Nil, 'Interface')
-    .Expanded := true;
+    //Agrega las declaraciones globales
+    nodInterf := AddNode(curNode, 0, 'Interface');   //Contenedor
+    for elem in unt.InterfaceDecls.Items do begin
+      AddNodeTo(nodInterf, elem);  //Agrega el nodo
+    end;
+    nodInterf.Expanded := true;
     //Agrega nodo para el programa principal
-    AddNodeTo(curNode, Nil, 'Implementation')
-    .Expanded := true;
+    nodImplem := AddNode(curNode, 0, 'Implementation');
+    for elem in unt.ImplementationDecls.Items do begin
+      AddNodeTo(nodImplem, elem);  //Agrega el nodo
+    end;
+    nodImplem.Expanded := true;
   end;
 end;
 function TfraSynxTree6502.SelectedIsMain: boolean;
