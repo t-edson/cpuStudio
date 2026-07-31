@@ -50,8 +50,8 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    lex       : TAleLexer;  //Reference to lexer
-    progTree  : TProgram;   //Reference to program AST
+    lexer     : TAleLexer;  //Reference to lexer
+    parser    : TParserPas;  //Reference to Parser
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNodeTo(nodParent: TTreeNode; elem: TASTNode; nodName: string = ''
       ): TTreeNode;
@@ -74,7 +74,7 @@ type
     property TextColor: TColor read FTextColor write SetTextColor;
   public    //Initialization
     procedure Refresh;
-    procedure Init(cpx: TAnalyzer; astProg: TProgram);
+    procedure Init(cpx0: TAnalyzer);
     constructor Create(AOwner: TComponent) ; override;
   end;
 
@@ -268,6 +268,14 @@ begin
     nod := TreeView1.Items.AddChild(nodParent, 'Instruction');
     nod.ImageIndex := 19;
     nod.SelectedIndex := 19;
+  end else if elem.nodeType = ntProgram then begin
+    nod := TreeView1.Items.AddChild(nodParent, TProgram(elem).Name);
+    nod.ImageIndex := 1;
+    nod.SelectedIndex := 1;
+  end else if elem.nodeType = ntUnit then begin
+    nod := TreeView1.Items.AddChild(nodParent, TUnit(elem).Name);
+    nod.ImageIndex := 1;
+    nod.SelectedIndex := 1;
   end else begin
     nod := TreeView1.Items.AddChild(nodParent, '?');
     nod.ImageIndex := 0;
@@ -307,6 +315,8 @@ var
   varDecl: TVarDecl;
   arrayType: TArrayTypeDef;
   asmBlock: TAsmBlock;
+  Prog: TProgram;
+  unt: TUnit;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -418,6 +428,22 @@ begin
     for elem in block.Statements do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
+  end else if curEle.NodeType = ntProgram then begin
+    prog := TProgram(curEle);
+    //Agrega nodo para las declaraciones globales
+    AddNodeTo(curNode, prog.Declarations, 'Declarations')
+    .Expanded := true;
+    //Agrega nodo para el programa principal
+    AddNodeTo(curNode, prog.Body, 'Body')
+    .Expanded := true;
+  end else if curEle.NodeType = ntUnit then begin
+    unt := TUnit(curEle);
+    //Agrega nodo para las declaraciones globales
+    AddNodeTo(curNode, Nil, 'Interface')
+    .Expanded := true;
+    //Agrega nodo para el programa principal
+    AddNodeTo(curNode, Nil, 'Implementation')
+    .Expanded := true;
   end;
 end;
 function TfraSynxTree6502.SelectedIsMain: boolean;
@@ -499,7 +525,7 @@ begin
     exit;
   end;
   elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(lex, elem);
+  frmElemProp.Exec(lexer, elem);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
 begin
@@ -518,7 +544,7 @@ begin
   if SelectedIsElement then begin
     elem := TASTNode(TreeView1.Selected.Data);
     if elem = nil then exit;
-    fileName := lex.ctxFile(elem.SrcPos);
+    fileName := lexer.ctxFile(elem.SrcPos);
     if OnLocateElemen <> nil then OnLocateElemen(fileName, elem.SrcPos.row, elem.SrcPos.col);
   end;
 end;
@@ -537,7 +563,7 @@ begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
   elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(lex, elem);
+  frmElemProp.Exec(lexer, elem);
   frmElemProp.Show;
 end;
 procedure TfraSynxTree6502.acGenDoAnalysExecute(Sender: TObject);
@@ -559,31 +585,25 @@ end;
 procedure TfraSynxTree6502.Refresh;
 {Actualiza el árbol de sintaxis con el AST del compilador}
 var
-  nodMain, nodDecl, nodBody: TTreeNode;
+  nodMain: TTreeNode;
 begin
   TreeView1.Visible := true;
-
   TreeView1.Items.BeginUpdate;
   TreeView1.Items.Clear;
   //Agrega nodo principal
-  nodMain := TreeView1.Items.AddChild(nil, progTree.Name);
-  nodMain.ImageIndex := 1;
-  nodMain.SelectedIndex := 1;
-  nodMain.Data := progTree;  //Elemento raiz
-  //Agrega nodo para las declaraciones globales
-  nodDecl := AddNodeTo(nodMain, progTree.Declarations, 'Declarations');
-  //Agrega nodo para el programa principal
-  nodBody := AddNodeTo(nodMain, progTree.Body, 'Body');
+  if parser.IsUnit then begin
+    nodMain := AddNodeTo(Nil, parser.astUnit);   //Agrega nodo de unidad
+  end else begin
+    nodMain := AddNodeTo(Nil, parser.astProg);   //Agrega nodo de programa
+  end;
   //Termina configuración
   nodMain.Expanded := true;    //Expande nodo raiz
-  nodDecl.Expanded := true;
-  nodBody.Expanded := true;
   TreeView1.Items.EndUpdate;
 end;
-procedure TfraSynxTree6502.Init(cpx: TAnalyzer; astProg: TProgram);
+procedure TfraSynxTree6502.Init(cpx0: TAnalyzer);
 begin
-  lex        := cpx.lexer;
-  progTree := astProg;
+  lexer     := cpx0.lexer;
+  parser    := cpx0.parser;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];

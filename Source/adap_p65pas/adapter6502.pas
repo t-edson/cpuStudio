@@ -135,7 +135,7 @@ procedure TAdapter6502.CompileAndExec(Sender: TObject);
 {Compila y ejecuta en la ventana de simulación}
 begin
   Compile;
-  if Compiler.IsUnit then exit;  //No es programa
+  if Compiler.parser.IsUnit then exit;  //No es programa
   if msg.nErrors=0 then begin
      frmDebug.Exec(Compiler);
      frmDebug.acGenRunExecute(self);
@@ -615,7 +615,7 @@ begin
 
   //Crea frame del árbol de sintaxis
   fraASTview := TfraSynxTree6502.Create(nil);
-  fraASTview.Init(Compiler, Compiler.parser.astProg);    //Conecta al compilador
+  fraASTview.Init(Compiler);    //Conecta al compilador
   fraASTview.OnLocateElemen := @SynTree_LocateElemen;
   fraASTview.OnReqAnalysis  := @SynTree_ReqAnalysis;
   fraASTview.OnReqOptimizat := @SynTree_ReqOptimizat;
