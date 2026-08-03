@@ -4,8 +4,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, TreeFilterEdit, Forms, Controls,
   ComCtrls, Menus, ActnList, ExtCtrls, LCLProc, Graphics,
-  Globales, FormElemProperty, ParserPas,
-  ASTunit, Analyzer, alexiaLex, MisUtils;
+  Globales, FormElemProperty, AstPascal, Analyzer, alexiaLex, MisUtils;
 type
   { TfraSynxTree6502 }
   TfraSynxTree6502 = class(TFrame)
@@ -50,8 +49,8 @@ type
   private
     FBackColor: TColor;
     FTextColor: TColor;
-    lexer     : TAleLexer;  //Reference to lexer
-    parser    : TParserPas;  //Reference to Parser
+    cpx       : TAnalyzer;  //Referencia al Compilador
+    lexer     : TAleLexer;  //Referencia al lexer
     frmElemProp: TfrmElemProperty;  //Formulario de propiedades
     function AddNode(nodParent: TTreeNode; imgIndex: integer; nodName: string
       ): TTreeNode;
@@ -513,10 +512,10 @@ begin
   TreeView1.Items.BeginUpdate;
   TreeView1.Items.Clear;
   //Agrega nodo principal
-  if parser.IsUnit then begin
-    nodMain := AddNodeTo(Nil, parser.astUnit);   //Agrega nodo de unidad
+  if cpx.CompiledUnit then begin
+    nodMain := AddNodeTo(Nil, cpx.astUnit);   //Agrega nodo de unidad
   end else begin
-    nodMain := AddNodeTo(Nil, parser.astProg);   //Agrega nodo de programa
+    nodMain := AddNodeTo(Nil, cpx.astProg);   //Agrega nodo de programa
   end;
   //Termina configuración
   nodMain.Expanded := true;    //Expande nodo raiz
@@ -524,8 +523,8 @@ begin
 end;
 procedure TfraSynxTree6502.Init(cpx0: TAnalyzer);
 begin
-  lexer     := cpx0.lexer;
-  parser    := cpx0.parser;
+  lexer := cpx0.lexer;
+  cpx   := cpx0;
   TreeView1.ReadOnly := true;
   TreeView1.OnAdvancedCustomDrawItem := @TreeView1AdvancedCustomDrawItem;
   TreeView1.Options := TreeView1.Options - [tvoThemedDraw];
