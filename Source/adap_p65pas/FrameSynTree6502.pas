@@ -436,8 +436,6 @@ begin
   end;
 end;
 procedure TfraSynxTree6502.TreeView1SelectionChanged(Sender: TObject);
-var
-  elem: TASTNode;
 begin
   if not frmElemProp.Visible then exit;
   if TreeView1.Selected = nil then exit;
@@ -445,8 +443,8 @@ begin
     frmElemProp.Clear;
     exit;
   end;
-  elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(lexer, elem);
+  //Muestra propiedades
+  frmElemProp.Exec(lexer, TreeView1.Selected);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
 begin
@@ -478,13 +476,10 @@ begin
   end;
 end;
 procedure TfraSynxTree6502.acGenPropExecute(Sender: TObject);
-var
-  elem: TASTNode;
 begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
-  elem := TASTNode(TreeView1.Selected.Data);
-  frmElemProp.Exec(lexer, elem);
+  frmElemProp.Exec(lexer, TreeView1.Selected);
   frmElemProp.Show;
 end;
 procedure TfraSynxTree6502.acGenDoAnalysExecute(Sender: TObject);
