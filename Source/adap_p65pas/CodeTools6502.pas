@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LCLType, LCLProc, SynEdit, SynEditHighlighter, LazUTF8,
   MisUtils, SynFacilCompletion, SynFacilHighlighter, SynFacilBasic,
-  FrameEditView, Globales, alexiaLex, Compiler_PIC16, AstElemP65,
+  FrameEditView, Globales, alexiaLex, Compiler_PIC16, AstElemP65, AstPascal,
   EditView, FrameCfgCompiler6502;
 type
   { TCodeTool }
@@ -46,6 +46,39 @@ type
   end;
 
 implementation
+
+function GetDeclarationLocation(Node: TASTNode): TSrcPos;
+var
+  functCall: TFunctionCall;
+begin
+  if Node = nil then
+  begin
+    Result.row := -1;
+    Result.col := -1;
+    Result.idCtx := -1;
+    Exit;
+  end;
+
+  case Node.NodeType of
+    ntVariableRef: begin
+      if TVariableRef(Node).Declaration <> nil then
+        Result := TVariableRef(Node).Declaration.SrcPos
+      else
+        Result := Node.SrcPos;
+    end;
+    ntFunctionCall: begin
+      //Similar para llamadas a funciones
+      functCall := TFunctionCall(Node);
+      Result := GetDeclarationLocation(functCall.Declaration);
+    end;
+    ntFieldAccess: begin
+      //Para campos, buscar el campo en el registro
+      Result := Node.SrcPos; // O buscar en la declaración del campo
+    end
+    else
+      Result := Node.SrcPos;
+  end;
+end;
 
 procedure TCodeTool.ReadCurIdentif(out tok: string; out tokType: integer;
                                    out lex: TSynFacilComplet2; out curX: integer);
@@ -95,23 +128,23 @@ var
   filPath: string;
   dlin: SizeInt;
 begin
-//  ed := fraEdit.ActiveEditor;
-//  //Primero ubica el token
-//  ReadCurIdentif(tok, tokType, lex, curX);
-//  if tok='' then exit;  //No encontró token
-//  if tokType = lex.tnIdentif then begin
-//    //Asegurarse que "synTree" está actualizado.
-//    cxp.Exec(fraEdit.ActiveEditor.FileName, '', '-Ca' + LineEnding + '-Dn' + lineending +
-//             '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
-//    if cxp.HayError then begin
-//      //Basta que haya compilado hasta donde se encuentra el identifiacdor, para que funciones.
-//  //    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
-//  //    exit;
-//    end;
-//    callPos.col := curX;
-//    callPos.row := ed.sedit.CaretY;
-//    callPos.idCtx := cxp.lex.ctxId(ed.FileName);
-//    ele := cxp.ast.GetElementCalledAt(callPos);
+  ed := fraEdit.ActiveEditor;
+  //Primero ubica el token
+  ReadCurIdentif(tok, tokType, lex, curX);
+  if tok='' then exit;  //No encontró token
+  if tokType = lex.tnIdentif then begin
+    //Asegurarse que "synTree" está actualizado.
+    cxp.Exec(ed.FileName, '-Ca' + LineEnding + '-Dn' + lineending +
+             '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
+    if cxp.HayError then begin
+      //Basta que haya compilado hasta donde se encuentra el identificador, para que funciones.
+  //    MsgErr('Compilation error.');  //tal vez debería dar más información sobre el error
+  //    exit;
+    end;
+    callPos.col := curX;
+    callPos.row := ed.sedit.CaretY;
+    callPos.idCtx := cxp.lexer.ctxId(ed.FileName);
+//    ele := cxp.astProg.GetElementCalledAt(callPos);
 //    if ele = nil then begin
 //      //No lo ubica, puede ser que esté en la sección de declaración
 //      ele := cxp.ast.GetELementDeclaredAt(callPos);
@@ -154,7 +187,7 @@ begin
 //    end;
 //  end else begin
 //    exit;  //No es identificador
-//  end;
+  end;
 end;
 procedure TCodeTool.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
 {Procesa el evento de teclado, para cuando se tiene el editor seleccionado.}
@@ -324,7 +357,7 @@ begin
 end;
 procedure TCodeTool.GeneralIdentifierCompletion(opEve: TFaOpenEvent;
   curEnv: TFaCursorEnviron; out Cancel: boolean);
-{La idea de este método es implementar el completado de un identifcador, en cualquier
+{La idea de este método es implementar el completado de un identificador, en cualquier
 parte en que se encuentre el cursor.
 Pero actualmente solo se aplica para cualquier bloque que no sea el bloque principal
 (Cuerpo del programa principal o cuerpo de procedimientos). EL completado del blooue
