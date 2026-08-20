@@ -126,8 +126,8 @@ begin
     nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
   ntProcDecl:
     nod := AddNode(nodParent, 26, TProcDecl(elem).Name);
-  ntDeclarations:
-    nod := AddNode(nodParent, 0, 'Declarations');
+//  ntDeclarations:
+//    nod := AddNode(nodParent, 0, 'Declarations');
   ntBlock:
     nod := AddNode(nodParent, 0, 'Block');
   ntBinaryOp:
@@ -142,7 +142,7 @@ begin
     nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
   ntPointerDeref:
     nod := AddNode(nodParent, 29, '_ptr');
-  ntArrayRefer:
+  ntArrayRef:
     nod := AddNode(nodParent, 27, '_item');
   ntArrayRange: begin
     arrayRange := TArrayRange(elem);
@@ -211,14 +211,13 @@ var
   procDecl: TProcDecl;
   assig: TAssignment;
   binaryOp: TBinaryOp;
-  arrIndex: TArrayIndex;
+  arrIndex: TArrayRef;
   functCall: TFunctionCall;
   constDecl: TConstDecl;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
   ptrDeref: TPointerDeref;
   ifStatem: TIfStatement;
-  nodDeclars: TDeclarations;
   block: TBlock;
   whileLoop: TWhileLoop;
   repUntil: TRepeatUntil;
@@ -229,7 +228,7 @@ var
   asmBlock: TAsmBlock;
   Prog: TProgram;
   unt: TUnit;
-  nodInterf, nodImplem: TTreeNode;
+  nodInterf, nodImplem, nodDecls: TTreeNode;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -245,15 +244,13 @@ begin
     if not procDecl.IsForward then begin
       //Agrega nodo para los parámetros
       //AddNodeTo(curNode, procDecl.Parameters);
-      //Agrega nodo para las declaraciones
-      AddNodeTo(curNode, procDecl.Declarations);
+      //Agrega nodo para las declaraciones y sus ítems
+      nodDecls := AddNode(curNode, 0, 'Declarations');
+      for elem in procDecl.Declarations do begin
+        AddNodeTo(nodDecls, elem);  //Agrega el nodo
+      end;
       //Agrega nodo para el cuerpo
       AddNodeTo(curNode, procDecl.Body);
-    end;
-  end else if curEle.NodeType = ntDeclarations then begin
-    nodDeclars := TDeclarations(curEle);
-    for elem in nodDeclars.Items do begin
-      AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
   end else if curEle.NodeType = ntRecordType then begin
     recordType := TRecordTypeDef(curEle);
@@ -298,8 +295,8 @@ begin
     ptrDeref := TPointerDeref(curEle);
     //Agrega variable base
     AddNodeTo(curNode, ptrDeref.Pointer);
-  end else if curEle.NodeType = ntArrayRefer then begin
-    arrIndex := TArrayIndex(curEle);
+  end else if curEle.NodeType = ntArrayRef then begin
+    arrIndex := TArrayRef(curEle);
     //Agrega variable base
     AddNodeTo(curNode, arrIndex.ArrayVar);
     //Agrega índices
@@ -346,8 +343,11 @@ begin
   end else if curEle.NodeType = ntProgram then begin
     prog := TProgram(curEle);
     //Agrega nodo para las declaraciones globales
-    AddNodeTo(curNode, prog.Declarations, 'Declarations')
-    .Expanded := true;
+    nodDecls := AddNode(curNode, 0, 'Declarations');
+    nodDecls.Expanded := true;
+    for elem in prog.Declarations do begin
+      AddNodeTo(nodDecls, elem);  //Agrega el nodo
+    end;
     //Agrega nodo para el programa principal
     AddNodeTo(curNode, prog.Body, 'Body')
     .Expanded := true;
@@ -355,13 +355,13 @@ begin
     unt := TUnit(curEle);
     //Agrega las declaraciones globales
     nodInterf := AddNode(curNode, 0, 'Interface');   //Contenedor
-    for elem in unt.InterfaceDecls.Items do begin
+    for elem in unt.InterfaceDecls do begin
       AddNodeTo(nodInterf, elem);  //Agrega el nodo
     end;
     nodInterf.Expanded := true;
     //Agrega nodo para el programa principal
     nodImplem := AddNode(curNode, 0, 'Implementation');
-    for elem in unt.ImplementationDecls.Items do begin
+    for elem in unt.ImplementationDecls do begin
       AddNodeTo(nodImplem, elem);  //Agrega el nodo
     end;
     nodImplem.Expanded := true;
