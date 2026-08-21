@@ -122,9 +122,9 @@ var
   tok, fileSrc: string;
   tokType, curX: integer;
   lex: TSynFacilComplet2;
-  callPos: TSrcPos;
+  callPos, srcDec: TSrcPos;
   ed: TSynEditor;
-  ele: TAstElement;
+  ele: TASTNode;
   filPath: string;
   dlin: SizeInt;
 begin
@@ -133,7 +133,7 @@ begin
   ReadCurIdentif(tok, tokType, lex, curX);
   if tok='' then exit;  //No encontró token
   if tokType = lex.tnIdentif then begin
-    //Asegurarse que "synTree" está actualizado.
+    //Asegurarse que el AST está actualizado.
     cxp.Exec(ed.FileName, '-Ca' + LineEnding + '-Dn' + lineending +
              '-Fu"' + fraCfgCompiler.unitPathExpanded + '"');  //Solo análisis
     if cxp.HayError then begin
@@ -144,49 +144,53 @@ begin
     callPos.col := curX;
     callPos.row := ed.sedit.CaretY;
     callPos.idCtx := cxp.lexer.ctxId(ed.FileName);
-//    ele := cxp.astProg.GetElementCalledAt(callPos);
-//    if ele = nil then begin
-//      //No lo ubica, puede ser que esté en la sección de declaración
-//      ele := cxp.ast.GetELementDeclaredAt(callPos);
-//      if ele <> nil then begin
-//        //Es el punto donde se declara
-//        if ele.idClass = eleUnit then begin
-//          fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
-//  //        MsgBox(ele.name);
-//        end else begin
-//          //Es otra declaración
-//        end;
-//      end else begin
-//        MsgExc('Unknown identifier: %s', [tok]);
-//      end;
-//  //    curBody := cxp.ast.GetElementBodyAt(ed.SynEdit.CaretXY);
-//  //    if curBody=nil then begin
-//  //
-//  //    end;
-//    end else begin
-//      //Ubica la declaración del elemento
-//      fileSrc := cxp.lex.ctxFile(ele.srcDec);
-//      if not fraEdit.SelectOrLoad(fileSrc, ele.srcDec.row, ele.srcDec.col, false) then begin
-//        MsgExc('Cannot load file: %s', [fileSrc]);
-//      end;
-//    end;
-//  end else if tokType = lex.tnDirective then begin
-//    //Es directiva. Tal vez sea {$INCLUDE ...}
-//    if Upcase(copy(tok,1, 9)) = '{$INCLUDE' then begin
-//       //Es {$INCLUDE ...}
-//      delete(tok, 1, 9);
-//      dlin := length(tok);
-//      if tok[dlin] = '}' then delete(tok, dlin, 1);  //quita "}".
-//      filPath := trim(tok);
-//      //Se calcula la ruta completa tal cual se hace en ParserDirec
-//      filPath := cxp.ExpandRelPathToMain(filPath);
-//      //msgbox(filPath);
-//      if not fraEdit.SelectOrLoad(filPath, 1, 1, false) then begin
-//        MsgExc('Cannot load file: %s', [filPath]);
-//      end;
-//    end;
-//  end else begin
-//    exit;  //No es identificador
+    if cxp.CompiledUnit then
+       ele := FindNodeAtPosition(cxp.astUnit, callPos.row, callPos.col)
+    else
+       ele := FindNodeAtPosition(cxp.astProg, callPos.row, callPos.col);
+    //ele := cxp.astProg.GetElementCalledAt(callPos);
+    if ele = nil then begin
+      //No lo ubica, puede ser que esté en la sección de declaración
+      //ele := cxp.ast.GetELementDeclaredAt(callPos);
+      //if ele <> nil then begin
+      //  //Es el punto donde se declara
+      //  if ele.idClass = eleUnit then begin
+      //    fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
+      //  end else begin
+      //    //Es otra declaración
+      //  end;
+      //end else begin
+        MsgExc('Unknown identifier: %s', [tok]);
+      //end;
+    end else begin
+      //Ubica la declaración del elemento
+      if ele.NodeType = ntVariableRef then begin
+        srcDec := TVariableRef(ele).Declaration.SrcPos;
+      end else begin
+        Exit;
+      end;
+      fileSrc := cxp.lexer.ctxFile(srcDec);
+      if not fraEdit.SelectOrLoad(fileSrc, srcDec.row, srcDec.col, false) then begin
+        MsgExc('Cannot load file: %s', [fileSrc]);
+      end;
+    end;
+  end else if tokType = lex.tnDirective then begin
+    //Es directiva. Tal vez sea {$INCLUDE ...}
+    if Upcase(copy(tok,1, 9)) = '{$INCLUDE' then begin
+       //Es {$INCLUDE ...}
+      delete(tok, 1, 9);
+      dlin := length(tok);
+      if tok[dlin] = '}' then delete(tok, dlin, 1);  //quita "}".
+      filPath := trim(tok);
+      //Se calcula la ruta completa tal cual se hace en ParserDirec
+      filPath := cxp.options.ExpandRelPathToMain(filPath);
+      //msgbox(filPath);
+      if not fraEdit.SelectOrLoad(filPath, 1, 1, false) then begin
+        MsgExc('Cannot load file: %s', [filPath]);
+      end;
+    end;
+  end else begin
+    exit;  //No es identificador
   end;
 end;
 procedure TCodeTool.KeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
