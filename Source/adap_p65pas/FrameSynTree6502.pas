@@ -136,7 +136,7 @@ begin
     nod := AddNode(nodParent, 18, TUnaryOp(elem).Op);
   ntAssignment:
     nod := AddNode(nodParent, 3, 'assign');
-  ntFunctionCall:
+  ntProcFunctCall:
     nod := AddNode(nodParent, 3, TFunctionCall(elem).Name);
   ntVariableRef:
     nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
@@ -281,7 +281,7 @@ begin
     unaryOp := TUnaryOp(curEle);
     //Argumento
     AddNodeTo(curNode, unaryOp.Operand);
-  end else if curEle.NodeType = ntFunctionCall then begin
+  end else if curEle.NodeType = ntProcFunctCall then begin
     functCall := TFunctionCall(curEle);
     //Agrega elementos
     for elem in functCall.Arguments do begin

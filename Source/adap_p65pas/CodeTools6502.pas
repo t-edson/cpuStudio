@@ -5,7 +5,7 @@ interface
 uses
   Classes, SysUtils, LCLType, LCLProc, SynEdit, SynEditHighlighter, LazUTF8,
   MisUtils, SynFacilCompletion, SynFacilHighlighter, SynFacilBasic,
-  FrameEditView, Globales, alexiaLex, Compiler_PIC16, AstElemP65, AstPascal,
+  FrameEditView, Globales, alexiaLex, Compiler_PIC16, AstPascal, AstElemP65,
   EditView, FrameCfgCompiler6502;
 type
   { TCodeTool }
@@ -46,19 +46,187 @@ type
   end;
 
 implementation
-
+//----- Estas rutinas trabajan con el AST. Podrían estar en otra unidad llamada AstPascalUtils.pas
+function FindNodeAtPosition(Node: TASTNode; Row, Col: Integer): TASTNode;
+{Utilidad para encontrar un Nodo del AST a partir de una posición en el código fuente}
+var
+  i: Integer;
+  Child: TASTNode;
+  Prog: TProgram;
+  Block: TBlock;
+  Assignm: TAssignment;
+  BinOp: TBinaryOp;
+  UnaryOp: TUnaryOp;
+  FuncCall: TFunctionCall;
+  IfStmt: TIfStatement;
+  WhileLoop: TWhileLoop;
+  ForLoop: TForLoop;
+  CaseStmt: TCaseStatement;
+  CaseBranch: TCaseBranch;
+  WithStmt: TWithStatement;
+  ArrayRef: TArrayRef;
+  FieldAccess: TFieldAccess;
+  PointerDeref: TPointerDeref;
+  RecordLit: TRecordLiteral;
+  Init, fInit: TFieldInitializer;
+begin
+  //Validación
+  if Node = nil then Exit(nil);
+  //Verificar si es la posición del nodo
+  if (Node.SrcPos.row = Row) and (Node.SrcPos.col = Col) then
+    Exit(Node);
+  //Si el nodo tiene hijos, buscar recursivamente
+  case Node.NodeType of
+    ntProgram: begin
+      Prog := TProgram(Node);
+      //Buscar en declaraciones
+      for i := 0 to Prog.Declarations.Count - 1 do begin
+        Result := FindNodeAtPosition(Prog.Declarations[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+      //Buscar en el cuerpo
+      Result := FindNodeAtPosition(Prog.Body, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntBlock: begin
+      Block := TBlock(Node);
+      for i := 0 to Block.Statements.Count - 1 do begin
+        Result := FindNodeAtPosition(Block.Statements[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+    end;
+    ntAssignment: begin
+      Assignm := TAssignment(Node);
+      // Buscar en el destino
+      Result := FindNodeAtPosition(Assignm.Target, Row, Col);
+      if Result <> nil then Exit;
+      // Buscar en el valor
+      Result := FindNodeAtPosition(Assignm.Value, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntBinaryOp: begin
+      BinOp := TBinaryOp(Node);
+      Result := FindNodeAtPosition(BinOp.Left, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(BinOp.Right, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntUnaryOp: begin
+      UnaryOp := TUnaryOp(Node);
+      Result := FindNodeAtPosition(UnaryOp.Operand, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntProcFunctCall: begin
+      FuncCall := TFunctionCall(Node);
+      for i := 0 to FuncCall.Arguments.Count - 1 do begin
+        Result := FindNodeAtPosition(FuncCall.Arguments[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+    end;
+    ntIfStatement: begin
+      IfStmt := TIfStatement(Node);
+      Result := FindNodeAtPosition(IfStmt.Condition, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(IfStmt.ThenBranch, Row, Col);
+      if Result <> nil then Exit;
+      if IfStmt.ElseBranch <> nil then
+        Result := FindNodeAtPosition(IfStmt.ElseBranch, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntWhileLoop: begin
+      WhileLoop := TWhileLoop(Node);
+      Result := FindNodeAtPosition(WhileLoop.Condition, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(WhileLoop.Body, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntForLoop: begin
+      ForLoop := TForLoop(Node);
+      Result := FindNodeAtPosition(ForLoop.ControlVar, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(ForLoop.StartExpr, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(ForLoop.EndExpr, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(ForLoop.Body, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntCaseStatement: begin
+      CaseStmt := TCaseStatement(Node);
+      Result := FindNodeAtPosition(CaseStmt.Selector, Row, Col);
+      if Result <> nil then Exit;
+      for i := 0 to CaseStmt.Branches.Count - 1 do
+      begin
+        Result := FindNodeAtPosition(CaseStmt.Branches[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+      if CaseStmt.ElseBranch <> nil then
+        Result := FindNodeAtPosition(CaseStmt.ElseBranch, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntCaseBranch: begin
+      CaseBranch := TCaseBranch(Node);
+      for i := 0 to CaseBranch.Constants.Count - 1 do begin
+        Result := FindNodeAtPosition(CaseBranch.Constants[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+      Result := FindNodeAtPosition(CaseBranch.Statement, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntWithStatement: begin
+      WithStmt := TWithStatement(Node);
+      Result := FindNodeAtPosition(WithStmt.RecordVar, Row, Col);
+      if Result <> nil then Exit;
+      Result := FindNodeAtPosition(WithStmt.Body, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntArrayRef: begin
+      ArrayRef := TArrayRef(Node);
+      Result := FindNodeAtPosition(ArrayRef.ArrayVar, Row, Col);
+      if Result <> nil then Exit;
+      for i := 0 to ArrayRef.Indices.Count - 1 do begin
+        Result := FindNodeAtPosition(ArrayRef.Indices[i], Row, Col);
+        if Result <> nil then Exit;
+      end;
+    end;
+    ntFieldAccess: begin
+      FieldAccess := TFieldAccess(Node);
+      Result := FindNodeAtPosition(FieldAccess.RecordVar, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntPointerDeref: begin
+      PointerDeref := TPointerDeref(Node);
+      Result := FindNodeAtPosition(PointerDeref.Pointer, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntRecordLiteral: begin
+      RecordLit := TRecordLiteral(Node);
+      for i := 0 to RecordLit.FieldInitializers.Count - 1 do begin
+        Init := RecordLit.FieldInitializers[i];
+        Result := FindNodeAtPosition(Init, Row, Col);
+        if Result <> nil then Exit;
+      end;
+    end;
+    ntFieldInitializer: begin
+      fInit := TFieldInitializer(Node);
+      Result := FindNodeAtPosition(fInit.Value, Row, Col);
+      if Result <> nil then Exit;
+    end;
+  end;
+  //Otro nodo
+  Result := nil;
+end;
 function GetDeclarationLocation(Node: TASTNode): TSrcPos;
+{Devuelve la declaración del elemento que "Node" del AST.}
 var
   functCall: TFunctionCall;
 begin
-  if Node = nil then
-  begin
+  if Node = nil then begin
     Result.row := -1;
     Result.col := -1;
     Result.idCtx := -1;
     Exit;
   end;
-
   case Node.NodeType of
     ntVariableRef: begin
       if TVariableRef(Node).Declaration <> nil then
@@ -66,10 +234,17 @@ begin
       else
         Result := Node.SrcPos;
     end;
-    ntFunctionCall: begin
+    ntProcFunctCall: begin
       //Similar para llamadas a funciones
       functCall := TFunctionCall(Node);
-      Result := GetDeclarationLocation(functCall.Declaration);
+      if functCall.IsIntrinsic then begin
+        Result := Node.SrcPos;
+      end;
+      if functCall.Declaration <> Nil then begin
+         Result := functCall.Declaration.SrcPos
+      end else begin  //No tiene declaración
+         Result := Node.SrcPos;
+      end;
     end;
     ntFieldAccess: begin
       //Para campos, buscar el campo en el registro
@@ -79,7 +254,7 @@ begin
       Result := Node.SrcPos;
   end;
 end;
-
+//------------------------------------------
 procedure TCodeTool.ReadCurIdentif(out tok: string; out tokType: integer;
                                    out lex: TSynFacilComplet2; out curX: integer);
 {Da infomación sobre el token actual. Si no encuentra información, devuelve cadena
@@ -164,11 +339,7 @@ begin
       //end;
     end else begin
       //Ubica la declaración del elemento
-      if ele.NodeType = ntVariableRef then begin
-        srcDec := TVariableRef(ele).Declaration.SrcPos;
-      end else begin
-        Exit;
-      end;
+      srcDec := GetDeclarationLocation(ele);
       fileSrc := cxp.lexer.ctxFile(srcDec);
       if not fraEdit.SelectOrLoad(fileSrc, srcDec.row, srcDec.col, false) then begin
         MsgExc('Cannot load file: %s', [fileSrc]);
