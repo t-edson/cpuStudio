@@ -237,7 +237,7 @@ begin
   end else if curEle.NodeType = ntVarDecl then begin
     varDecl := TVarDecl(curEle);
     //Añade tipo de la variable
-    AddNodeTo(curNode, varDecl.TypeDef, varDecl.TypeName);
+    AddNodeTo(curNode, varDecl.TypeRef);
 
   end else if curEle.NodeType = ntProcDecl then begin
     procDecl := TProcDecl(curEle);
