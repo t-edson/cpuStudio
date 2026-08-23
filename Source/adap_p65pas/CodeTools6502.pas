@@ -69,6 +69,7 @@ var
   PointerDeref: TPointerDeref;
   RecordLit: TRecordLiteral;
   Init, fInit: TFieldInitializer;
+  VarDecl: TVarDecl;
 begin
   //Validación
   if Node = nil then Exit(nil);
@@ -95,7 +96,12 @@ begin
         if Result <> nil then Exit;
       end;
     end;
-    ntAssignment: begin
+    ntVarDecl: begin //La declaración de un variable tiene un nodo hijo
+      VarDecl := tVarDecl(Node);
+      Result := FindNodeAtPosition(VarDecl.TypeRef, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntAssignment: begin  //Busca en las dos partes de la asignación
       Assignm := TAssignment(Node);
       // Buscar en el destino
       Result := FindNodeAtPosition(Assignm.Target, Row, Col);
@@ -220,6 +226,7 @@ function GetDeclarationLocation(Node: TASTNode): TSrcPos;
 {Devuelve la declaración del elemento que "Node" del AST.}
 var
   functCall: TFunctionCall;
+  TypeRef: TTypeRef;
 begin
   if Node = nil then begin
     Result.row := -1;
@@ -248,7 +255,15 @@ begin
     end;
     ntFieldAccess: begin
       //Para campos, buscar el campo en el registro
-      Result := Node.SrcPos; // O buscar en la declaración del campo
+      Result := Node.SrcPos; //O buscar en la declaración del campo
+    end;
+    ntTypeRef: begin
+      TypeRef := TTypeRef(Node);
+      if TypeRef.Declaration <> Nil then begin
+        Result := TypeRef.Declaration.SrcPos;
+      end else begin
+        Result := Node.SrcPos;
+      end;
     end
     else
       Result := Node.SrcPos;
