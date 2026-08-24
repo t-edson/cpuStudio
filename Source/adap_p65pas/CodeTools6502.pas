@@ -51,7 +51,7 @@ function FindNodeAtPosition(Node: TASTNode; Row, Col: Integer): TASTNode;
 {Utilidad para encontrar un Nodo del AST a partir de una posición en el código fuente}
 var
   i: Integer;
-  Child: TASTNode;
+  Child, field: TASTNode;
   Prog: TProgram;
   Block: TBlock;
   Assignm: TAssignment;
@@ -70,6 +70,7 @@ var
   RecordLit: TRecordLiteral;
   Init, fInit: TFieldInitializer;
   VarDecl: TVarDecl;
+  RecordType: TRecordTypeDef;
 begin
   //Validación
   if Node = nil then Exit(nil);
@@ -161,8 +162,7 @@ begin
       CaseStmt := TCaseStatement(Node);
       Result := FindNodeAtPosition(CaseStmt.Selector, Row, Col);
       if Result <> nil then Exit;
-      for i := 0 to CaseStmt.Branches.Count - 1 do
-      begin
+      for i := 0 to CaseStmt.Branches.Count - 1 do begin
         Result := FindNodeAtPosition(CaseStmt.Branches[i], Row, Col);
         if Result <> nil then Exit;
       end;
@@ -217,6 +217,12 @@ begin
       fInit := TFieldInitializer(Node);
       Result := FindNodeAtPosition(fInit.Value, Row, Col);
       if Result <> nil then Exit;
+    end;
+    ntRecordType: begin
+      RecordType := TRecordTypeDef(Node);
+      for field in RecordType.Fields do begin
+
+      end;
     end;
   end;
   //Otro nodo

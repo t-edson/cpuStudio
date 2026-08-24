@@ -109,7 +109,7 @@ function TfraSynxTree6502.AddNodeTo(nodParent: TTreeNode; elem: TASTNode;
 var
   nod: TTreeNode;
   numberLit: TNumberLiteral;
-  txtNumber, rango: String;
+  txtNumber, rango, nodLabel: String;
   arrayRange: TArrayRange;
 begin
   if elem = nil then begin
@@ -122,8 +122,13 @@ begin
     nod := AddNode(nodParent, 23, TConstDecl(elem).Name);
   ntVarDecl:
     nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
-  ntSubrangeType, ntEnumType, ntArrayType, ntRecordType, ntPointerType, ntAliasType:
+  ntSubrangeType, ntEnumType, ntRecordType, ntPointerType, ntAliasType:
     nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
+  ntArrayType: begin
+    nodLabel := TArrayTypeDef(elem).TypeName;
+    if nodLabel = '' then nodLabel := '<Array>';   //Declaración INLINE
+    nod := AddNode(nodParent, 15, nodLabel);
+  end;
   ntProcFunctDecl:
     nod := AddNode(nodParent, 26, TProcFunctDecl(elem).Name);
 //  ntDeclarations:
@@ -140,6 +145,11 @@ begin
     nod := AddNode(nodParent, 3, TFunctionCall(elem).Name);
   ntVariableRef:
     nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
+  ntTypeRef: begin
+    nodLabel := TTypeRef(elem).Name;
+    if nodLabel = '' then nodLabel := '<Inline>';
+    nod := AddNode(nodParent, 15, nodLabel);
+  end;
   ntPointerDeref:
     nod := AddNode(nodParent, 29, '_ptr');
   ntArrayRef:
@@ -229,6 +239,7 @@ var
   Prog: TProgram;
   unt: TUnit;
   nodInterf, nodImplem, nodDecls: TTreeNode;
+  TypeRef: TTypeRef;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -238,7 +249,6 @@ begin
     varDecl := TVarDecl(curEle);
     //Añade tipo de la variable
     AddNodeTo(curNode, varDecl.TypeRef);
-
   end else if curEle.NodeType = ntProcFunctDecl then begin
     procDecl := TProcFunctDecl(curEle);
     if not procDecl.IsForward then begin
@@ -263,6 +273,8 @@ begin
     for elem in arrayType.IndexRanges do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
+    //Agrega el tipo de elemento
+    AddNodeTo(curNode, arrayType.ElemTypeRef);
   end else if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
     //Parte izquierda de la asignación
@@ -290,6 +302,12 @@ begin
       //if elem.nodeType = ntBlock then nodElem.Expanded := true;
       //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
       ////if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
+    end;
+  end else if curEle.nodeType = ntTypeRef then begin
+    //La referencia a un tipo puede tener una declaración INLINE de tipo
+    TypeRef := TTypeRef(curEle);
+    if TypeRef.TypeDef <> Nil then begin
+      AddNodeTo(curNode, TypeRef.TypeDef);
     end;
   end else if curEle.nodeType = ntPointerDeref then begin
     ptrDeref := TPointerDeref(curEle);
