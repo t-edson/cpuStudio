@@ -124,8 +124,8 @@ begin
     nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
   ntSubrangeType, ntEnumType, ntArrayType, ntRecordType, ntPointerType, ntAliasType:
     nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
-  ntProcDecl:
-    nod := AddNode(nodParent, 26, TProcDecl(elem).Name);
+  ntProcFunctDecl:
+    nod := AddNode(nodParent, 26, TProcFunctDecl(elem).Name);
 //  ntDeclarations:
 //    nod := AddNode(nodParent, 0, 'Declarations');
   ntBlock:
@@ -208,7 +208,7 @@ procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 {Crea los subnodos del nodo "nodMain", de forma recursiva.}
 var
   elem: TASTNode;
-  procDecl: TProcDecl;
+  procDecl: TProcFunctDecl;
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayRef;
@@ -239,8 +239,8 @@ begin
     //Añade tipo de la variable
     AddNodeTo(curNode, varDecl.TypeRef);
 
-  end else if curEle.NodeType = ntProcDecl then begin
-    procDecl := TProcDecl(curEle);
+  end else if curEle.NodeType = ntProcFunctDecl then begin
+    procDecl := TProcFunctDecl(curEle);
     if not procDecl.IsForward then begin
       //Agrega nodo para los parámetros
       //AddNodeTo(curNode, procDecl.Parameters);
