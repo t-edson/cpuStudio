@@ -122,9 +122,9 @@ begin
     nod := AddNode(nodParent, 23, TConstDecl(elem).Name);
   ntVarDecl:
     nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
-  ntSubrangeType, ntEnumType, ntRecordType, ntPointerType, ntAliasType:
+  ntSubranTypeDecl, ntEnumTypeDecl, ntRecordTypeDecl, ntPointerTypeDecl, ntAliasTypeDecl:
     nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
-  ntArrayType: begin
+  ntArrayTypeDecl: begin
     nodLabel := TArrayTypeDef(elem).TypeName;
     if nodLabel = '' then nodLabel := '<Array>';   //Declaración INLINE
     nod := AddNode(nodParent, 15, nodLabel);
@@ -262,12 +262,12 @@ begin
       //Agrega nodo para el cuerpo
       AddNodeTo(curNode, procDecl.Body);
     end;
-  end else if curEle.NodeType = ntRecordType then begin
+  end else if curEle.NodeType = ntRecordTypeDecl then begin
     recordType := TRecordTypeDef(curEle);
     for elem in recordType.Fields do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
-  end else if curEle.NodeType = ntArrayType then begin
+  end else if curEle.NodeType = ntArrayTypeDecl then begin
     arrayType := TArrayTypeDef(curEle);
     //Agrega los índices del arreglo
     for elem in arrayType.IndexRanges do begin

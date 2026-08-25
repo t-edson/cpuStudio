@@ -218,7 +218,7 @@ begin
       Result := FindNodeAtPosition(fInit.Value, Row, Col);
       if Result <> nil then Exit;
     end;
-    ntRecordType: begin
+    ntRecordTypeDecl: begin
       RecordType := TRecordTypeDef(Node);
       for field in RecordType.Fields do begin
 
