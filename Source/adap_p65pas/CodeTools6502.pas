@@ -70,7 +70,7 @@ var
   RecordLit: TRecordLiteral;
   Init, fInit: TFieldInitializer;
   VarDecl: TVarDecl;
-  RecordType: TRecordTypeDef;
+  RecordType: TRecordTypeDecl;
 begin
   //Validación
   if Node = nil then Exit(nil);
@@ -219,7 +219,7 @@ begin
       if Result <> nil then Exit;
     end;
     ntRecordTypeDecl: begin
-      RecordType := TRecordTypeDef(Node);
+      RecordType := TRecordTypeDecl(Node);
       for field in RecordType.Fields do begin
 
       end;

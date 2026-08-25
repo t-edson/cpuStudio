@@ -125,7 +125,7 @@ begin
   ntSubranTypeDecl, ntEnumTypeDecl, ntRecordTypeDecl, ntPointerTypeDecl, ntAliasTypeDecl:
     nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
   ntArrayTypeDecl: begin
-    nodLabel := TArrayTypeDef(elem).TypeName;
+    nodLabel := TArrayTypeDecl(elem).TypeName;
     if nodLabel = '' then nodLabel := '<Array>';   //Declaración INLINE
     nod := AddNode(nodParent, 15, nodLabel);
   end;
@@ -232,9 +232,9 @@ var
   whileLoop: TWhileLoop;
   repUntil: TRepeatUntil;
   forLoop: TForLoop;
-  recordType: TRecordTypeDef;
+  recordType: TRecordTypeDecl;
   varDecl: TVarDecl;
-  arrayType: TArrayTypeDef;
+  arrayType: TArrayTypeDecl;
   asmBlock: TAsmBlock;
   Prog: TProgram;
   unt: TUnit;
@@ -263,12 +263,12 @@ begin
       AddNodeTo(curNode, procDecl.Body);
     end;
   end else if curEle.NodeType = ntRecordTypeDecl then begin
-    recordType := TRecordTypeDef(curEle);
+    recordType := TRecordTypeDecl(curEle);
     for elem in recordType.Fields do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
   end else if curEle.NodeType = ntArrayTypeDecl then begin
-    arrayType := TArrayTypeDef(curEle);
+    arrayType := TArrayTypeDecl(curEle);
     //Agrega los índices del arreglo
     for elem in arrayType.IndexRanges do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
