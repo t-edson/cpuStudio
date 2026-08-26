@@ -51,7 +51,7 @@ function FindNodeAtPosition(Node: TASTNode; Row, Col: Integer): TASTNode;
 {Utilidad para encontrar un Nodo del AST a partir de una posición en el código fuente}
 var
   i: Integer;
-  Child, field: TASTNode;
+  Child, field, astNode: TASTNode;
   Prog: TProgram;
   Block: TBlock;
   Assignm: TAssignment;
@@ -71,6 +71,7 @@ var
   Init, fInit: TFieldInitializer;
   VarDecl: TVarDecl;
   RecordType: TRecordTypeDef;
+  ProcFunctDecl: TProcFunctDecl;
 begin
   //Validación
   if Node = nil then Exit(nil);
@@ -100,6 +101,25 @@ begin
     ntVarDecl: begin //La declaración de un variable tiene un nodo hijo
       VarDecl := tVarDecl(Node);
       Result := FindNodeAtPosition(VarDecl.TypeRef, Row, Col);
+      if Result <> nil then Exit;
+    end;
+    ntProcFunctDecl: begin
+      ProcFunctDecl := TProcFunctDecl(Node);
+      //Buscar en los parámetros
+      for astNode in ProcFunctDecl.Parameters do begin
+        Result := FindNodeAtPosition(astNode, Row, Col);
+        if Result <> nil then Exit;
+      end;
+      //Buscar en los declaraciones
+      for astNode in ProcFunctDecl.Declarations do begin
+        Result := FindNodeAtPosition(astNode, Row, Col);
+        if Result <> nil then Exit;
+      end;
+      //Busca en el tipo de retorno
+      Result := FindNodeAtPosition(ProcFunctDecl.ReturnTypeRef, Row, Col);
+      if Result <> nil then Exit;
+      //Buscar en el cuerpo
+      Result := FindNodeAtPosition(ProcFunctDecl.Body, Row, Col);
       if Result <> nil then Exit;
     end;
     ntAssignment: begin  //Busca en las dos partes de la asignación
@@ -265,8 +285,8 @@ begin
     end;
     ntTypeRef: begin
       TypeRef := TTypeRef(Node);
-      if TypeRef.Declaration <> Nil then begin
-        Result := TypeRef.Declaration.SrcPos;
+      if TypeRef.Definit <> Nil then begin
+        Result := TypeRef.Definit.SrcPos;
       end else begin
         Result := Node.SrcPos;
       end;
@@ -344,20 +364,8 @@ begin
        ele := FindNodeAtPosition(cxp.astUnit, callPos.row, callPos.col)
     else
        ele := FindNodeAtPosition(cxp.astProg, callPos.row, callPos.col);
-    //ele := cxp.astProg.GetElementCalledAt(callPos);
     if ele = nil then begin
-      //No lo ubica, puede ser que esté en la sección de declaración
-      //ele := cxp.ast.GetELementDeclaredAt(callPos);
-      //if ele <> nil then begin
-      //  //Es el punto donde se declara
-      //  if ele.idClass = eleUnit then begin
-      //    fraEdit.SelectOrLoad(TAstUnit(ele).srcFile);
-      //  end else begin
-      //    //Es otra declaración
-      //  end;
-      //end else begin
-        MsgExc('Unknown identifier: %s', [tok]);
-      //end;
+       MsgExc('Unknown identifier: %s', [tok]);
     end else begin
       //Ubica la declaración del elemento
       srcDec := GetDeclarationLocation(ele);

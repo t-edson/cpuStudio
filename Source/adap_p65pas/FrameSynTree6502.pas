@@ -254,6 +254,9 @@ begin
     AddNodeTo(curNode, varDecl.TypeRef);
   end else if curEle.NodeType = ntProcFunctDecl then begin
     procDecl := TProcFunctDecl(curEle);
+    if procDecl.IsFunction then begin  //Tipo de retorno
+      AddNodeTo(curNode, procDecl.ReturnTypeRef);
+    end;
     if not procDecl.IsForward then begin
       //Agrega nodo para los parámetros
       //AddNodeTo(curNode, procDecl.Parameters);
