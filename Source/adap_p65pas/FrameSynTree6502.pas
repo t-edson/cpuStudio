@@ -91,6 +91,10 @@ var
   TIT_OTHER: String;
 
 { TfraSynxTree6502 }
+procedure TfraSynxTree6502.frmElemPropertyExplore(elem: TASTNode);
+begin
+  acGenGoToExecute(self);
+end;
 function TfraSynxTree6502.AddNode(nodParent: TTreeNode; imgIndex: integer; nodName: string): TTreeNode;
 {Agrega un nodo con un ícono y un nombre específico}
 var
@@ -122,15 +126,17 @@ begin
     nod := AddNode(nodParent, 23, TConstDecl(elem).Name);
   ntVarDecl:
     nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
+  ntProcFunctDecl:
+    nod := AddNode(nodParent, 26, TProcFunctDecl(elem).Name);
+  ntTypeDecl:
+    nod := AddNode(nodParent, 15, TTypeDecl(elem).Name);
   ntSubranTypeDef, ntEnumTypeDef, ntRecordTypeDef, ntPointerTypeDef, ntAliasTypeDef:
-    nod := AddNode(nodParent, 15, TTypeDef(elem).TypeName);
+    nod := AddNode(nodParent, 31, TTypeDef(elem).TypeName);
   ntArrayTypeDef: begin
     nodLabel := TArrayTypeDef(elem).TypeName;
     if nodLabel = '' then nodLabel := '<Array>';   //Declaración INLINE
-    nod := AddNode(nodParent, 15, nodLabel);
+    nod := AddNode(nodParent, 31, nodLabel);
   end;
-  ntProcFunctDecl:
-    nod := AddNode(nodParent, 26, TProcFunctDecl(elem).Name);
 //  ntDeclarations:
 //    nod := AddNode(nodParent, 0, 'Declarations');
   ntBlock:
@@ -210,10 +216,6 @@ begin
   //Devuelve referencia al nodo
   Result := nod;
 end;
-procedure TfraSynxTree6502.frmElemPropertyExplore(elem: TASTNode);
-begin
-  acGenGoToExecute(self);
-end;
 procedure TfraSynxTree6502.AddChildNodes(curNode: TTreeNode; curEle: TASTNode);
 {Crea los subnodos del nodo "nodMain", de forma recursiva.}
 var
@@ -240,6 +242,7 @@ var
   unt: TUnit;
   nodInterf, nodImplem, nodDecls: TTreeNode;
   TypeRef: TTypeRef;
+  TypeDecl: TTypeDecl;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -262,6 +265,10 @@ begin
       //Agrega nodo para el cuerpo
       AddNodeTo(curNode, procDecl.Body);
     end;
+  end else if curEle.NodeType = ntTypeDecl then begin
+    TypeDecl := TTypeDecl(curEle);
+    //Añade de definici¨´on
+    AddNodeTo(curNode, TypeDecl.Definit);
   end else if curEle.NodeType = ntRecordTypeDef then begin
     recordType := TRecordTypeDef(curEle);
     for elem in recordType.Fields do begin
