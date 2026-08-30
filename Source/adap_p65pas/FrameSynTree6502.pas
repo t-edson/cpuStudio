@@ -151,11 +151,6 @@ begin
     nod := AddNode(nodParent, 3, TFunctionCall(elem).Name);
   ntVariableRef:
     nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
-  ntTypeRef: begin
-    nodLabel := TTypeRef(elem).Name;
-    if nodLabel = '' then nodLabel := '<Inline>';
-    nod := AddNode(nodParent, 15, nodLabel);
-  end;
   ntPointerDeref:
     nod := AddNode(nodParent, 29, '_ptr');
   ntArrayRef:
@@ -241,7 +236,6 @@ var
   Prog: TProgram;
   unt: TUnit;
   nodInterf, nodImplem, nodDecls: TTreeNode;
-  TypeRef: TTypeRef;
   TypeDecl: TTypeDecl;
 begin
   if          curEle.NodeType = ntConstDecl then begin
@@ -251,11 +245,11 @@ begin
   end else if curEle.NodeType = ntVarDecl then begin
     varDecl := TVarDecl(curEle);
     //Añade tipo de la variable
-    AddNodeTo(curNode, varDecl.TypeRef);
+    AddNodeTo(curNode, varDecl.TypeDef);
   end else if curEle.NodeType = ntProcFunctDecl then begin
     procDecl := TProcFunctDecl(curEle);
     if procDecl.IsFunction then begin  //Tipo de retorno
-      AddNodeTo(curNode, procDecl.ReturnTypeRef);
+      AddNodeTo(curNode, procDecl.ReturnTypeDef);
     end;
     if not procDecl.IsForward then begin
       //Agrega nodo para los parámetros
@@ -271,7 +265,7 @@ begin
   end else if curEle.NodeType = ntTypeDecl then begin
     TypeDecl := TTypeDecl(curEle);
     //Añade de definici¨´on
-    AddNodeTo(curNode, TypeDecl.Definit);
+    AddNodeTo(curNode, TypeDecl.Definition);
   end else if curEle.NodeType = ntRecordTypeDef then begin
     recordType := TRecordTypeDef(curEle);
     for elem in recordType.Fields do begin
@@ -284,7 +278,7 @@ begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
     //Agrega el tipo de elemento
-    AddNodeTo(curNode, arrayType.ElemTypeRef);
+    AddNodeTo(curNode, arrayType.ElemTypeDef);
   end else if curEle.NodeType = ntAssignment then begin
     assig := TAssignment(curEle);
     //Parte izquierda de la asignación
@@ -312,12 +306,6 @@ begin
       //if elem.nodeType = ntBlock then nodElem.Expanded := true;
       //if elem.nodeType = ntAssignment then nodElem.Expanded := true;
       ////if elem.Parent.nodeType = ntAssignment then nodElem.Expanded := true; //Expande instrucciones
-    end;
-  end else if curEle.nodeType = ntTypeRef then begin
-    //La referencia a un tipo puede tener una declaración INLINE de tipo
-    TypeRef := TTypeRef(curEle);
-    if TypeRef.TypeDef <> Nil then begin
-      AddNodeTo(curNode, TypeRef.TypeDef);
     end;
   end else if curEle.nodeType = ntPointerDeref then begin
     ptrDeref := TPointerDeref(curEle);

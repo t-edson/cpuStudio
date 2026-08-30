@@ -100,7 +100,7 @@ begin
     end;
     ntVarDecl: begin //La declaración de un variable tiene un nodo hijo
       VarDecl := tVarDecl(Node);
-      Result := FindNodeAtPosition(VarDecl.TypeRef, Row, Col);
+      Result := FindNodeAtPosition(VarDecl.TypeDef, Row, Col);
       if Result <> nil then Exit;
     end;
     ntProcFunctDecl: begin
@@ -116,7 +116,7 @@ begin
         if Result <> nil then Exit;
       end;
       //Busca en el tipo de retorno
-      Result := FindNodeAtPosition(ProcFunctDecl.ReturnTypeRef, Row, Col);
+      Result := FindNodeAtPosition(ProcFunctDecl.ReturnTypeDef, Row, Col);
       if Result <> nil then Exit;
       //Buscar en el cuerpo
       Result := FindNodeAtPosition(ProcFunctDecl.Body, Row, Col);
@@ -252,7 +252,7 @@ function GetDeclarationLocation(Node: TASTNode): TSrcPos;
 {Devuelve la declaración del elemento que "Node" del AST.}
 var
   functCall: TFunctionCall;
-  TypeRef: TTypeRef;
+  AliasTypeDef: TAliasTypeDef;
 begin
   if Node = nil then begin
     Result.row := -1;
@@ -283,10 +283,10 @@ begin
       //Para campos, buscar el campo en el registro
       Result := Node.SrcPos; //O buscar en la declaración del campo
     end;
-    ntTypeRef: begin
-      TypeRef := TTypeRef(Node);
-      if TypeRef.Definit <> Nil then begin
-        Result := TypeRef.Definit.SrcPos;
+    ntAliasTypeDef: begin
+      AliasTypeDef := TAliasTypeDef(Node);
+      if AliasTypeDef.Definition <> Nil then begin
+        Result := AliasTypeDef.Definition.SrcPos;
       end else begin
         Result := Node.SrcPos;
       end;
