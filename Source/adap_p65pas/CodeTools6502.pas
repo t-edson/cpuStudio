@@ -285,8 +285,8 @@ begin
     end;
     ntAliasTypeDef: begin
       AliasTypeDef := TAliasTypeDef(Node);
-      if AliasTypeDef.Definition <> Nil then begin
-        Result := AliasTypeDef.Definition.SrcPos;
+      if AliasTypeDef.FinalDef <> Nil then begin
+        Result := AliasTypeDef.FinalDef.SrcPos;
       end else begin
         Result := Node.SrcPos;
       end;
