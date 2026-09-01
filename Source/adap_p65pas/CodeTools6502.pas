@@ -111,9 +111,11 @@ begin
         if Result <> nil then Exit;
       end;
       //Buscar en los declaraciones
-      for astNode in ProcFunctDecl.Declarations do begin
-        Result := FindNodeAtPosition(astNode, Row, Col);
-        if Result <> nil then Exit;
+      if ProcFunctDecl.Declarations<>Nil then begin
+        for astNode in ProcFunctDecl.Declarations do begin
+          Result := FindNodeAtPosition(astNode, Row, Col);
+          if Result <> nil then Exit;
+        end;
       end;
       //Busca en el tipo de retorno
       Result := FindNodeAtPosition(ProcFunctDecl.ReturnTypeDef, Row, Col);
