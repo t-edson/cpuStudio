@@ -128,14 +128,44 @@ begin
     nod := AddNode(nodParent, 24, TVarDecl(elem).Name);
   ntProcFunctDecl:
     nod := AddNode(nodParent, 26, TProcFunctDecl(elem).Name);
-  ntTypeDecl:
+  ntTypeDecl: begin
     nod := AddNode(nodParent, 15, TTypeDecl(elem).Name);
-  ntSubranTypeDef, ntEnumTypeDef, ntRecordTypeDef, ntPointerTypeDef, ntAliasTypeDef:
+  end;
+  //Definiciones de tipos
+  ntSimpleTypeDef: begin
+    nodLabel := TSimpleTypeDef(elem).TypeName;
+    if nodLabel = '' then nodLabel := '<Simple>';
+    nod := AddNode(nodParent, 31, nodLabel);
+  end;
+  ntAliasTypeDef: begin
+    nodLabel := TAliasTypeDef(elem).TypeName;
+    if nodLabel = '' then nodLabel := '<Alias>:' + TAliasTypeDef(elem).BaseType;
+    nod := AddNode(nodParent, 31, nodLabel);
+  end;
+  ntSubranTypeDef: begin
+    nodLabel := TSubranTypeDef(elem).TypeName;
+    if nodLabel = '' then nodLabel := '<Subran>';   //Declaración INLINE
     nod := AddNode(nodParent, 31, TTypeDef(elem).TypeName);
+  end;
   ntArrayTypeDef: begin
     nodLabel := TArrayTypeDef(elem).TypeName;
     if nodLabel = '' then nodLabel := '<Array>';   //Declaración INLINE
     nod := AddNode(nodParent, 31, nodLabel);
+  end;
+  ntRecordTypeDef: begin
+    nodLabel := TRecordTypeDef(elem).TypeName;
+    if nodLabel = '' then nodLabel := '<Record>';   //Declaración INLINE
+    nod := AddNode(nodParent, 31, nodLabel);
+  end;
+  ntEnumTypeDef: begin
+     nodLabel := TEnumTypeDef(elem).TypeName;
+     if nodLabel = '' then nodLabel := '<Enum>';   //Declaración INLINE
+     nod := AddNode(nodParent, 31, nodLabel);
+  end;
+  ntPointerTypeDef: begin
+     nodLabel := TPointerTypeDef(elem).TypeName;
+     if nodLabel = '' then nodLabel := '<Pointer>';   //Declaración INLINE
+     nod := AddNode(nodParent, 31, nodLabel);
   end;
 //  ntDeclarations:
 //    nod := AddNode(nodParent, 0, 'Declarations');
@@ -237,6 +267,7 @@ var
   unt: TUnit;
   nodInterf, nodImplem, nodDecls: TTreeNode;
   TypeDecl: TTypeDecl;
+  AliasTypeDef: TAliasTypeDef;
 begin
   if          curEle.NodeType = ntConstDecl then begin
     constDecl := TConstDecl(curEle);
@@ -266,6 +297,10 @@ begin
     TypeDecl := TTypeDecl(curEle);
     //Añade de definici¨´on
     AddNodeTo(curNode, TypeDecl.Definition);
+//  end else if curEle.NodeType = ntAliasTypeDef then begin
+//    AliasTypeDef := TAliasTypeDef(curEle);
+//    //Agreda el nodo
+//    AddNodeTo(curNode, AliasTypeDef.);  //Agrega el nodo
   end else if curEle.NodeType = ntRecordTypeDef then begin
     recordType := TRecordTypeDef(curEle);
     for elem in recordType.Fields do begin
@@ -460,7 +495,7 @@ begin
     exit;
   end;
   //Muestra propiedades
-  frmElemProp.Exec(lexer, TreeView1.Selected);
+  frmElemProp.Exec(cpx, TreeView1.Selected);
 end;
 procedure TfraSynxTree6502.TreeView1DblClick(Sender: TObject);
 begin
@@ -495,7 +530,7 @@ procedure TfraSynxTree6502.acGenPropExecute(Sender: TObject);
 begin
   if TreeView1.Selected = nil then exit;
   if TreeView1.Selected.Data = nil then exit;
-  frmElemProp.Exec(lexer, TreeView1.Selected);
+  frmElemProp.Exec(cpx, TreeView1.Selected);
   frmElemProp.Show;
 end;
 procedure TfraSynxTree6502.acGenDoAnalysExecute(Sender: TObject);

@@ -4,7 +4,7 @@ unit FormElemProperty;
 interface
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Buttons, StdCtrls, ExtCtrls,
-  ComCtrls, ImgList, MisUtils, alexiaLex, AstPascal;
+  ComCtrls, ImgList, MisUtils, alexiaLex, AstPascal, Analyzer;
 type
 
   { TfrmElemProperty }
@@ -35,7 +35,7 @@ type
   public
     OnExplore: procedure(elem0: TASTNode) of object;
     procedure Clear;
-    procedure Exec(lex: TAleLexer; treeNod: TTreeNode);
+    procedure Exec(cpx: TAnalyzer; treeNod: TTreeNode);
   end;
 
 var
@@ -96,19 +96,20 @@ begin
 //    butDetails.Enabled := true;
 //  end;
 end;
-procedure TfrmElemProperty.Exec(lex: TAleLexer; treeNod: TTreeNode);
+procedure TfrmElemProperty.Exec(cpx: TAnalyzer; treeNod: TTreeNode);
 var
   adicInformation: String;
   imgIdx: TImageIndex;
+  Express: TExpression;
 begin
   elem := TASTNode(treeNod.Data);
   if elem = nil then exit;
   Image1.Stretch := true;
-  Image1.Proportional := true;  // to keep width/height ratio
+  Image1.Proportional := true;  //To keep width/height ratio
   adicInformation := '';
 
-  txtEleLocaPath.Caption := lex.ctxFileDir(elem.SrcPos);
-  txtEleLocFile.Caption := lex.ctxFileName(elem.SrcPos) + elem.SrcPos.RowColString;
+  txtEleLocaPath.Caption := cpx.lexer.ctxFileDir(elem.SrcPos);
+  txtEleLocFile.Caption := cpx.lexer.ctxFileName(elem.SrcPos) + elem.SrcPos.RowColString;
   BitBtn2.Enabled := true;
   //Configura etiqueta y botón de número de llamadas al elemento
   SetCalledInfo(elem);
@@ -117,7 +118,11 @@ begin
   ImageList1.GetBitmap(imgIdx, Image1.Picture.Bitmap);
   txtEleType.Caption := elem.ClassName;
   adicInformation := elem.ToString;
-
+  if elem is TExpression then begin
+    Express := TExpression(elem);
+    adicInformation += LineEnding +
+      'TypeDef using GetTypeOf():' + LineEnding + cpx.checker.GetTypeOf(Express).ToString;
+  end;
   Memo1.Text := adicInformation;
 end;
 
