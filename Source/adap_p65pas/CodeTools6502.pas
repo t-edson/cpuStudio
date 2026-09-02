@@ -57,7 +57,7 @@ var
   Assignm: TAssignment;
   BinOp: TBinaryOp;
   UnaryOp: TUnaryOp;
-  FuncCall: TFunctionCall;
+  FuncCall: TProcFunctCall;
   IfStmt: TIfStatement;
   WhileLoop: TWhileLoop;
   ForLoop: TForLoop;
@@ -106,9 +106,11 @@ begin
     ntProcFunctDecl: begin
       ProcFunctDecl := TProcFunctDecl(Node);
       //Buscar en los parámetros
-      for astNode in ProcFunctDecl.Parameters do begin
-        Result := FindNodeAtPosition(astNode, Row, Col);
-        if Result <> nil then Exit;
+      if ProcFunctDecl.Parameters <> Nil then begin
+        for astNode in ProcFunctDecl.Parameters do begin
+          Result := FindNodeAtPosition(astNode, Row, Col);
+          if Result <> nil then Exit;
+        end;
       end;
       //Buscar en los declaraciones
       if ProcFunctDecl.Declarations<>Nil then begin
@@ -146,7 +148,7 @@ begin
       if Result <> nil then Exit;
     end;
     ntProcFunctCall: begin
-      FuncCall := TFunctionCall(Node);
+      FuncCall := TProcFunctCall(Node);
       for i := 0 to FuncCall.Arguments.Count - 1 do begin
         Result := FindNodeAtPosition(FuncCall.Arguments[i], Row, Col);
         if Result <> nil then Exit;
@@ -253,7 +255,7 @@ end;
 function GetDeclarationLocation(Node: TASTNode): TSrcPos;
 {Devuelve la declaración del elemento que "Node" del AST.}
 var
-  functCall: TFunctionCall;
+  functCall: TProcFunctCall;
   AliasTypeDef: TAliasTypeDef;
 begin
   if Node = nil then begin
@@ -271,7 +273,7 @@ begin
     end;
     ntProcFunctCall: begin
       //Similar para llamadas a funciones
-      functCall := TFunctionCall(Node);
+      functCall := TProcFunctCall(Node);
       if functCall.IsIntrinsic then begin
         Result := Node.SrcPos;
       end;

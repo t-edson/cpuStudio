@@ -178,7 +178,7 @@ begin
   ntAssignment:
     nod := AddNode(nodParent, 3, 'assign');
   ntProcFunctCall:
-    nod := AddNode(nodParent, 3, TFunctionCall(elem).Name);
+    nod := AddNode(nodParent, 3, TProcFunctCall(elem).Name);
   ntVariableRef:
     nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
   ntPointerDeref:
@@ -249,7 +249,7 @@ var
   assig: TAssignment;
   binaryOp: TBinaryOp;
   arrIndex: TArrayRef;
-  functCall: TFunctionCall;
+  functCall: TProcFunctCall;
   constDecl: TConstDecl;
   unaryOp: TUnaryOp;
   fieldAccess: TFieldAccess;
@@ -333,7 +333,7 @@ begin
     //Argumento
     AddNodeTo(curNode, unaryOp.Operand);
   end else if curEle.NodeType = ntProcFunctCall then begin
-    functCall := TFunctionCall(curEle);
+    functCall := TProcFunctCall(curEle);
     //Agrega elementos
     for elem in functCall.Arguments do begin
       AddNodeTo(curNode, elem);
