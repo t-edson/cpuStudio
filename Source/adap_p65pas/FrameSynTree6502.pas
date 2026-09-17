@@ -114,7 +114,7 @@ var
   nod: TTreeNode;
   numberLit: TNumberLiteral;
   txtNumber, rango, nodLabel: String;
-  arrayRange: TArrayRange;
+  arrayRange: TValueRange;
 begin
   if elem = nil then begin
     nod := AddNode(nodParent, 17, nodName);
@@ -185,8 +185,8 @@ begin
     nod := AddNode(nodParent, 29, '_ptr');
   ntArrayRef:
     nod := AddNode(nodParent, 27, '_item');
-  ntArrayRange: begin
-    arrayRange := TArrayRange(elem);
+  ntValueRange: begin
+    arrayRange := TValueRange(elem);
     if arrayRange.HighExpr = Nil then begin
       rango := arrayRange.LowExpr.ValueStr + '..';
     end else begin
