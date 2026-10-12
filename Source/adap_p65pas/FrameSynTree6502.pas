@@ -180,7 +180,7 @@ begin
   ntProcFunctCall:
     nod := AddNode(nodParent, 3, TProcFunctCall(elem).Name);
   ntVariableRef:
-    nod := AddNode(nodParent, 2, TVariableRef(elem).Name);
+    nod := AddNode(nodParent, 2, TIdentifierRef(elem).Name);
   ntPointerDeref:
     nod := AddNode(nodParent, 29, '_ptr');
   ntArrayRef:
@@ -345,7 +345,7 @@ begin
   end else if curEle.nodeType = ntPointerDeref then begin
     ptrDeref := TPointerDeref(curEle);
     //Agrega variable base
-    AddNodeTo(curNode, ptrDeref.Pointer);
+    AddNodeTo(curNode, ptrDeref.PointerVar);
   end else if curEle.NodeType = ntArrayRef then begin
     arrIndex := TArrayRef(curEle);
     //Agrega variable base

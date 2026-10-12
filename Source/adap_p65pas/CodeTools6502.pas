@@ -226,7 +226,7 @@ begin
     end;
     ntPointerDeref: begin
       PointerDeref := TPointerDeref(Node);
-      Result := FindNodeAtPosition(PointerDeref.Pointer, Row, Col);
+      Result := FindNodeAtPosition(PointerDeref.PointerVar, Row, Col);
       if Result <> nil then Exit;
     end;
     ntRecordLiteral: begin
@@ -266,8 +266,8 @@ begin
   end;
   case Node.NodeType of
     ntVariableRef: begin
-      if TVariableRef(Node).Declaration <> nil then
-        Result := TVariableRef(Node).Declaration.SrcPos
+      if TIdentifierRef(Node).Declaration <> nil then
+        Result := TIdentifierRef(Node).Declaration.SrcPos
       else
         Result := Node.SrcPos;
     end;
