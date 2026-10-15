@@ -178,8 +178,9 @@ begin
   ntAssignment:
     nod := AddNode(nodParent, 3, 'assign');
   ntProcFunctCall:
-    nod := AddNode(nodParent, 3, TProcFunctCall(elem).Name);
-  ntVariableRef:
+    //nod := AddNode(nodParent, 3, TProcFunctCall(elem).Name);
+    nod := AddNode(nodParent, 3, '<function_ident>');
+  ntIdentifierRef:
     nod := AddNode(nodParent, 2, TIdentifierRef(elem).Name);
   ntPointerDeref:
     nod := AddNode(nodParent, 29, '_ptr');

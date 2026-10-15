@@ -265,7 +265,7 @@ begin
     Exit;
   end;
   case Node.NodeType of
-    ntVariableRef: begin
+    ntIdentifierRef: begin
       if TIdentifierRef(Node).Declaration <> nil then
         Result := TIdentifierRef(Node).Declaration.SrcPos
       else
