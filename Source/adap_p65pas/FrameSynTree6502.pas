@@ -139,7 +139,7 @@ begin
   end;
   ntAliasTypeDef: begin
     nodLabel := TAliasTypeDef(elem).TypeName;
-    if nodLabel = '' then nodLabel := '<Alias>:' + TAliasTypeDef(elem).BaseType;
+    if nodLabel = '' then nodLabel := '<Alias>:' + TAliasTypeDef(elem).TargetType;
     nod := AddNode(nodParent, 31, nodLabel);
   end;
   ntSubranTypeDef: begin
