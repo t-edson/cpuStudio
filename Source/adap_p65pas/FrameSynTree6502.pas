@@ -310,7 +310,7 @@ begin
   end else if curEle.NodeType = ntArrayTypeDef then begin
     arrayType := TArrayTypeDef(curEle);
     //Agrega los índices del arreglo
-    for elem in arrayType.IndexRanges do begin
+    for elem in arrayType.ArrayIndexes do begin
       AddNodeTo(curNode, elem);  //Agrega el nodo
     end;
     //Agrega el tipo de elemento
